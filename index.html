@@ -5,31 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Investor Relations | Omkar Enterprises</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-    /* Consent Popup Styles */
+    body { margin: 0; font-family: Arial, sans-serif; }
     #consentPopup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); display: none;
+      align-items: center; justify-content: center; z-index: 9999;
     }
     #consentBox {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
+      background: #fff; padding: 20px; border-radius: 10px;
+      width: 90%; max-width: 400px; text-align: center;
     }
     #consentBox h2 { margin-top: 0; color:#0A2540; }
-    #consentBox p { font-size: 14px; line-height: 1.4; }
     #consentBox input, #consentBox button {
       width: 90%; margin: 8px 0; padding: 10px; font-size: 14px;
     }
@@ -41,14 +27,11 @@
 </head>
 <body>
 
-  <!-- Main Content -->
   <div id="mainContent" style="display:none; padding:20px;">
     <h1>Welcome to Omkar Enterprises Investor Relations</h1>
     <p>Here you can view information about our consultancy firm, investor terms, and official documents.</p>
-    <!-- You can place your firm profile / investor details here -->
   </div>
 
-  <!-- Consent Popup -->
   <div id="consentPopup">
     <div id="consentBox">
       <h2>Consent Required</h2>
@@ -71,55 +54,62 @@
     </div>
   </div>
 
-  <script>
-    const consentPopup = document.getElementById("consentPopup");
-    const mainContent = document.getElementById("mainContent");
-    const scriptURL = "YOUR_SCRIPT_URL_HERE"; // Replace with your Apps Script Web App URL
+<script>
+const consentPopup = document.getElementById("consentPopup");
+const mainContent = document.getElementById("mainContent");
+const scriptURL = "YOUR_SCRIPT_URL_HERE"; // Replace with Apps Script URL
 
-    // Show popup only if not already consented
-    window.onload = function() {
-      let email = localStorage.getItem("investorEmail");
-      if (!email) {
-        consentPopup.style.display = "flex";
-      } else {
-        mainContent.style.display = "block";
-      }
-    };
-
-    // Handle form submission
-    document.getElementById("consentForm").addEventListener("submit", function(e){
-      e.preventDefault();
-
-      let name = document.getElementById("name").value;
-      let email = document.getElementById("email").value;
-      let phone = document.getElementById("phone").value;
-
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          phone: phone,
-          consent: true
-        })
-      })
-      .then(response => response.json())
+window.onload = function() {
+  let email = localStorage.getItem("investorEmail");
+  if (email) {
+    // Check backend if already consented
+    fetch(scriptURL + "?email=" + encodeURIComponent(email))
+      .then(r => r.json())
       .then(data => {
-        if (data.alreadyExists) {
-          alert("Welcome back! Consent already recorded.");
+        if (data.exists) {
+          mainContent.style.display = "block";
         } else {
-          alert("Consent recorded successfully!");
+          consentPopup.style.display = "flex";
         }
-        localStorage.setItem("investorEmail", email);
-        consentPopup.style.display = "none";
-        mainContent.style.display = "block";
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Error saving consent. Please try again.");
       });
-    });
-  </script>
+  } else {
+    consentPopup.style.display = "flex";
+  }
+};
 
+document.getElementById("consentForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
+
+  fetch(scriptURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      phone: phone,
+      consent: true
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.alreadyExists) {
+      alert("Welcome back! Consent already recorded.");
+    } else {
+      alert("Consent recorded successfully!");
+    }
+    localStorage.setItem("investorEmail", email);
+    consentPopup.style.display = "none";
+    mainContent.style.display = "block";
+  })
+  .catch(err => {
+    console.error("Fetch error:", err);
+    alert("Error saving consent. Please try again.");
+  });
+});
+</script>
 </body>
 </html>
