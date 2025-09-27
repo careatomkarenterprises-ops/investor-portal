@@ -57,21 +57,26 @@
 <script>
 const consentPopup = document.getElementById("consentPopup");
 const mainContent = document.getElementById("mainContent");
-const scriptURL = "https://script.google.com/macros/s/AKfycbxbQhUZGEwkbUiLe-FgfN3L0Vs56ckqoXeKj0gI-_DK6dlN60m6Z-gAL3HfofcO-AmIHw/exec";
 
+// ✅ Replace with YOUR /exec URL (not /dev)
+const scriptURL = "https://script.google.com/macros/s/AKfycbwtbyJ8aCYlQeSTt0uPavhtuYRLe0sf1Y6r3S0_jVfZ/exec";
 
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if (email) {
-    // Check backend if already consented
     fetch(scriptURL + "?email=" + encodeURIComponent(email))
-      .then(r => r.json())
+      .then(r => r.text())
+      .then(txt => JSON.parse(txt))
       .then(data => {
         if (data.exists) {
           mainContent.style.display = "block";
         } else {
           consentPopup.style.display = "flex";
         }
+      })
+      .catch(err => {
+        console.error("Check consent error:", err);
+        consentPopup.style.display = "flex";
       });
   } else {
     consentPopup.style.display = "flex";
@@ -95,7 +100,8 @@ document.getElementById("consentForm").addEventListener("submit", function(e){
       consent: true
     })
   })
-  .then(response => response.json())
+  .then(r => r.text())
+  .then(txt => JSON.parse(txt))
   .then(data => {
     if (data.alreadyExists) {
       alert("Welcome back! Consent already recorded.");
@@ -107,10 +113,11 @@ document.getElementById("consentForm").addEventListener("submit", function(e){
     mainContent.style.display = "block";
   })
   .catch(err => {
-    console.error("Fetch error:", err);
+    console.error("Save consent error:", err);
     alert("Error saving consent. Please try again.");
   });
 });
 </script>
+
 </body>
 </html>
