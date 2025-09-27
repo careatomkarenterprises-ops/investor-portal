@@ -58,10 +58,10 @@
 const consentPopup = document.getElementById("consentPopup");
 const mainContent = document.getElementById("mainContent");
 
-// ✅ Replace with YOUR /exec URL (not /dev)
-const scriptURL = "const scriptURL = "https://script.google.com/macros/s/AKfycbzJ_aG_DEIAbXVE_EymYfG46SyjLLsQ-P4yevNX0Ibo5sYsuPiijswowLLJJlVrKULeMA/exec";
-";
+// ✅ Your latest /exec URL
+const scriptURL = "https://script.google.com/macros/s/AKfycbzJ_aG_DEIAbXVE_EymYfG46SyjLLsQ-P4yevNX0Ibo5sYsuPiijswowLLJJlVrKULeMA/exec";
 
+// Check if already consented
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if (email) {
@@ -84,6 +84,7 @@ window.onload = function() {
   }
 };
 
+// Handle consent form submission
 document.getElementById("consentForm").addEventListener("submit", function(e){
   e.preventDefault();
 
@@ -119,6 +120,5 @@ document.getElementById("consentForm").addEventListener("submit", function(e){
   });
 });
 </script>
-
 </body>
 </html>
