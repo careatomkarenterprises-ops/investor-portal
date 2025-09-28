@@ -1,20 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omkar Investor Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-body { background-color: #f8f9fa; }
-.dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omkar Investor Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background-color: #f8f9fa; }
+    .dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    #consentPopup {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.8); display: none;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    #consentBox {
+      background: #fff; padding: 20px; border-radius: 10px;
+      width: 90%; max-width: 400px; text-align: center;
+    }
+    #consentBox input, #consentBox button {
+      width: 90%; margin: 8px 0; padding: 10px; font-size: 14px;
+    }
+    #consentBox button {
+      background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer;
+    }
+    #consentBox button:hover { background: #C9A227; color:#000; }
+  </style>
 </head>
 <body>
 
-<div class="container py-4">
-  <!-- Header -->
+<!-- Consent Popup -->
+<div id="consentPopup">
+  <div id="consentBox">
+    <h2>Consent Required</h2>
+    <p>
+      Omkar Enterprises is a private consultancy firm.<br>
+      We are not a bank or NBFC and do not raise public deposits under the 
+      <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
+      This discussion is strictly private and contractual.
+    </p>
+    <form id="consentForm">
+      <label style="font-size:13px;">
+        <input type="checkbox" id="agreeCheck" required> I have read, understood, and voluntarily consent to proceed.
+      </label><br><br>
+      <input type="text" id="name" placeholder="Full Name" required><br>
+      <input type="email" id="email" placeholder="Email Address" required><br>
+      <input type="tel" id="phone" placeholder="Contact Number" required><br>
+      <button type="submit">Proceed</button>
+    </form>
+  </div>
+</div>
+
+<!-- Dashboard Container -->
+<div class="container py-4" id="dashboardContainer" style="display:none;">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">Omkar Enterprises Investor Relations</h2>
     <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
@@ -31,50 +71,19 @@ body { background-color: #f8f9fa; }
   </ul>
 
   <div class="tab-content pt-4">
-
-    <!-- Overview for New Visitors -->
+    <!-- Overview for Visitors -->
     <div class="tab-pane fade show active" id="overview">
       <div id="visitorOverview">
         <div class="row g-3 mb-4">
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Total Investments</h5>
-              <h3 id="totalInvestments">₹0</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Total Payouts</h5>
-              <h3 id="totalPayouts">₹0</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Active Investors</h5>
-              <h3 id="activeInvestors">0</h3>
-            </div>
-          </div>
+          <div class="col-md-4"><div class="p-3 bg-white dashboard-card text-center"><h5>Total Investments</h5><h3 id="totalInvestments">₹25 Cr</h3></div></div>
+          <div class="col-md-4"><div class="p-3 bg-white dashboard-card text-center"><h5>Total Payouts</h5><h3 id="totalPayouts">₹7 Cr</h3></div></div>
+          <div class="col-md-4"><div class="p-3 bg-white dashboard-card text-center"><h5>Active Investors</h5><h3 id="activeInvestors">180</h3></div></div>
         </div>
-
-        <!-- Charts -->
         <div class="row g-3">
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6>Investments vs Payouts</h6>
-              <canvas id="investmentChart"></canvas>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6>Investor Tenure Distribution</h6>
-              <canvas id="tenureChart"></canvas>
-            </div>
-          </div>
+          <div class="col-md-6"><div class="p-3 bg-white dashboard-card"><h6>Investments vs Payouts</h6><canvas id="investmentChart"></canvas></div></div>
+          <div class="col-md-6"><div class="p-3 bg-white dashboard-card"><h6>Investor Tenure Distribution</h6><canvas id="tenureChart"></canvas></div></div>
         </div>
-
-        <div class="mt-4">
-          <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
-        </div>
+        <div class="mt-4"><a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a></div>
       </div>
     </div>
 
@@ -98,11 +107,11 @@ body { background-color: #f8f9fa; }
       </div>
     </div>
 
-    <!-- Earnings -->
+    <!-- Earnings Explanation -->
     <div class="tab-pane fade" id="earnings">
       <div class="p-3 bg-white dashboard-card">
         <h5>How You Earn</h5>
-        <p>Investors earn fixed monthly returns through structured lending opportunities. Payouts are consistent and secured with agreements.</p>
+        <p>Investors with Omkar Enterprises earn fixed monthly returns through structured lending opportunities. Unlike volatile stock markets, your payouts are consistent and secured with agreements.</p>
       </div>
     </div>
 
@@ -110,104 +119,152 @@ body { background-color: #f8f9fa; }
     <div class="tab-pane fade" id="hotdeals">
       <div class="p-3 bg-white dashboard-card">
         <h5>Hot Deals</h5>
-        <form id="hotdealForm">
-          <input type="text" id="hdName" placeholder="Full Name" required class="form-control mb-2">
-          <input type="email" id="hdEmail" placeholder="Email" required class="form-control mb-2">
-          <input type="tel" id="hdPhone" placeholder="Phone" required class="form-control mb-2">
-          <input type="number" id="hdAmount" placeholder="Amount" required class="form-control mb-2">
-          <input type="text" id="hdTenure" placeholder="Tenure" required class="form-control mb-2">
-          <button type="submit" class="btn btn-success">Submit Hot Deal</button>
-        </form>
-        <div id="hotdealMsg" class="mt-2"></div>
+        <ul id="hotDealsList">Loading hot deals...</ul>
       </div>
     </div>
 
     <!-- FAQ -->
     <div class="tab-pane fade" id="faq">
       <div class="p-3 bg-white dashboard-card">
-        <h5>FAQ</h5>
-        <ul id="faqList"></ul>
+        <h5>FAQ / Help</h5>
+        <ul id="faqList">Loading FAQs...</ul>
       </div>
     </div>
 
   </div>
 </div>
 
+<!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec";
-const logoutBtn = document.getElementById('logoutBtn');
+const scriptURL = "YOUR_GOOGLE_SCRIPT_EXEC_URL";
 
-// Charts
-const ctx1 = document.getElementById('investmentChart');
-new Chart(ctx1, { type:'bar', data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label:'Investments', data:[5,7,9,12,15,18]},{ label:'Payouts', data:[1,2,3,4,5,6]}] } });
-const ctx2 = document.getElementById('tenureChart');
-new Chart(ctx2, { type:'pie', data:{ labels:['Quarterly','Biannual','Annual'], datasets:[{ data:[40,30,30] }] } });
+// Consent popup logic
+const consentPopup = document.getElementById("consentPopup");
+const dashboardContainer = document.getElementById("dashboardContainer");
 
-// Logout
-logoutBtn.addEventListener('click', ()=>{ localStorage.removeItem("investorEmail"); window.location.reload(); });
-
-// Hot Deal submission
-document.getElementById('hotdealForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  fetch(scriptURL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      action:'hotdeal',
-      name: document.getElementById('hdName').value,
-      email: document.getElementById('hdEmail').value,
-      phone: document.getElementById('hdPhone').value,
-      amount: document.getElementById('hdAmount').value,
-      tenure: document.getElementById('hdTenure').value
-    })
-  }).then(r=>r.json()).then(data=>{
-    document.getElementById('hotdealMsg').innerText = 'Hot Deal submitted successfully!';
-    document.getElementById('hotdealForm').reset();
-  }).catch(err=>console.error(err));
-});
-
-// FAQ load
-fetch(scriptURL+'?action=faq')
-.then(r=>r.json())
-.then(faq=>{
-  const faqList = document.getElementById('faqList');
-  faq.forEach(f=>{ faqList.innerHTML += `<li><strong>${f.question}</strong> ${f.answer}</li>`; });
-});
-
-// Visitor vs Investor view
-window.onload = function(){
+// On page load
+window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if(email){
-    fetch(scriptURL+'?email='+encodeURIComponent(email))
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.exists){
-        document.getElementById('investorDashboard').style.display='block';
-        document.getElementById('investorName').innerText = data.name;
-        document.getElementById('investorEmail').innerText = data.email;
-        document.getElementById('investorPhone').innerText = data.phone;
-        document.getElementById('investorConsent').innerText = data.consent;
-        document.getElementById('visitorOverview').style.display='none';
-      } else {
-        document.getElementById('visitorOverview').style.display='block';
-        document.getElementById('investorDashboard').style.display='none';
-      }
-    });
+    fetch(scriptURL + "?email=" + encodeURIComponent(email))
+      .then(r=>r.json())
+      .then(data=>{
+        if(data.exists){
+          loadDashboard(data);
+        } else {
+          showConsent();
+        }
+      }).catch(err=>{
+        console.error("Consent check error:", err);
+        showConsent();
+      });
   } else {
-    document.getElementById('visitorOverview').style.display='block';
-    document.getElementById('investorDashboard').style.display='none';
+    showConsent();
   }
+};
 
-  // Load totals for visitor overview
-  fetch(scriptURL+'?action=totals')
+function showConsent(){ consentPopup.style.display = "flex"; }
+
+// Handle consent form submit
+document.getElementById("consentForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const consent = document.getElementById("agreeCheck").checked;
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("consent", consent);
+
+  fetch(scriptURL, { method: "POST", body: formData })
   .then(r=>r.json())
   .then(data=>{
-    document.getElementById('totalInvestments').innerText = '₹'+data.totalFunds.toLocaleString();
-    document.getElementById('totalPayouts').innerText = '₹'+data.totalPayouts.toLocaleString();
-    document.getElementById('activeInvestors').innerText = data.investors;
+    localStorage.setItem("investorEmail", email);
+    consentPopup.style.display = "none";
+    loadDashboard({exists:true, name, email, phone, consent});
+    loadDynamicData();
+  })
+  .catch(err=>{
+    console.error("Save consent error:", err);
+    alert("Error saving consent. Please try again.");
   });
-};
+});
+
+// Load dashboard
+function loadDashboard(user){
+  dashboardContainer.style.display = "block";
+  if(user){
+    document.getElementById("investorName").innerText = user.name || "Investor";
+    document.getElementById("investorEmail").innerText = user.email || "";
+    document.getElementById("investorPhone").innerText = user.phone || "";
+    document.getElementById("investorConsent").innerText = user.consent ? "Yes" : "No";
+  }
+  loadDynamicData();
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  localStorage.removeItem("investorEmail");
+  alert("Logged out successfully!");
+  location.reload();
+});
+
+// Charts (visitor overview)
+new Chart(document.getElementById('investmentChart'), {
+  type:'bar',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[
+      {label:'Investments', data:[5,7,9,12,15,18]},
+      {label:'Payouts', data:[1,2,3,4,5,6]}
+    ]
+  }
+});
+new Chart(document.getElementById('tenureChart'), {
+  type:'pie',
+  data:{
+    labels:['Quarterly','Biannual','Annual'],
+    datasets:[{data:[40,30,30]}]
+  }
+});
+
+// Load Hot Deals and FAQ dynamically
+function loadDynamicData(){
+  // Hot Deals
+  fetch(scriptURL + "?action=hotdeals")
+    .then(r=>r.json())
+    .then(data=>{
+      const ul = document.getElementById("hotDealsList");
+      ul.innerHTML = "";
+      if(data.length){
+        data.forEach(item=>{
+          let li = document.createElement("li");
+          li.innerText = item;
+          ul.appendChild(li);
+        });
+      } else ul.innerText = "No hot deals currently.";
+    }).catch(console.error);
+
+  // FAQ
+  fetch(scriptURL + "?action=faq")
+    .then(r=>r.json())
+    .then(data=>{
+      const ul = document.getElementById("faqList");
+      ul.innerHTML = "";
+      if(data.length){
+        data.forEach(item=>{
+          let li = document.createElement("li");
+          li.innerHTML = `<strong>${item.question}</strong><br>${item.answer}`;
+          ul.appendChild(li);
+        });
+      } else ul.innerText = "FAQ will be updated soon.";
+    }).catch(console.error);
+}
 </script>
 </body>
 </html>
