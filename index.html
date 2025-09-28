@@ -4,194 +4,237 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Investor Dashboard | Omkar Enterprises</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background:#f4f6f9; color:#333; }
-    header {
-      background:#0A2540; color:#fff; padding:15px 20px;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    header h1 { margin:0; font-size:20px; }
-    nav button {
-      margin:0 5px; padding:8px 15px; border:none; border-radius:5px;
-      background:#fff; color:#0A2540; cursor:pointer;
-    }
-    nav button.active { background:#C9A227; color:#000; }
-    #logoutBtn {
-      background:#C9A227; color:#000; border:none; border-radius:5px;
-      padding:8px 15px; cursor:pointer;
-    }
-    #logoutBtn:hover { background:#fff; color:#0A2540; }
-    .container { padding:20px; }
-    .tab { display:none; }
-    .tab.active { display:block; }
+    body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
     #consentPopup {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center;
-      z-index:9999;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); display: none;
+      align-items: center; justify-content: center; z-index: 9999;
     }
     #consentBox {
-      background:#fff; padding:20px; border-radius:10px;
-      width:90%; max-width:400px; text-align:center;
+      background: #fff; padding: 20px; border-radius: 10px;
+      width: 90%; max-width: 400px; text-align: center;
     }
-    #consentBox input, #consentBox button {
-      width:90%; margin:8px 0; padding:10px; font-size:14px;
+    #consentBox h2 { margin-top: 0; color:#0A2540; }
+    #sidebar {
+      height: 100vh;
+      background-color: #0A2540;
+      color: #fff;
+      padding-top: 20px;
     }
-    #consentBox button {
-      background:#0A2540; color:#fff; border:none; border-radius:5px; cursor:pointer;
+    #sidebar .nav-link {
+      color: #fff;
     }
-    #consentBox button:hover { background:#C9A227; color:#000; }
+    #sidebar .nav-link.active {
+      background-color: #C9A227;
+      color: #000;
+      font-weight: bold;
+    }
+    .content-area {
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Consent Popup -->
-  <div id="consentPopup">
-    <div id="consentBox">
-      <h2>Consent Required</h2>
-      <p>
-        Omkar Enterprises is a private consultancy firm.<br>
-        We are not a bank or NBFC and do not raise public deposits under the 
-        <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
-        This discussion is strictly private and contractual.
-      </p>
-      <form id="consentForm" 
-        action="https://script.google.com/macros/s/AKfycbzH9_aevj4qyuJd0laAwvT1jn6j6T-pdy_wPllEItuPZoIjPm8gm87L92MsHQ_cqgIQ/exec" 
-        method="post" target="hiddenFrame">
-        
-        <label style="font-size:13px;">
-          <input type="checkbox" name="consent" value="true" required>
-          I have read, understood, and voluntarily consent to proceed.
-        </label><br><br>
-        <input type="text" name="name" placeholder="Full Name" required><br>
-        <input type="email" name="email" placeholder="Email Address" required><br>
-        <input type="tel" name="phone" placeholder="Contact Number" required><br>
-        <button type="submit">Proceed</button>
-      </form>
-      <!-- Hidden iframe for form submit -->
-      <iframe name="hiddenFrame" style="display:none;"></iframe>
+<!-- Consent Popup -->
+<div id="consentPopup">
+  <div id="consentBox">
+    <h2>Consent Required</h2>
+    <p>
+      Omkar Enterprises is a private consultancy firm.<br>
+      We are not a bank or NBFC and do not raise public deposits under the 
+      <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
+      This discussion is strictly private and contractual.
+    </p>
+    <form id="consentForm" method="POST" target="hidden_iframe">
+      <label style="font-size:13px;">
+        <input type="checkbox" id="agreeCheck" name="consent" value="true" required>
+        I have read, understood, and voluntarily consent to proceed.
+      </label><br><br>
+      <input type="text" id="name" name="name" placeholder="Full Name" class="form-control mb-2" required>
+      <input type="email" id="email" name="email" placeholder="Email Address" class="form-control mb-2" required>
+      <input type="tel" id="phone" name="phone" placeholder="Contact Number" class="form-control mb-2" required>
+      <button type="submit" class="btn btn-dark w-100">Proceed</button>
+    </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
+  </div>
+</div>
+
+<!-- Main Dashboard Layout -->
+<div id="mainContent" style="display:none;">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2" id="sidebar">
+        <h4 class="text-center mb-4">Investor Panel</h4>
+        <nav class="nav flex-column">
+          <a class="nav-link active" data-bs-toggle="tab" href="#home">🏠 Home</a>
+          <a class="nav-link" data-bs-toggle="tab" href="#agreements">📑 Agreements</a>
+          <a class="nav-link" data-bs-toggle="tab" href="#investments">💰 Investments</a>
+          <a class="nav-link" data-bs-toggle="tab" href="#payouts">📊 Payouts</a>
+          <a class="nav-link" data-bs-toggle="tab" href="#profile">👤 Profile</a>
+          <a class="nav-link" data-bs-toggle="tab" href="#support">📞 Support</a>
+          <a class="nav-link text-danger" href="#" onclick="logout()">🚪 Logout</a>
+        </nav>
+      </div>
+
+      <!-- Content Area -->
+      <div class="col-md-9 col-lg-10 content-area">
+        <div class="tab-content">
+          <!-- Home -->
+          <div class="tab-pane fade show active" id="home">
+            <h2>Welcome <span id="userName"></span> 👋</h2>
+            <p>Here’s an overview of your investor dashboard.</p>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Investments</h5>
+                    <p class="card-text" id="totalInvestments">₹0</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">Payouts Received</h5>
+                    <p class="card-text" id="payoutsReceived">₹0</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">Active Agreements</h5>
+                    <p class="card-text" id="activeAgreements">0</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agreements -->
+          <div class="tab-pane fade" id="agreements">
+            <h2>📑 Agreements</h2>
+            <table class="table table-bordered">
+              <thead>
+                <tr><th>Date</th><th>Agreement Name</th><th>Download</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>01-Sep-2025</td><td>Loan Agreement</td><td><a href="#">Download</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Investments -->
+          <div class="tab-pane fade" id="investments">
+            <h2>💰 Investment Summary</h2>
+            <table class="table table-striped">
+              <thead>
+                <tr><th>Date</th><th>Amount</th><th>Tenure</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>01-Sep-2025</td><td>₹1,00,000</td><td>12 months</td><td>Active</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Payouts -->
+          <div class="tab-pane fade" id="payouts">
+            <h2>📊 Payout Tracker</h2>
+            <table class="table table-hover">
+              <thead>
+                <tr><th>Payout Date</th><th>Amount</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>01-Oct-2025</td><td>₹8,000</td><td>Paid</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Profile -->
+          <div class="tab-pane fade" id="profile">
+            <h2>👤 Profile</h2>
+            <ul class="list-group">
+              <li class="list-group-item"><b>Name:</b> <span id="profileName"></span></li>
+              <li class="list-group-item"><b>Email:</b> <span id="profileEmail"></span></li>
+              <li class="list-group-item"><b>Phone:</b> <span id="profilePhone"></span></li>
+              <li class="list-group-item"><b>Consent:</b> ✅ Given</li>
+            </ul>
+          </div>
+
+          <!-- Support -->
+          <div class="tab-pane fade" id="support">
+            <h2>📞 Support</h2>
+            <p>If you have any queries, feel free to contact us:</p>
+            <ul>
+              <li>Email: support@omkarservices.in</li>
+              <li>WhatsApp: +91 98765 43210</li>
+              <li>Office: Pune, Maharashtra</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none;">
-    <header>
-      <h1>Omkar Enterprises | Investor Dashboard</h1>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span id="investorInfo" style="font-size:13px; color:#fff;"></span>
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </header>
-    <div class="container">
-      <nav>
-        <button data-tab="home" class="active">Home</button>
-        <button data-tab="terms">Investor Terms</button>
-        <button data-tab="agreements">Agreements</button>
-        <button data-tab="reports">Reports</button>
-        <button data-tab="documents">Documents</button>
-      </nav>
-
-      <div id="home" class="tab active">
-        <h2>Welcome</h2>
-        <p>Access information about our consultancy firm, investor terms, and official documents.</p>
-      </div>
-
-      <div id="terms" class="tab">
-        <h2>Investor Terms</h2>
-        <p>[Investor Terms go here]</p>
-      </div>
-
-      <div id="agreements" class="tab">
-        <h2>Agreements</h2>
-        <p>[Agreements go here]</p>
-      </div>
-
-      <div id="reports" class="tab">
-        <h2>Reports</h2>
-        <p>[Reports and returns cycle]</p>
-      </div>
-
-      <div id="documents" class="tab">
-        <h2>Documents</h2>
-        <p>[Download official documents]</p>
-      </div>
-    </div>
-  </div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 const consentPopup = document.getElementById("consentPopup");
-const dashboard = document.getElementById("dashboard");
-const investorInfo = document.getElementById("investorInfo");
-const logoutBtn = document.getElementById("logoutBtn");
+const mainContent = document.getElementById("mainContent");
+const scriptURL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
 
-// Your WebApp URL
-const scriptURL = "https://script.google.com/macros/s/AKfycbzH9_aevj4qyuJd0laAwvT1jn6j6T-pdy_wPllEItuPZoIjPm8gm87L92MsHQ_cqgIQ/exec";
-
-// ✅ After consent form submission
-document.getElementById("consentForm").addEventListener("submit", function(e){
-  let email = document.querySelector("input[name=email]").value;
-  localStorage.setItem("investorEmail", email);
-
-  setTimeout(() => {
-    consentPopup.style.display = "none";
-    dashboard.style.display = "block";
-    loadInvestorInfo(email); // fetch name/email from Sheet
-    alert("Consent recorded successfully!");
-  }, 800);
-});
-
-// ✅ On page load, check login
+// On load check saved email
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
+  let name = localStorage.getItem("investorName");
+  let phone = localStorage.getItem("investorPhone");
+
   if (email) {
-    consentPopup.style.display = "none";
-    dashboard.style.display = "block";
-    loadInvestorInfo(email); // fetch official record
+    document.getElementById("userName").innerText = name;
+    document.getElementById("profileName").innerText = name;
+    document.getElementById("profileEmail").innerText = email;
+    document.getElementById("profilePhone").innerText = phone;
+    mainContent.style.display = "block";
   } else {
     consentPopup.style.display = "flex";
   }
 };
 
-// ✅ Fetch investor record from Sheet
-function loadInvestorInfo(email) {
-  fetch(scriptURL + "?email=" + encodeURIComponent(email))
-    .then(r => r.json())
-    .then(data => {
-      if (data.exists) {
-        investorInfo.textContent = data.name 
-          ? `${data.name} (${data.email})`
-          : data.email;
-      } else {
-        investorInfo.textContent = email;
-      }
-    })
-    .catch(err => {
-      console.error("Error fetching investor info:", err);
-      investorInfo.textContent = email;
-    });
-}
+// Handle consent form submission
+document.getElementById("consentForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
 
-// ✅ Tab switching
-const buttons = document.querySelectorAll("nav button");
-const tabs = document.querySelectorAll(".tab");
+  localStorage.setItem("investorName", name);
+  localStorage.setItem("investorEmail", email);
+  localStorage.setItem("investorPhone", phone);
 
-buttons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    buttons.forEach(b => b.classList.remove("active"));
-    tabs.forEach(t => t.classList.remove("active"));
+  alert("Consent recorded successfully!");
+  consentPopup.style.display = "none";
+  mainContent.style.display = "block";
+  document.getElementById("userName").innerText = name;
+  document.getElementById("profileName").innerText = name;
+  document.getElementById("profileEmail").innerText = email;
+  document.getElementById("profilePhone").innerText = phone;
 
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.tab).classList.add("active");
-  });
+  this.submit(); // submit to Google Apps Script
 });
 
-// ✅ Logout
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("investorEmail");
-  dashboard.style.display = "none";
+function logout() {
+  localStorage.clear();
+  mainContent.style.display = "none";
   consentPopup.style.display = "flex";
-  investorInfo.textContent = "";
-  alert("You have logged out. Please provide consent again to continue.");
-});
+}
 </script>
 
 </body>
