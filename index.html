@@ -27,11 +27,13 @@
 </head>
 <body>
 
+  <!-- Main Content -->
   <div id="mainContent" style="display:none; padding:20px;">
     <h1>Welcome to Omkar Enterprises Investor Relations</h1>
     <p>Here you can view information about our consultancy firm, investor terms, and official documents.</p>
   </div>
 
+  <!-- Consent Popup -->
   <div id="consentPopup">
     <div id="consentBox">
       <h2>Consent Required</h2>
@@ -61,6 +63,7 @@
         <button type="submit">Proceed</button>
       </form>
 
+      <!-- Invisible iframe to capture submission -->
       <iframe name="hidden_iframe" style="display:none;"></iframe>
     </div>
   </div>
@@ -69,27 +72,27 @@
 const consentPopup = document.getElementById("consentPopup");
 const mainContent = document.getElementById("mainContent");
 
-// ✅ On load, check if email exists in localStorage
+// ✅ On load, check if user already consented
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if (email) {
-    // Already consented before → show main content
+    // Already consented → show content
     consentPopup.style.display = "none";
     mainContent.style.display = "block";
   } else {
-    // First time visitor → show popup
+    // First-time visitor → show popup
     consentPopup.style.display = "flex";
   }
 };
 
-// ✅ When form is submitted, save email locally and show content
+// ✅ After form submit → save email, show content
 document.getElementById("consentForm").addEventListener("submit", function(e){
   let email = document.querySelector("input[name=email]").value;
 
-  // Save email to skip popup next time
+  // Store in localStorage
   localStorage.setItem("investorEmail", email);
 
-  // Delay slightly so Apps Script can record submission
+  // Delay so Apps Script receives the submission
   setTimeout(() => {
     consentPopup.style.display = "none";
     mainContent.style.display = "block";
