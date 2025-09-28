@@ -1,48 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Omkar Investor Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { background-color: #f8f9fa; }
-    .dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding:20px; }
-    #consentPopup {
-      position: fixed; top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.7); display:none;
-      align-items:center; justify-content:center; z-index:9999;
-    }
-    #consentBox {
-      background:#fff; padding:20px; border-radius:10px; max-width:400px; width:90%;
-    }
-    #consentBox input, #consentBox button { width:100%; margin:8px 0; padding:10px; }
-    #consentBox button { background:#0A2540; color:#fff; border:none; border-radius:5px; cursor:pointer; }
-    #consentBox button:hover { background:#C9A227; color:#000; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omkar Enterprises Investor Dashboard</title>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { background-color: #f8f9fa; }
+.dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom:1rem;}
+#consentPopup {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); display: none;
+  align-items: center; justify-content: center; z-index: 9999;
+}
+#consentBox {
+  background: #fff; padding: 20px; border-radius: 10px;
+  width: 90%; max-width: 400px; text-align: center;
+}
+#consentBox h2 { margin-top: 0; color:#0A2540; }
+#consentBox input, #consentBox button { width: 90%; margin: 8px 0; padding: 10px; font-size: 14px; }
+#consentBox button { background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+#consentBox button:hover { background: #C9A227; color:#000; }
+</style>
 </head>
 <body>
 
 <!-- Consent Popup -->
 <div id="consentPopup">
   <div id="consentBox">
-    <h4>Consent Required</h4>
-    <p>Omkar Enterprises is a private consultancy firm. We do not raise public deposits. This discussion is private and contractual.</p>
-    <form action="https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec" method="POST">
-      <input type="hidden" name="consent" value="true">
-      <input type="text" name="name" placeholder="Full Name" required>
-      <input type="email" name="email" placeholder="Email Address" required>
-      <input type="tel" name="phone" placeholder="Contact Number" required>
+    <h2>Consent Required</h2>
+    <p>
+      Omkar Enterprises is a private consultancy firm.<br>
+      We are not a bank or NBFC and do not raise public deposits.<br>
+      This discussion is strictly private and contractual.
+    </p>
+    <form id="consentForm">
+      <label style="font-size:13px;">
+        <input type="checkbox" id="agreeCheck" required>
+        I have read, understood, and voluntarily consent to proceed.
+      </label><br><br>
+      <input type="text" id="name" placeholder="Full Name" required><br>
+      <input type="email" id="email" placeholder="Email Address" required><br>
+      <input type="tel" id="phone" placeholder="Contact Number" required><br>
       <button type="submit">Proceed</button>
     </form>
   </div>
 </div>
 
-<!-- Dashboard -->
-<div class="container py-4" id="mainDashboard" style="display:none;">
+<!-- Main Dashboard -->
+<div class="container py-4" id="mainContent" style="display:none;">
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">Omkar Enterprises Investor Relations</h2>
@@ -60,55 +69,53 @@
   </ul>
 
   <div class="tab-content pt-4">
-    <!-- Overview for Visitors -->
+    <!-- Overview -->
     <div class="tab-pane fade show active" id="overview">
-      <div id="visitorOverview">
-        <div class="row g-3 mb-4">
-          <div class="col-md-4">
-            <div class="dashboard-card text-center">
-              <h5>Total Investments</h5>
-              <h3>₹25 Cr</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="dashboard-card text-center">
-              <h5>Total Payouts</h5>
-              <h3>₹7 Cr</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="dashboard-card text-center">
-              <h5>Active Investors</h5>
-              <h3>180</h3>
-            </div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="p-3 bg-white dashboard-card text-center">
+            <h5>Total Investments</h5>
+            <h3 id="totalInvestments">₹25 Cr</h3>
           </div>
         </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-white dashboard-card text-center">
+            <h5>Total Payouts</h5>
+            <h3 id="totalPayouts">₹7 Cr</h3>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-white dashboard-card text-center">
+            <h5>Active Investors</h5>
+            <h3 id="activeInvestors">180</h3>
+          </div>
+        </div>
+      </div>
 
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="dashboard-card">
-              <h6>Investments vs Payouts</h6>
-              <canvas id="investmentChart"></canvas>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="dashboard-card">
-              <h6>Investor Tenure Distribution</h6>
-              <canvas id="tenureChart"></canvas>
-            </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 bg-white dashboard-card">
+            <h6>Investments vs Payouts</h6>
+            <canvas id="investmentChart"></canvas>
           </div>
         </div>
+        <div class="col-md-6">
+          <div class="p-3 bg-white dashboard-card">
+            <h6>Investor Tenure Distribution</h6>
+            <canvas id="tenureChart"></canvas>
+          </div>
+        </div>
+      </div>
 
-        <div class="mt-4">
-          <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
-        </div>
+      <div class="mt-4">
+        <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
       </div>
     </div>
 
     <!-- Investor Dashboard -->
     <div class="tab-pane fade" id="investor">
-      <div class="dashboard-card">
-        <h5>Welcome, <span id="investorName"></span></h5>
+      <div class="p-3 bg-white dashboard-card">
+        <h5>Welcome, <span id="investorName">Investor</span></h5>
         <p><strong>Email:</strong> <span id="investorEmail"></span></p>
         <p><strong>Phone:</strong> <span id="investorPhone"></span></p>
         <p><strong>Consent:</strong> <span id="investorConsent"></span></p>
@@ -117,7 +124,7 @@
 
     <!-- Agreements -->
     <div class="tab-pane fade" id="agreement">
-      <div class="dashboard-card">
+      <div class="p-3 bg-white dashboard-card">
         <h5>Your Agreements</h5>
         <p>Download your signed agreements here (coming soon).</p>
       </div>
@@ -125,7 +132,7 @@
 
     <!-- Earnings -->
     <div class="tab-pane fade" id="earnings">
-      <div class="dashboard-card">
+      <div class="p-3 bg-white dashboard-card">
         <h5>How You Earn</h5>
         <p>Investors earn fixed monthly returns through structured lending opportunities. Payouts are consistent and secured with agreements.</p>
       </div>
@@ -133,19 +140,26 @@
 
     <!-- Hot Deals -->
     <div class="tab-pane fade" id="hotdeals">
-      <div class="dashboard-card">
+      <div class="p-3 bg-white dashboard-card">
         <h5>Hot Deals</h5>
-        <p>Start lending instantly (coming soon)</p>
+        <table class="table table-striped" id="hotDealsTable">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Tenure</th></tr>
+          </thead>
+          <tbody>
+            <!-- Hot Deals dynamically loaded -->
+          </tbody>
+        </table>
       </div>
     </div>
 
     <!-- FAQ -->
     <div class="tab-pane fade" id="faq">
-      <div class="dashboard-card">
-        <h5>FAQ</h5>
-        <div id="faqContent">
-          <p>Loading FAQ...</p>
-        </div>
+      <div class="p-3 bg-white dashboard-card">
+        <h5>Frequently Asked Questions</h5>
+        <ul id="faqList" class="list-group">
+          <!-- FAQs dynamically loaded -->
+        </ul>
       </div>
     </div>
   </div>
@@ -155,53 +169,110 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const consentPopup = document.getElementById('consentPopup');
-const mainDashboard = document.getElementById('mainDashboard');
-const logoutBtn = document.getElementById('logoutBtn');
+// Consent and Dashboard Logic
+const consentForm = document.getElementById("consentForm");
+const consentPopup = document.getElementById("consentPopup");
+const mainContent = document.getElementById("mainContent");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// Check if user already consented
-window.onload = function() {
-  const email = localStorage.getItem('investorEmail');
-  if(email){
-    mainDashboard.style.display = 'block';
-    consentPopup.style.display = 'none';
-    document.getElementById('investorName').textContent = localStorage.getItem('investorName') || "Investor";
-    document.getElementById('investorEmail').textContent = email;
-    document.getElementById('investorPhone').textContent = localStorage.getItem('investorPhone') || "-";
-    document.getElementById('investorConsent').textContent = "Yes";
-    document.getElementById('visitorOverview').style.display = 'none';
-  } else {
-    consentPopup.style.display = 'flex';
-    mainDashboard.style.display = 'none';
-  }
-};
+// Replace with your Apps Script URL
+const scriptURL = "https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec";
+
+// Consent submit
+consentForm.addEventListener("submit", function(e){
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+
+  fetch(scriptURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ name, email, phone, consent: true })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(data.success){
+      localStorage.setItem("investorEmail", email);
+      consentPopup.style.display = "none";
+      mainContent.style.display = "block";
+    }
+  }).catch(err => {
+    alert("Error saving consent. Please try again.");
+    console.error(err);
+  });
+});
 
 // Logout
-logoutBtn.addEventListener('click', () => {
-  localStorage.clear();
-  location.reload();
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("investorEmail");
+  consentPopup.style.display = "flex";
+  mainContent.style.display = "none";
+});
+
+// Auto-check consent on page load
+window.addEventListener("load", function(){
+  const email = localStorage.getItem("investorEmail");
+  if(email){
+    fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
+      .then(r => r.json())
+      .then(data => {
+        if(data.exists){
+          document.getElementById('investorName').innerText = data.name;
+          document.getElementById('investorEmail').innerText = data.email;
+          document.getElementById('investorPhone').innerText = data.phone;
+          document.getElementById('investorConsent').innerText = data.consent ? "Yes" : "No";
+
+          consentPopup.style.display = "none";
+          mainContent.style.display = "block";
+        } else {
+          consentPopup.style.display = "flex";
+          mainContent.style.display = "none";
+        }
+      }).catch(err => {
+        consentPopup.style.display = "flex";
+        mainContent.style.display = "none";
+      });
+  } else {
+    consentPopup.style.display = "flex";
+    mainContent.style.display = "none";
+  }
 });
 
 // Charts
-new Chart(document.getElementById('investmentChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Jan','Feb','Mar','Apr','May','Jun'],
-    datasets: [
-      { label:'Investments', data:[5,7,9,12,15,18], backgroundColor:'#0A2540' },
-      { label:'Payouts', data:[1,2,3,4,5,6], backgroundColor:'#C9A227' }
-    ]
-  }
-});
+const ctx1 = document.getElementById('investmentChart');
+new Chart(ctx1, { type: 'bar', data: { labels:['Jan','Feb','Mar'], datasets:[{label:'Investments',data:[5,7,9]},{label:'Payouts',data:[1,2,3]}] } });
 
-new Chart(document.getElementById('tenureChart'), {
-  type:'pie',
-  data:{
-    labels:['Quarterly','Biannual','Annual'],
-    datasets:[{ data:[40,30,30], backgroundColor:['#0A2540','#C9A227','#4CAF50'] }]
-  }
-});
+const ctx2 = document.getElementById('tenureChart');
+new Chart(ctx2, { type: 'pie', data:{ labels:['Quarterly','Biannual','Annual'], datasets:[{data:[40,30,30]}] } });
+
+// Load Hot Deals and FAQ dynamically
+function loadHotDeals(){
+  fetch(`${scriptURL}?action=hotdeals`)
+    .then(r=>r.json())
+    .then(data=>{
+      const tbody = document.querySelector("#hotDealsTable tbody");
+      tbody.innerHTML = "";
+      data.forEach(row=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.name}</td><td>${row.email}</td><td>${row.phone}</td><td>${row.amount}</td><td>${row.tenure}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+}
+
+function loadFAQ(){
+  fetch(`${scriptURL}?action=faq`)
+    .then(r=>r.json())
+    .then(data=>{
+      const ul = document.getElementById("faqList");
+      ul.innerHTML = "";
+      data.forEach(f=>{ ul.innerHTML += `<li class="list-group-item"><strong>${f.Question}</strong><br>${f.Answer}</li>`; });
+    });
+}
+
+loadHotDeals();
+loadFAQ();
 </script>
-
 </body>
 </html>
