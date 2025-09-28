@@ -3,152 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Omkar Investor Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Chart.js -->
+  <title>Omkar Enterprises Investor Relations</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { background-color: #f8f9fa; }
-    .dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    body { background: #f8f9fa; }
+    #consentPopup { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:9999; }
+    #consentBox { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:400px; }
   </style>
 </head>
 <body>
-
-<div class="container py-4">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Omkar Enterprises Investor Relations</h2>
-    <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
-  </div>
-
-  <!-- Tabs -->
-  <ul class="nav nav-tabs" id="dashboardTabs">
-    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#overview">Overview</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#investor">My Investments</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#agreement">Agreements</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#earnings">How You Earn</a></li>
-  </ul>
-
-  <div class="tab-content pt-4">
-    <!-- Overview for New Visitors -->
-    <div class="tab-pane fade show active" id="overview">
-      <div id="visitorOverview">
-        <div class="row g-3 mb-4">
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Total Investments</h5>
-              <h3 id="totalInvestments">₹25 Cr</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Total Payouts</h5>
-              <h3 id="totalPayouts">₹7 Cr</h3>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card text-center">
-              <h5>Active Investors</h5>
-              <h3 id="activeInvestors">180</h3>
-            </div>
-          </div>
+  <!-- Consent -->
+  <div id="consentPopup">
+    <div id="consentBox">
+      <h4>Consent Required</h4>
+      <p>Omkar Enterprises is a private consultancy firm. We are not a bank or NBFC. By proceeding, you agree to our private contractual terms.</p>
+      <form id="consentForm">
+        <input type="text" class="form-control mb-2" id="name" placeholder="Full Name" required>
+        <input type="email" class="form-control mb-2" id="email" placeholder="Email Address" required>
+        <input type="tel" class="form-control mb-2" id="phone" placeholder="Contact Number" required>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="agreeCheck" required>
+          <label for="agreeCheck">I have read and consent to proceed</label>
         </div>
-
-        <!-- Charts -->
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6>Investments vs Payouts</h6>
-              <canvas id="investmentChart"></canvas>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6>Investor Tenure Distribution</h6>
-              <canvas id="tenureChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sample Agreement -->
-        <div class="mt-4">
-          <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Investor Dashboard -->
-    <div class="tab-pane fade" id="investor">
-      <div id="investorDashboard">
-        <div class="p-3 bg-white dashboard-card">
-          <h5 class="mb-3">Welcome, <span id="investorName">Investor</span></h5>
-          <p><strong>Email:</strong> <span id="investorEmail"></span></p>
-          <p><strong>Phone:</strong> <span id="investorPhone"></span></p>
-          <p><strong>Consent:</strong> <span id="investorConsent"></span></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Agreements -->
-    <div class="tab-pane fade" id="agreement">
-      <div class="p-3 bg-white dashboard-card">
-        <h5>Your Agreements</h5>
-        <p>Download your signed agreements here (coming soon).</p>
-      </div>
-    </div>
-
-    <!-- Earnings Explanation -->
-    <div class="tab-pane fade" id="earnings">
-      <div class="p-3 bg-white dashboard-card">
-        <h5>How You Earn</h5>
-        <p>Investors with Omkar Enterprises earn fixed monthly returns through structured lending opportunities. Unlike volatile stock markets, your payouts are consistent and secured with agreements.</p>
-      </div>
+        <button type="submit" class="btn btn-primary w-100">Proceed</button>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- Bootstrap Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold">Omkar Enterprises</a>
+      <button id="logoutBtn" class="btn btn-outline-light btn-sm" style="display:none;">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Visitor Dashboard -->
+  <div class="container my-4" id="visitorDashboard" style="display:none;">
+    <h3 class="mb-3">Our Market Performance</h3>
+    <div class="row text-center">
+      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Total Funds</h5><p id="totalFunds" class="fs-4 fw-bold text-primary">₹0</p></div></div>
+      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Total Payouts</h5><p id="totalPayouts" class="fs-4 fw-bold text-success">₹0</p></div></div>
+      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Investors</h5><p id="totalInvestors" class="fs-4 fw-bold text-dark">0</p></div></div>
+    </div>
+    <canvas id="performanceChart" height="100"></canvas>
+    <hr>
+    <h4 class="mt-4">Hot Deals</h4>
+    <form id="hotDealForm" class="card p-3 shadow">
+      <input type="text" class="form-control mb-2" id="hdName" placeholder="Full Name" required>
+      <input type="email" class="form-control mb-2" id="hdEmail" placeholder="Email Address" required>
+      <input type="tel" class="form-control mb-2" id="hdPhone" placeholder="Contact Number" required>
+      <input type="number" class="form-control mb-2" id="hdAmount" placeholder="Amount to Lend (₹)" required>
+      <select id="hdTenure" class="form-control mb-2" required>
+        <option value="">Select Tenure</option>
+        <option>3 Months</option>
+        <option>6 Months</option>
+        <option>12 Months</option>
+      </select>
+      <button type="submit" class="btn btn-success w-100">Express Interest</button>
+    </form>
+  </div>
+
+  <!-- Investor Dashboard -->
+  <div class="container my-4" id="investorDashboard" style="display:none;">
+    <h3>Welcome, <span id="invName"></span></h3>
+    <div class="row">
+      <div class="col-md-6"><div class="card p-3 shadow"><h5>Your Details</h5><p>Email: <span id="invEmail"></span></p><p>Phone: <span id="invPhone"></span></p><p>Investment: ₹<span id="invInvestment">100000</span></p><p>Payout Cycle: <span id="invCycle">Monthly</span></p></div></div>
+      <div class="col-md-6"><div class="card p-3 shadow"><h5>Documents</h5><a class="btn btn-outline-primary w-100 mb-2" id="downloadAgreement" target="_blank">Download Agreement</a><a class="btn btn-outline-success w-100" id="downloadTDS" target="_blank">Download TDS Certificate</a></div></div>
+    </div>
+  </div>
+
 <script>
-// Charts for visitors
-const ctx1 = document.getElementById('investmentChart');
-new Chart(ctx1, {
-  type: 'bar',
-  data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      { label: 'Investments', data: [5, 7, 9, 12, 15, 18] },
-      { label: 'Payouts', data: [1, 2, 3, 4, 5, 6] }
-    ]
-  }
+const scriptURL = "YOUR_SCRIPT_URL_HERE";
+const consentPopup = document.getElementById("consentPopup");
+const visitorDashboard = document.getElementById("visitorDashboard");
+const investorDashboard = document.getElementById("investorDashboard");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const emailStored = localStorage.getItem("investorEmail");
+
+// Show consent if no email stored
+if (!emailStored) consentPopup.style.display = "flex";
+
+// Handle consent
+document.getElementById("consentForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+
+  const formData = new URLSearchParams();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("consent", true);
+
+  await fetch(scriptURL, { method: "POST", body: formData });
+  localStorage.setItem("investorEmail", email);
+  consentPopup.style.display="none";
+  loadDashboard(email);
 });
 
-const ctx2 = document.getElementById('tenureChart');
-new Chart(ctx2, {
-  type: 'pie',
-  data: {
-    labels: ['Quarterly', 'Biannual', 'Annual'],
-    datasets: [{ data: [40, 30, 30] }]
-  }
-});
-
-// Logout button
-const logoutBtn = document.getElementById('logoutBtn');
-logoutBtn.addEventListener('click', () => {
-  alert('Logged out successfully!');
-  window.location.href = 'index.html'; // back to consent/login
-});
-
-// Example: Toggle between visitor & investor view (replace with real check)
-const isInvestor = false; // dynamically set true if found in Sheet
-if (isInvestor) {
-  document.getElementById('visitorOverview').style.display = 'none';
-  document.getElementById('investorDashboard').style.display = 'block';
-} else {
-  document.getElementById('visitorOverview').style.display = 'block';
-  document.getElementById('investorDashboard').style.display = 'none';
+// Load dashboard
+async function loadDashboard(email){
+  try {
+    const res = await fetch(`${scriptURL}?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (data.exists){
+      investorDashboard.style.display="block";
+      document.getElementById("invName").innerText = data.name;
+      document.getElementById("invEmail").innerText = data.email;
+      document.getElementById("invPhone").innerText = data.phone;
+      logoutBtn.style.display="block";
+    } else {
+      loadVisitor();
+    }
+  } catch (err) { loadVisitor(); }
 }
+
+// Visitor dashboard
+async function loadVisitor(){
+  visitorDashboard.style.display="block";
+  logoutBtn.style.display="block";
+  const res = await fetch(`${scriptURL}?action=totals`);
+  const data = await res.json();
+  document.getElementById("totalFunds").innerText = "₹" + data.totalFunds;
+  document.getElementById("totalPayouts").innerText = "₹" + data.totalPayouts;
+  document.getElementById("totalInvestors").innerText = data.investors;
+  new Chart(document.getElementById("performanceChart"), { type:"bar", data:{ labels:["Jan","Feb","Mar"], datasets:[{ label:"Payouts", data:[20000,30000,50000], backgroundColor:"blue"}]} });
+}
+
+// Hot deal form
+document.getElementById("hotDealForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const fd = new URLSearchParams();
+  fd.append("action","hotdeal");
+  fd.append("name", document.getElementById("hdName").value);
+  fd.append("email", document.getElementById("hdEmail").value);
+  fd.append("phone", document.getElementById("hdPhone").value);
+  fd.append("amount", document.getElementById("hdAmount").value);
+  fd.append("tenure", document.getElementById("hdTenure").value);
+
+  const res = await fetch(scriptURL, { method:"POST", body:fd });
+  const data = await res.json();
+  if (data.success){ alert("Thank you! Your Hot Deal interest is recorded."); e.target.reset(); }
+});
+
+// Logout
+logoutBtn.addEventListener("click", ()=>{ localStorage.removeItem("investorEmail"); location.reload(); });
+
+if (emailStored){ loadDashboard(emailStored); }
 </script>
 </body>
 </html>
