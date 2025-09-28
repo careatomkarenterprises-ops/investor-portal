@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investor Relations | Omkar Enterprises</title>
+  <title>Investor Dashboard | Omkar Enterprises</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; }
+
+    /* Consent Popup */
     #consentPopup {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.8); display: none;
@@ -23,15 +25,44 @@
       background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer;
     }
     #consentBox button:hover { background: #C9A227; color:#000; }
+
+    /* Dashboard Layout */
+    #dashboard { display: none; }
+    header {
+      background: #0A2540; color: #fff; padding: 15px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    nav { display: flex; gap: 15px; }
+    nav button {
+      background: transparent; border: none; color: #fff;
+      font-size: 14px; cursor: pointer; padding: 8px 12px;
+    }
+    nav button.active { background: #C9A227; color: #000; border-radius: 5px; }
+
+    /* Logout Button */
+    #logoutBtn {
+      background: #C9A227; color: #000; border: none; border-radius: 5px;
+      padding: 8px 12px; cursor: pointer; font-size: 14px;
+    }
+    #logoutBtn:hover { background: #fff; color:#0A2540; }
+
+    .content { padding: 20px; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+
+    /* Card Style */
+    .card {
+      background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .card h2 { margin-top: 0; color:#0A2540; }
+    .card ul { padding-left: 18px; }
+    .card a { color: #0A2540; text-decoration: none; }
+    .card a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-
-  <!-- Main Content -->
-  <div id="mainContent" style="display:none; padding:20px;">
-    <h1>Welcome to Omkar Enterprises Investor Relations</h1>
-    <p>Here you can view information about our consultancy firm, investor terms, and official documents.</p>
-  </div>
 
   <!-- Consent Popup -->
   <div id="consentPopup">
@@ -44,7 +75,6 @@
         This discussion is strictly private and contractual.
       </p>
 
-      <!-- ✅ Direct form submit to Apps Script -->
       <form id="consentForm" 
             method="POST" 
             action="https://script.google.com/macros/s/AKfycbzJ_aG_DEIAbXVE_EymYfG46SyjLLsQ-P4yevNX0Ibo5sYsuPiijswowLLJJlVrKULeMA/exec" 
@@ -63,41 +93,135 @@
         <button type="submit">Proceed</button>
       </form>
 
-      <!-- Invisible iframe to capture submission -->
       <iframe name="hidden_iframe" style="display:none;"></iframe>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <header>
+      <h1>Omkar Enterprises | Investor Dashboard</h1>
+      <div>
+        <nav>
+          <button data-tab="home" class="active">Home</button>
+          <button data-tab="terms">Investor Terms</button>
+          <button data-tab="agreements">Agreements</button>
+          <button data-tab="reports">Reports</button>
+          <button data-tab="documents">Documents</button>
+        </nav>
+      </div>
+      <button id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="content">
+      <!-- Home -->
+      <div id="home" class="tab active">
+        <div class="card">
+          <h2>Welcome</h2>
+          <p>Welcome to Omkar Enterprises Investor Relations.  
+             Here you can access investor terms, agreements, reports, and official documents.</p>
+        </div>
+      </div>
+
+      <!-- Investor Terms -->
+      <div id="terms" class="tab">
+        <div class="card">
+          <h2>Investor Terms</h2>
+          <p>These are the standard investor terms applicable under our consultancy model:</p>
+          <ul>
+            <li>Private contractual arrangement, not public deposit.</li>
+            <li>Return cycles may be quarterly, biannually, or annually.</li>
+            <li>Agreed payout dates will be specified in individual agreements.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Agreements -->
+      <div id="agreements" class="tab">
+        <div class="card">
+          <h2>Agreements</h2>
+          <p>Sample agreements and drafts:</p>
+          <ul>
+            <li><a href="docs/sample-agreement.pdf" target="_blank">Sample Investor Agreement (PDF)</a></li>
+            <li><a href="docs/contract-draft.pdf" target="_blank">Contract Draft (PDF)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div id="reports" class="tab">
+        <div class="card">
+          <h2>Reports / Returns Cycle</h2>
+          <p>Here you will find updates about returns and performance cycles:</p>
+          <ul>
+            <li>Quarterly Reports – <a href="docs/q1-report.pdf" target="_blank">Download</a></li>
+            <li>Annual Returns – <a href="docs/annual-report.pdf" target="_blank">Download</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div id="documents" class="tab">
+        <div class="card">
+          <h2>Documents</h2>
+          <p>Access official documents and compliance files:</p>
+          <ul>
+            <li><a href="docs/company-profile.pdf" target="_blank">Company Profile</a></li>
+            <li><a href="docs/legal-disclaimer.pdf" target="_blank">Legal Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
 <script>
 const consentPopup = document.getElementById("consentPopup");
-const mainContent = document.getElementById("mainContent");
+const dashboard = document.getElementById("dashboard");
+const logoutBtn = document.getElementById("logoutBtn");
 
 // ✅ On load, check if user already consented
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if (email) {
-    // Already consented → show content
     consentPopup.style.display = "none";
-    mainContent.style.display = "block";
+    dashboard.style.display = "block";
   } else {
-    // First-time visitor → show popup
     consentPopup.style.display = "flex";
   }
 };
 
-// ✅ After form submit → save email, show content
+// ✅ After consent form submit
 document.getElementById("consentForm").addEventListener("submit", function(e){
   let email = document.querySelector("input[name=email]").value;
-
-  // Store in localStorage
   localStorage.setItem("investorEmail", email);
 
-  // Delay so Apps Script receives the submission
   setTimeout(() => {
     consentPopup.style.display = "none";
-    mainContent.style.display = "block";
+    dashboard.style.display = "block";
     alert("Consent recorded successfully!");
   }, 800);
+});
+
+// ✅ Tab switching
+const buttons = document.querySelectorAll("nav button");
+const tabs = document.querySelectorAll(".tab");
+
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    buttons.forEach(b => b.classList.remove("active"));
+    tabs.forEach(t => t.classList.remove("active"));
+
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+// ✅ Logout clears consent
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("investorEmail");
+  dashboard.style.display = "none";
+  consentPopup.style.display = "flex";
+  alert("You have logged out. Please provide consent again to continue.");
 });
 </script>
 </body>
