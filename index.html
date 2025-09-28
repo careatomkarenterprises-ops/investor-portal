@@ -3,45 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omkar Enterprises Investor Dashboard</title>
-<!-- Bootstrap CSS -->
+<title>Omkar Investor Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { background-color: #f8f9fa; }
-.dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom:1rem;}
-#consentPopup {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8); display: none;
-  align-items: center; justify-content: center; z-index: 9999;
-}
-#consentBox {
-  background: #fff; padding: 20px; border-radius: 10px;
-  width: 90%; max-width: 400px; text-align: center;
-}
-#consentBox h2 { margin-top: 0; color:#0A2540; }
-#consentBox input, #consentBox button { width: 90%; margin: 8px 0; padding: 10px; font-size: 14px; }
-#consentBox button { background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-#consentBox button:hover { background: #C9A227; color:#000; }
+.dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+#consentPopup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:9999; }
+#consentBox { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:center; }
+#consentBox input, #consentBox button { width: 90%; margin: 8px 0; padding:10px; }
+#consentBox button { background:#0A2540; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+#consentBox button:hover { background:#C9A227; color:#000; }
 </style>
 </head>
 <body>
 
-<!-- Consent Popup -->
 <div id="consentPopup">
   <div id="consentBox">
     <h2>Consent Required</h2>
     <p>
       Omkar Enterprises is a private consultancy firm.<br>
-      We are not a bank or NBFC and do not raise public deposits.<br>
-      This discussion is strictly private and contractual.
+      Not a bank or NBFC. Discussion is private and contractual.
     </p>
     <form id="consentForm">
-      <label style="font-size:13px;">
-        <input type="checkbox" id="agreeCheck" required>
-        I have read, understood, and voluntarily consent to proceed.
-      </label><br><br>
+      <label><input type="checkbox" id="agreeCheck" required> I consent to proceed.</label><br><br>
       <input type="text" id="name" placeholder="Full Name" required><br>
       <input type="email" id="email" placeholder="Email Address" required><br>
       <input type="tel" id="phone" placeholder="Contact Number" required><br>
@@ -50,15 +35,12 @@ body { background-color: #f8f9fa; }
   </div>
 </div>
 
-<!-- Main Dashboard -->
-<div class="container py-4" id="mainContent" style="display:none;">
-  <!-- Header -->
+<div class="container py-4" id="dashboardContent" style="display:none;">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">Omkar Enterprises Investor Relations</h2>
     <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
   </div>
 
-  <!-- Tabs -->
   <ul class="nav nav-tabs" id="dashboardTabs">
     <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#overview">Overview</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#investor">My Investments</a></li>
@@ -71,54 +53,60 @@ body { background-color: #f8f9fa; }
   <div class="tab-content pt-4">
     <!-- Overview -->
     <div class="tab-pane fade show active" id="overview">
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="p-3 bg-white dashboard-card text-center">
-            <h5>Total Investments</h5>
-            <h3 id="totalInvestments">₹25 Cr</h3>
+      <div id="visitorOverview">
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Total Investments</h5>
+              <h3 id="totalInvestments">₹25 Cr</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Total Payouts</h5>
+              <h3 id="totalPayouts">₹7 Cr</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Active Investors</h5>
+              <h3 id="activeInvestors">180</h3>
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="p-3 bg-white dashboard-card text-center">
-            <h5>Total Payouts</h5>
-            <h3 id="totalPayouts">₹7 Cr</h3>
+        <!-- Charts -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-white dashboard-card">
+              <h6>Investments vs Payouts</h6>
+              <canvas id="investmentChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-white dashboard-card">
+              <h6>Investor Tenure Distribution</h6>
+              <canvas id="tenureChart"></canvas>
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="p-3 bg-white dashboard-card text-center">
-            <h5>Active Investors</h5>
-            <h3 id="activeInvestors">180</h3>
-          </div>
+        <div class="mt-4">
+          <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
         </div>
-      </div>
-
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="p-3 bg-white dashboard-card">
-            <h6>Investments vs Payouts</h6>
-            <canvas id="investmentChart"></canvas>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="p-3 bg-white dashboard-card">
-            <h6>Investor Tenure Distribution</h6>
-            <canvas id="tenureChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-4">
-        <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
       </div>
     </div>
 
-    <!-- Investor Dashboard -->
+    <!-- Investor -->
     <div class="tab-pane fade" id="investor">
-      <div class="p-3 bg-white dashboard-card">
-        <h5>Welcome, <span id="investorName">Investor</span></h5>
-        <p><strong>Email:</strong> <span id="investorEmail"></span></p>
-        <p><strong>Phone:</strong> <span id="investorPhone"></span></p>
-        <p><strong>Consent:</strong> <span id="investorConsent"></span></p>
+      <div id="investorDashboard">
+        <div class="p-3 bg-white dashboard-card">
+          <h5>Welcome, <span id="investorName">Investor</span></h5>
+          <p><strong>Email:</strong> <span id="investorEmail"></span></p>
+          <p><strong>Phone:</strong> <span id="investorPhone"></span></p>
+          <p><strong>Consent:</strong> <span id="investorConsent"></span></p>
+          <p><strong>Total Investment:</strong> ₹<span id="investorInvestment">0</span></p>
+          <p><strong>Last Payout:</strong> ₹<span id="investorPayout">0</span></p>
+          <p><strong>Cycle:</strong> <span id="investorCycle">-</span></p>
+        </div>
       </div>
     </div>
 
@@ -134,7 +122,7 @@ body { background-color: #f8f9fa; }
     <div class="tab-pane fade" id="earnings">
       <div class="p-3 bg-white dashboard-card">
         <h5>How You Earn</h5>
-        <p>Investors earn fixed monthly returns through structured lending opportunities. Payouts are consistent and secured with agreements.</p>
+        <p>Investors earn fixed monthly returns through structured lending. Payouts are consistent and secured.</p>
       </div>
     </div>
 
@@ -142,137 +130,108 @@ body { background-color: #f8f9fa; }
     <div class="tab-pane fade" id="hotdeals">
       <div class="p-3 bg-white dashboard-card">
         <h5>Hot Deals</h5>
-        <table class="table table-striped" id="hotDealsTable">
-          <thead>
-            <tr><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Tenure</th></tr>
-          </thead>
-          <tbody>
-            <!-- Hot Deals dynamically loaded -->
-          </tbody>
-        </table>
+        <p>Explore live lending opportunities and express interest (data saved to Sheet2).</p>
       </div>
     </div>
 
     <!-- FAQ -->
     <div class="tab-pane fade" id="faq">
       <div class="p-3 bg-white dashboard-card">
-        <h5>Frequently Asked Questions</h5>
-        <ul id="faqList" class="list-group">
-          <!-- FAQs dynamically loaded -->
-        </ul>
+        <h5>FAQ</h5>
+        <p>Dynamic FAQ loaded from Sheet3 for new visitors or investors.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-// Consent and Dashboard Logic
-const consentForm = document.getElementById("consentForm");
+const scriptURL = "YOUR_GOOGLE_SCRIPT_DEPLOY_URL_HERE"; // Replace with your web app URL
 const consentPopup = document.getElementById("consentPopup");
-const mainContent = document.getElementById("mainContent");
-const logoutBtn = document.getElementById("logoutBtn");
+const dashboardContent = document.getElementById("dashboardContent");
 
-// Replace with your Apps Script URL
-const scriptURL = "https://script.google.com/macros/s/AKfycby9PrucbSw5g87yijgUBeGkCUeOFz6-TeodzIoRjpsWUx4ejTOOwCThiERBfQdGUXzN/exec";
+// Check local storage for existing investor email
+let storedEmail = localStorage.getItem("investorEmail");
 
-// Consent submit
-consentForm.addEventListener("submit", function(e){
+function showDashboard(data) {
+  dashboardContent.style.display = "block";
+  document.getElementById('investorName').textContent = data.name;
+  document.getElementById('investorEmail').textContent = data.email;
+  document.getElementById('investorPhone').textContent = data.phone;
+  document.getElementById('investorConsent').textContent = data.consent;
+  document.getElementById('investorInvestment').textContent = data.investment || "0";
+  document.getElementById('investorPayout').textContent = data.lastPayout || "0";
+  document.getElementById('investorCycle').textContent = data.cycle || "-";
+
+  // Hide visitor overview if investor
+  document.getElementById('visitorOverview').style.display = 'none';
+}
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem("investorEmail");
+  window.location.reload();
+});
+
+// First consent logic
+window.onload = function() {
+  if(storedEmail){
+    fetch(`${scriptURL}?email=${encodeURIComponent(storedEmail)}`)
+      .then(r => r.json())
+      .then(data => {
+        if(data.exists){
+          showDashboard(data);
+        } else {
+          consentPopup.style.display = "flex";
+        }
+      })
+      .catch(err => consentPopup.style.display = "flex");
+  } else {
+    consentPopup.style.display = "flex";
+  }
+};
+
+// Consent form submission
+document.getElementById('consentForm').addEventListener('submit', function(e){
   e.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
 
   fetch(scriptURL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ name, email, phone, consent: true })
+    body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&consent=true`
   })
   .then(r => r.json())
   .then(data => {
-    if(data.success){
-      localStorage.setItem("investorEmail", email);
-      consentPopup.style.display = "none";
-      mainContent.style.display = "block";
-    }
-  }).catch(err => {
-    alert("Error saving consent. Please try again.");
-    console.error(err);
-  });
-});
-
-// Logout
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("investorEmail");
-  consentPopup.style.display = "flex";
-  mainContent.style.display = "none";
-});
-
-// Auto-check consent on page load
-window.addEventListener("load", function(){
-  const email = localStorage.getItem("investorEmail");
-  if(email){
+    localStorage.setItem("investorEmail", email);
+    consentPopup.style.display = "none";
     fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
       .then(r => r.json())
-      .then(data => {
-        if(data.exists){
-          document.getElementById('investorName').innerText = data.name;
-          document.getElementById('investorEmail').innerText = data.email;
-          document.getElementById('investorPhone').innerText = data.phone;
-          document.getElementById('investorConsent').innerText = data.consent ? "Yes" : "No";
+      .then(showDashboard);
+  })
+  .catch(err => alert("Error saving consent. Please try again."));
+});
 
-          consentPopup.style.display = "none";
-          mainContent.style.display = "block";
-        } else {
-          consentPopup.style.display = "flex";
-          mainContent.style.display = "none";
-        }
-      }).catch(err => {
-        consentPopup.style.display = "flex";
-        mainContent.style.display = "none";
-      });
-  } else {
-    consentPopup.style.display = "flex";
-    mainContent.style.display = "none";
+// Charts for visitors
+const ctx1 = document.getElementById('investmentChart');
+new Chart(ctx1, {
+  type: 'bar',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[
+      {label:'Investments', data:[5,7,9,12,15,18]},
+      {label:'Payouts', data:[1,2,3,4,5,6]}
+    ]
   }
 });
 
-// Charts
-const ctx1 = document.getElementById('investmentChart');
-new Chart(ctx1, { type: 'bar', data: { labels:['Jan','Feb','Mar'], datasets:[{label:'Investments',data:[5,7,9]},{label:'Payouts',data:[1,2,3]}] } });
-
 const ctx2 = document.getElementById('tenureChart');
-new Chart(ctx2, { type: 'pie', data:{ labels:['Quarterly','Biannual','Annual'], datasets:[{data:[40,30,30]}] } });
-
-// Load Hot Deals and FAQ dynamically
-function loadHotDeals(){
-  fetch(`${scriptURL}?action=hotdeals`)
-    .then(r=>r.json())
-    .then(data=>{
-      const tbody = document.querySelector("#hotDealsTable tbody");
-      tbody.innerHTML = "";
-      data.forEach(row=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${row.name}</td><td>${row.email}</td><td>${row.phone}</td><td>${row.amount}</td><td>${row.tenure}</td>`;
-        tbody.appendChild(tr);
-      });
-    });
-}
-
-function loadFAQ(){
-  fetch(`${scriptURL}?action=faq`)
-    .then(r=>r.json())
-    .then(data=>{
-      const ul = document.getElementById("faqList");
-      ul.innerHTML = "";
-      data.forEach(f=>{ ul.innerHTML += `<li class="list-group-item"><strong>${f.Question}</strong><br>${f.Answer}</li>`; });
-    });
-}
-
-loadHotDeals();
-loadFAQ();
+new Chart(ctx2, {
+  type: 'pie',
+  data: { labels:['Quarterly','Biannual','Annual'], datasets:[{data:[40,30,30]}] }
+});
 </script>
 </body>
 </html>
