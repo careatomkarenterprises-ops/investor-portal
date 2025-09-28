@@ -3,177 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Omkar Enterprises Investor Relations</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Investor Relations | Omkar Enterprises</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { background: #f8f9fa; }
-    #consentPopup { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:9999; }
-    #consentBox { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:400px; }
+    body { font-family: Arial, sans-serif; }
+    #consentPopup {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); display: none;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    #consentBox {
+      background: #fff; padding: 20px; border-radius: 10px;
+      width: 90%; max-width: 400px; text-align: center;
+    }
+    #consentBox h2 { margin-top: 0; color:#0A2540; }
+    #consentBox input, #consentBox button {
+      width: 90%; margin: 8px 0; padding: 10px; font-size: 14px;
+    }
+    #consentBox button {
+      background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer;
+    }
+    #consentBox button:hover { background: #C9A227; color:#000; }
   </style>
 </head>
 <body>
 
-  <!-- Consent Popup -->
-  <div id="consentPopup">
-    <div id="consentBox">
-      <h4>Consent Required</h4>
-      <p>Omkar Enterprises is a private consultancy firm. We are not a bank or NBFC. By proceeding, you agree to our private contractual terms.</p>
-      <form id="consentForm">
-        <input type="text" class="form-control mb-2" id="name" placeholder="Full Name" required>
-        <input type="email" class="form-control mb-2" id="email" placeholder="Email Address" required>
-        <input type="tel" class="form-control mb-2" id="phone" placeholder="Contact Number" required>
-        <div class="form-check mb-2">
-          <input class="form-check-input" type="checkbox" id="agreeCheck" required>
-          <label for="agreeCheck">I have read and consent to proceed</label>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Proceed</button>
-      </form>
-    </div>
+<!-- Consent Popup (UNCHANGED) -->
+<div id="consentPopup">
+  <div id="consentBox">
+    <h2>Consent Required</h2>
+    <p>
+      Omkar Enterprises is a private consultancy firm.<br>
+      We are not a bank or NBFC and do not raise public deposits under the 
+      <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
+      This discussion is strictly private and contractual.
+    </p>
+    <form id="consentForm" method="POST" action="YOUR_SCRIPT_URL_HERE">
+      <label style="font-size:13px;">
+        <input type="checkbox" name="consent" value="true" required>
+        I have read, understood, and voluntarily consent to proceed.
+      </label><br><br>
+      <input type="text" name="name" placeholder="Full Name" required><br>
+      <input type="email" name="email" placeholder="Email Address" required><br>
+      <input type="tel" name="phone" placeholder="Contact Number" required><br>
+      <button type="submit">Proceed</button>
+    </form>
   </div>
+</div>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-primary">
+<!-- Main Dashboard -->
+<div id="mainContent" style="display:none;">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold">Omkar Enterprises</a>
-      <button id="logoutBtn" class="btn btn-outline-light btn-sm" style="display:none;">Logout</button>
+      <a class="navbar-brand" href="#">Omkar Enterprises</a>
+      <button class="btn btn-outline-light" id="logoutBtn">Logout</button>
     </div>
   </nav>
 
-  <!-- Visitor Dashboard -->
-  <div class="container my-4" id="visitorDashboard" style="display:none;">
-    <h3 class="mb-3">Our Market Performance</h3>
-    <div class="row text-center">
-      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Total Funds</h5><p id="totalFunds" class="fs-4 fw-bold text-primary">₹0</p></div></div>
-      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Total Payouts</h5><p id="totalPayouts" class="fs-4 fw-bold text-success">₹0</p></div></div>
-      <div class="col-md-4 mb-3"><div class="card p-3 shadow"><h5>Investors</h5><p id="totalInvestors" class="fs-4 fw-bold text-dark">0</p></div></div>
+  <div class="container mt-4">
+    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview" type="button">Overview</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#hotdeals" type="button">Hot Deals</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#faq" type="button">FAQ</button></li>
+      <li class="nav-item investor-only"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mydata" type="button">My Dashboard</button></li>
+      <li class="nav-item investor-only"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#docs" type="button">Documents</button></li>
+    </ul>
+
+    <div class="tab-content mt-3">
+      <!-- Overview -->
+      <div class="tab-pane fade show active" id="overview" role="tabpanel">
+        <h3>Company Performance</h3>
+        <div class="row">
+          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Total Funds Raised</h5><p id="totalFunds">₹0</p></div></div>
+          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Total Payouts</h5><p id="totalPayouts">₹0</p></div></div>
+          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Investors Served</h5><p id="investorsCount">0</p></div></div>
+        </div>
+        <canvas id="performanceChart" class="mt-4"></canvas>
+      </div>
+
+      <!-- Hot Deals -->
+      <div class="tab-pane fade" id="hotdeals" role="tabpanel">
+        <h3>Hot Deals</h3>
+        <div class="row" id="hotDealsList">
+          <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+              <h5>Monthly Payout Scheme</h5>
+              <p>Earn fixed monthly interest on your lending.</p>
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enquiryModal">Invest Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="tab-pane fade" id="faq" role="tabpanel">
+        <h3>Frequently Asked Questions</h3>
+        <div id="faqContent"></div>
+      </div>
+
+      <!-- Investor Dashboard -->
+      <div class="tab-pane fade investor-only" id="mydata" role="tabpanel">
+        <h3>My Investment</h3>
+        <p><b>Name:</b> <span id="invName"></span></p>
+        <p><b>Email:</b> <span id="invEmail"></span></p>
+        <p><b>Phone:</b> <span id="invPhone"></span></p>
+        <p><b>Investment:</b> ₹<span id="invAmount"></span></p>
+        <p><b>Payout Cycle:</b> <span id="invCycle"></span></p>
+        <canvas id="myPerformanceChart"></canvas>
+      </div>
+
+      <!-- Investor Documents -->
+      <div class="tab-pane fade investor-only" id="docs" role="tabpanel">
+        <h3>Documents</h3>
+        <button class="btn btn-primary mb-2" id="downloadAgreement">Download Agreement</button>
+        <button class="btn btn-success" id="downloadTDS">Download TDS Certificate</button>
+      </div>
     </div>
-    <canvas id="performanceChart" height="100"></canvas>
-    <hr>
-    <h4 class="mt-4">Hot Deals</h4>
-    <form id="hotDealForm" class="card p-3 shadow">
-      <input type="text" class="form-control mb-2" id="hdName" placeholder="Full Name" required>
-      <input type="email" class="form-control mb-2" id="hdEmail" placeholder="Email Address" required>
-      <input type="tel" class="form-control mb-2" id="hdPhone" placeholder="Contact Number" required>
-      <input type="number" class="form-control mb-2" id="hdAmount" placeholder="Amount to Lend (₹)" required>
-      <select id="hdTenure" class="form-control mb-2" required>
-        <option value="">Select Tenure</option>
-        <option>3 Months</option>
-        <option>6 Months</option>
-        <option>12 Months</option>
-      </select>
-      <button type="submit" class="btn btn-success w-100">Express Interest</button>
+  </div>
+</div>
+
+<!-- Enquiry Modal -->
+<div class="modal fade" id="enquiryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form class="modal-content" method="POST" action="YOUR_SCRIPT_URL_HERE">
+      <div class="modal-header"><h5 class="modal-title">Hot Deal Enquiry</h5></div>
+      <div class="modal-body">
+        <input type="hidden" name="action" value="hotdeal">
+        <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
+        <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
+        <input type="tel" name="phone" class="form-control mb-2" placeholder="Phone" required>
+        <input type="number" name="amount" class="form-control mb-2" placeholder="Investment Amount" required>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
     </form>
   </div>
+</div>
 
-  <!-- Investor Dashboard -->
-  <div class="container my-4" id="investorDashboard" style="display:none;">
-    <h3>Welcome, <span id="invName"></span></h3>
-    <div class="row">
-      <div class="col-md-6"><div class="card p-3 shadow"><h5>Your Details</h5><p>Email: <span id="invEmail"></span></p><p>Phone: <span id="invPhone"></span></p><p>Investment: ₹<span id="invInvestment">100000</span></p><p>Payout Cycle: <span id="invCycle">Monthly</span></p></div></div>
-      <div class="col-md-6"><div class="card p-3 shadow"><h5>Documents</h5><a class="btn btn-outline-primary w-100 mb-2" id="downloadAgreement" target="_blank">Download Agreement</a><a class="btn btn-outline-success w-100" id="downloadTDS" target="_blank">Download TDS Certificate</a></div></div>
-    </div>
-  </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const scriptURL = "YOUR_SCRIPT_URL_HERE";
-const consentPopup = document.getElementById("consentPopup");
-const visitorDashboard = document.getElementById("visitorDashboard");
-const investorDashboard = document.getElementById("investorDashboard");
-const logoutBtn = document.getElementById("logoutBtn");
+const scriptURL = "YOUR_SCRIPT_URL_HERE"; // keep same Apps Script URL
 
-// Check consent: first-time logic
-async function checkConsent(email) {
-  if (!email) {
-    consentPopup.style.display = "flex";
-    return;
+// Show/hide investor-only tabs
+window.onload = function() {
+  let email = localStorage.getItem("investorEmail");
+  if (email) {
+    fetch(scriptURL + "?email=" + encodeURIComponent(email))
+      .then(r => r.json())
+      .then(data => {
+        if (data.exists) {
+          document.querySelectorAll(".investor-only").forEach(el => el.style.display = "block");
+        } else {
+          document.querySelectorAll(".investor-only").forEach(el => el.style.display = "none");
+        }
+        document.getElementById("mainContent").style.display = "block";
+      });
+  } else {
+    document.getElementById("consentPopup").style.display = "flex";
   }
-  try {
-    const res = await fetch(`${scriptURL}?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
-    if (data.exists) {
-      loadDashboard(email); // Already consented
-    } else {
-      consentPopup.style.display = "flex"; // Show consent
-    }
-  } catch (err) {
-    consentPopup.style.display = "flex"; // Show consent on error
-  }
-}
-
-// Initial check
-const emailStored = localStorage.getItem("investorEmail");
-checkConsent(emailStored);
-
-// Consent form submission
-document.getElementById("consentForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-
-  const formData = new URLSearchParams();
-  formData.append("name", name);
-  formData.append("email", email);
-  formData.append("phone", phone);
-  formData.append("consent", true);
-
-  await fetch(scriptURL, { method: "POST", body: formData });
-  localStorage.setItem("investorEmail", email);
-  consentPopup.style.display="none";
-  loadDashboard(email);
-});
-
-// Load dashboard based on user type
-async function loadDashboard(email){
-  try {
-    const res = await fetch(`${scriptURL}?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
-    if (data.exists){
-      investorDashboard.style.display="block";
-      document.getElementById("invName").innerText = data.name;
-      document.getElementById("invEmail").innerText = data.email;
-      document.getElementById("invPhone").innerText = data.phone;
-      logoutBtn.style.display="block";
-    } else {
-      loadVisitor();
-    }
-  } catch (err) {
-    loadVisitor();
-  }
-}
-
-// Visitor dashboard
-async function loadVisitor(){
-  visitorDashboard.style.display="block";
-  logoutBtn.style.display="block";
-  const res = await fetch(`${scriptURL}?action=totals`);
-  const data = await res.json();
-  document.getElementById("totalFunds").innerText = "₹" + data.totalFunds;
-  document.getElementById("totalPayouts").innerText = "₹" + data.totalPayouts;
-  document.getElementById("totalInvestors").innerText = data.investors;
-  new Chart(document.getElementById("performanceChart"), { type:"bar", data:{ labels:["Jan","Feb","Mar"], datasets:[{ label:"Payouts", data:[20000,30000,50000], backgroundColor:"blue"}]} });
-}
-
-// Hot deal form
-document.getElementById("hotDealForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const fd = new URLSearchParams();
-  fd.append("action","hotdeal");
-  fd.append("name", document.getElementById("hdName").value);
-  fd.append("email", document.getElementById("hdEmail").value);
-  fd.append("phone", document.getElementById("hdPhone").value);
-  fd.append("amount", document.getElementById("hdAmount").value);
-  fd.append("tenure", document.getElementById("hdTenure").value);
-
-  const res = await fetch(scriptURL, { method:"POST", body:fd });
-  const data = await res.json();
-  if (data.success){ alert("Thank you! Your Hot Deal interest is recorded."); e.target.reset(); }
-});
+};
 
 // Logout
-logoutBtn.addEventListener("click", ()=>{ localStorage.removeItem("investorEmail"); location.reload(); });
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("investorEmail");
+  location.reload();
+});
 
+// FAQ Content
+const visitorFAQ = `
+  <div class="accordion" id="visitorFAQ">
+    <div class="accordion-item"><h2 class="accordion-header">
+      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q1">How do I start lending?</button>
+    </h2><div id="q1" class="accordion-collapse collapse"><div class="accordion-body">You can start with our hot deals instantly.</div></div></div>
+    <div class="accordion-item"><h2 class="accordion-header">
+      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q2">What returns can I expect?</button>
+    </h2><div id="q2" class="accordion-collapse collapse"><div class="accordion-body">Returns depend on the scheme. Average fixed monthly returns apply.</div></div></div>
+  </div>
+`;
+const investorFAQ = `
+  <div class="accordion" id="investorFAQ">
+    <div class="accordion-item"><h2 class="accordion-header">
+      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q1i">When is my next payout?</button>
+    </h2><div id="q1i" class="accordion-collapse collapse"><div class="accordion-body">Check your dashboard for the payout cycle details.</div></div></div>
+    <div class="accordion-item"><h2 class="accordion-header">
+      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q2i">How can I get my TDS certificate?</button>
+    </h2><div id="q2i" class="accordion-collapse collapse"><div class="accordion-body">Download from the Documents tab anytime.</div></div></div>
+  </div>
+`;
+document.getElementById("faqContent").innerHTML = visitorFAQ; // default
+
+// Buttons for document download
+document.getElementById("downloadAgreement").addEventListener("click", () => {
+  let email = localStorage.getItem("investorEmail");
+  window.open(`${scriptURL}?action=download&type=agreement&email=${encodeURIComponent(email)}`, "_blank");
+});
+document.getElementById("downloadTDS").addEventListener("click", () => {
+  let email = localStorage.getItem("investorEmail");
+  window.open(`${scriptURL}?action=download&type=tds&email=${encodeURIComponent(email)}`, "_blank");
+});
+
+// Charts (static demo – later link to Sheet)
+new Chart(document.getElementById("performanceChart"), {
+  type: 'line',
+  data: { labels: ["Jan","Feb","Mar"], datasets:[{ label:"Payouts", data:[10000,12000,15000] }] }
+});
+new Chart(document.getElementById("myPerformanceChart"), {
+  type: 'bar',
+  data: { labels: ["Jan","Feb","Mar"], datasets:[{ label:"My Payouts", data:[2000,2500,2600] }] }
+});
 </script>
 </body>
 </html>
