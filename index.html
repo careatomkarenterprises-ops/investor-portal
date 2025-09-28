@@ -58,16 +58,15 @@
 const consentPopup = document.getElementById("consentPopup");
 const mainContent = document.getElementById("mainContent");
 
-// ✅ Your latest /exec URL
-const scriptURL = "https://script.google.com/macros/s/AKfycbzJ_aG_DEIAbXVE_EymYfG46SyjLLsQ-P4yevNX0Ibo5sYsuPiijswowLLJJlVrKULeMA/exec";
+// ✅ Replace with your actual Google Apps Script Web App URL
+const scriptURL = "https://script.google.com/macros/s/AKfycbx2PmsXSfVB-KhXDadxOqbC_2np4liMtKkgcPsi5gOsZzb6XJw3SF71uNZSGzuqEOgXZw/exec";
 
 // Check if already consented
 window.onload = function() {
   let email = localStorage.getItem("investorEmail");
   if (email) {
     fetch(scriptURL + "?email=" + encodeURIComponent(email))
-      .then(r => r.text())
-      .then(txt => JSON.parse(txt))
+      .then(r => r.json())
       .then(data => {
         if (data.exists) {
           mainContent.style.display = "block";
@@ -92,19 +91,21 @@ document.getElementById("consentForm").addEventListener("submit", function(e){
   let email = document.getElementById("email").value;
   let phone = document.getElementById("phone").value;
 
+  // Send as form-urlencoded (Apps Script handles this best)
+  let formData = new URLSearchParams();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("consent", true);
+
   fetch(scriptURL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      phone: phone,
-      consent: true
-    })
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: formData.toString()
   })
-  .then(r => r.text())
-  .then(txt => JSON.parse(txt))
+  .then(r => r.json())
   .then(data => {
+    console.log("Response:", data);
     if (data.alreadyExists) {
       alert("Welcome back! Consent already recorded.");
     } else {
@@ -116,7 +117,7 @@ document.getElementById("consentForm").addEventListener("submit", function(e){
   })
   .catch(err => {
     console.error("Save consent error:", err);
-    alert("Error saving consent. Please try again.");
+    alert("Error saving consent: " + err);
   });
 });
 </script>
