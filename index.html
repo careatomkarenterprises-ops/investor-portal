@@ -13,7 +13,8 @@
   </style>
 </head>
 <body>
-  <!-- Consent -->
+
+  <!-- Consent Popup -->
   <div id="consentPopup">
     <div id="consentBox">
       <h4>Consent Required</h4>
@@ -75,18 +76,36 @@
   </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec";
+const scriptURL = "YOUR_SCRIPT_URL_HERE";
 const consentPopup = document.getElementById("consentPopup");
 const visitorDashboard = document.getElementById("visitorDashboard");
 const investorDashboard = document.getElementById("investorDashboard");
 const logoutBtn = document.getElementById("logoutBtn");
 
+// Check consent: first-time logic
+async function checkConsent(email) {
+  if (!email) {
+    consentPopup.style.display = "flex";
+    return;
+  }
+  try {
+    const res = await fetch(`${scriptURL}?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (data.exists) {
+      loadDashboard(email); // Already consented
+    } else {
+      consentPopup.style.display = "flex"; // Show consent
+    }
+  } catch (err) {
+    consentPopup.style.display = "flex"; // Show consent on error
+  }
+}
+
+// Initial check
 const emailStored = localStorage.getItem("investorEmail");
+checkConsent(emailStored);
 
-// Show consent if no email stored
-if (!emailStored) consentPopup.style.display = "flex";
-
-// Handle consent
+// Consent form submission
 document.getElementById("consentForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const name = document.getElementById("name").value;
@@ -105,7 +124,7 @@ document.getElementById("consentForm").addEventListener("submit", async (e)=>{
   loadDashboard(email);
 });
 
-// Load dashboard
+// Load dashboard based on user type
 async function loadDashboard(email){
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(email)}`);
@@ -119,7 +138,9 @@ async function loadDashboard(email){
     } else {
       loadVisitor();
     }
-  } catch (err) { loadVisitor(); }
+  } catch (err) {
+    loadVisitor();
+  }
 }
 
 // Visitor dashboard
@@ -153,7 +174,6 @@ document.getElementById("hotDealForm").addEventListener("submit", async (e)=>{
 // Logout
 logoutBtn.addEventListener("click", ()=>{ localStorage.removeItem("investorEmail"); location.reload(); });
 
-if (emailStored){ loadDashboard(emailStored); }
 </script>
 </body>
 </html>
