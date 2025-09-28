@@ -1,219 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investor Relations | Omkar Enterprises</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    #consentPopup {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85); display: none;
-      align-items: center; justify-content: center; z-index: 9999;
-    }
-    #consentBox {
-      background: #fff; padding: 20px; border-radius: 10px;
-      width: 90%; max-width: 400px; text-align: center;
-    }
-    #consentBox h2 { margin-top: 0; color:#0A2540; }
-    #consentBox input, #consentBox button {
-      width: 90%; margin: 8px 0; padding: 10px; font-size: 14px;
-    }
-    #consentBox button {
-      background: #0A2540; color: #fff; border: none; border-radius: 5px; cursor: pointer;
-    }
-    #consentBox button:hover { background: #C9A227; color:#000; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omkar Investor Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { background-color: #f8f9fa; }
+.dashboard-card { border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+</style>
 </head>
 <body>
 
-<!-- Consent Popup (UNCHANGED) -->
-<div id="consentPopup">
-  <div id="consentBox">
-    <h2>Consent Required</h2>
-    <p>
-      Omkar Enterprises is a private consultancy firm.<br>
-      We are not a bank or NBFC and do not raise public deposits under the 
-      <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
-      This discussion is strictly private and contractual.
-    </p>
-    <form id="consentForm" method="POST" action="https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec">
-      <label style="font-size:13px;">
-        <input type="checkbox" name="consent" value="true" required>
-        I have read, understood, and voluntarily consent to proceed.
-      </label><br><br>
-      <input type="text" name="name" placeholder="Full Name" required><br>
-      <input type="email" name="email" placeholder="Email Address" required><br>
-      <input type="tel" name="phone" placeholder="Contact Number" required><br>
-      <button type="submit">Proceed</button>
-    </form>
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Omkar Enterprises Investor Relations</h2>
+    <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
   </div>
-</div>
 
-<!-- Main Dashboard -->
-<div id="mainContent" style="display:none;">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Omkar Enterprises</a>
-      <button class="btn btn-outline-light" id="logoutBtn">Logout</button>
-    </div>
-  </nav>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs" id="dashboardTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#overview">Overview</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#investor">My Investments</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#agreement">Agreements</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#earnings">How You Earn</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#hotdeals">Hot Deals</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#faq">FAQ</a></li>
+  </ul>
 
-  <div class="container mt-4">
-    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview" type="button">Overview</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#hotdeals" type="button">Hot Deals</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#faq" type="button">FAQ</button></li>
-      <li class="nav-item investor-only"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mydata" type="button">My Dashboard</button></li>
-      <li class="nav-item investor-only"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#docs" type="button">Documents</button></li>
-    </ul>
+  <div class="tab-content pt-4">
 
-    <div class="tab-content mt-3">
-      <!-- Overview -->
-      <div class="tab-pane fade show active" id="overview" role="tabpanel">
-        <h3>Company Performance</h3>
-        <div class="row">
-          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Total Funds Raised</h5><p id="totalFunds">₹0</p></div></div>
-          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Total Payouts</h5><p id="totalPayouts">₹0</p></div></div>
-          <div class="col-md-4"><div class="card p-3 shadow-sm"><h5>Investors Served</h5><p id="investorsCount">0</p></div></div>
-        </div>
-        <canvas id="performanceChart" class="mt-4"></canvas>
-      </div>
-
-      <!-- Hot Deals -->
-      <div class="tab-pane fade" id="hotdeals" role="tabpanel">
-        <h3>Hot Deals</h3>
-        <div class="row" id="hotDealsList">
+    <!-- Overview for New Visitors -->
+    <div class="tab-pane fade show active" id="overview">
+      <div id="visitorOverview">
+        <div class="row g-3 mb-4">
           <div class="col-md-4">
-            <div class="card p-3 shadow-sm">
-              <h5>Monthly Payout Scheme</h5>
-              <p>Earn fixed monthly interest on your lending.</p>
-              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enquiryModal">Invest Now</button>
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Total Investments</h5>
+              <h3 id="totalInvestments">₹0</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Total Payouts</h5>
+              <h3 id="totalPayouts">₹0</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 bg-white dashboard-card text-center">
+              <h5>Active Investors</h5>
+              <h3 id="activeInvestors">0</h3>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- FAQ -->
-      <div class="tab-pane fade" id="faq" role="tabpanel">
-        <h3>Frequently Asked Questions</h3>
-        <div id="faqContent"></div>
-      </div>
+        <!-- Charts -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-white dashboard-card">
+              <h6>Investments vs Payouts</h6>
+              <canvas id="investmentChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-white dashboard-card">
+              <h6>Investor Tenure Distribution</h6>
+              <canvas id="tenureChart"></canvas>
+            </div>
+          </div>
+        </div>
 
-      <!-- Investor Dashboard -->
-      <div class="tab-pane fade investor-only" id="mydata" role="tabpanel">
-        <h3>My Investment</h3>
-        <p><b>Name:</b> <span id="invName"></span></p>
-        <p><b>Email:</b> <span id="invEmail"></span></p>
-        <p><b>Phone:</b> <span id="invPhone"></span></p>
-        <p><b>Investment:</b> ₹<span id="invAmount"></span></p>
-        <p><b>Payout Cycle:</b> <span id="invCycle"></span></p>
-        <canvas id="myPerformanceChart"></canvas>
-      </div>
-
-      <!-- Investor Documents -->
-      <div class="tab-pane fade investor-only" id="docs" role="tabpanel">
-        <h3>Documents</h3>
-        <button class="btn btn-primary mb-2" id="downloadAgreement">Download Agreement</button>
-        <button class="btn btn-success" id="downloadTDS">Download TDS Certificate</button>
+        <div class="mt-4">
+          <a href="sample-agreement.pdf" class="btn btn-primary" target="_blank">View Sample Agreement</a>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Enquiry Modal -->
-<div class="modal fade" id="enquiryModal" tabindex="-1">
-  <div class="modal-dialog">
-    <form class="modal-content" method="POST" action="https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec">
-      <div class="modal-header"><h5 class="modal-title">Hot Deal Enquiry</h5></div>
-      <div class="modal-body">
-        <input type="hidden" name="action" value="hotdeal">
-        <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
-        <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
-        <input type="tel" name="phone" class="form-control mb-2" placeholder="Phone" required>
-        <input type="number" name="amount" class="form-control mb-2" placeholder="Investment Amount" required>
+    <!-- Investor Dashboard -->
+    <div class="tab-pane fade" id="investor">
+      <div id="investorDashboard">
+        <div class="p-3 bg-white dashboard-card">
+          <h5 class="mb-3">Welcome, <span id="investorName">Investor</span></h5>
+          <p><strong>Email:</strong> <span id="investorEmail"></span></p>
+          <p><strong>Phone:</strong> <span id="investorPhone"></span></p>
+          <p><strong>Consent:</strong> <span id="investorConsent"></span></p>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+    <!-- Agreements -->
+    <div class="tab-pane fade" id="agreement">
+      <div class="p-3 bg-white dashboard-card">
+        <h5>Your Agreements</h5>
+        <p>Download your signed agreements here (coming soon).</p>
       </div>
-    </form>
+    </div>
+
+    <!-- Earnings -->
+    <div class="tab-pane fade" id="earnings">
+      <div class="p-3 bg-white dashboard-card">
+        <h5>How You Earn</h5>
+        <p>Investors earn fixed monthly returns through structured lending opportunities. Payouts are consistent and secured with agreements.</p>
+      </div>
+    </div>
+
+    <!-- Hot Deals -->
+    <div class="tab-pane fade" id="hotdeals">
+      <div class="p-3 bg-white dashboard-card">
+        <h5>Hot Deals</h5>
+        <form id="hotdealForm">
+          <input type="text" id="hdName" placeholder="Full Name" required class="form-control mb-2">
+          <input type="email" id="hdEmail" placeholder="Email" required class="form-control mb-2">
+          <input type="tel" id="hdPhone" placeholder="Phone" required class="form-control mb-2">
+          <input type="number" id="hdAmount" placeholder="Amount" required class="form-control mb-2">
+          <input type="text" id="hdTenure" placeholder="Tenure" required class="form-control mb-2">
+          <button type="submit" class="btn btn-success">Submit Hot Deal</button>
+        </form>
+        <div id="hotdealMsg" class="mt-2"></div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="tab-pane fade" id="faq">
+      <div class="p-3 bg-white dashboard-card">
+        <h5>FAQ</h5>
+        <ul id="faqList"></ul>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbynp8VHTHNb82RMWZKv1UHVV46M_TmtdRRT1_01A-XeQ7WxnRA4wMBdq6mc-wGpBQw_/exec"; // keep same Apps Script URL
+const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+const logoutBtn = document.getElementById('logoutBtn');
 
-// Show/hide investor-only tabs
-window.onload = function() {
-  let email = localStorage.getItem("investorEmail");
-  if (email) {
-    fetch(scriptURL + "?email=" + encodeURIComponent(email))
-      .then(r => r.json())
-      .then(data => {
-        if (data.exists) {
-          document.querySelectorAll(".investor-only").forEach(el => el.style.display = "block");
-        } else {
-          document.querySelectorAll(".investor-only").forEach(el => el.style.display = "none");
-        }
-        document.getElementById("mainContent").style.display = "block";
-      });
-  } else {
-    document.getElementById("consentPopup").style.display = "flex";
-  }
-};
+// Charts
+const ctx1 = document.getElementById('investmentChart');
+new Chart(ctx1, { type:'bar', data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label:'Investments', data:[5,7,9,12,15,18]},{ label:'Payouts', data:[1,2,3,4,5,6]}] } });
+const ctx2 = document.getElementById('tenureChart');
+new Chart(ctx2, { type:'pie', data:{ labels:['Quarterly','Biannual','Annual'], datasets:[{ data:[40,30,30] }] } });
 
 // Logout
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("investorEmail");
-  location.reload();
+logoutBtn.addEventListener('click', ()=>{ localStorage.removeItem("investorEmail"); window.location.reload(); });
+
+// Hot Deal submission
+document.getElementById('hotdealForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  fetch(scriptURL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      action:'hotdeal',
+      name: document.getElementById('hdName').value,
+      email: document.getElementById('hdEmail').value,
+      phone: document.getElementById('hdPhone').value,
+      amount: document.getElementById('hdAmount').value,
+      tenure: document.getElementById('hdTenure').value
+    })
+  }).then(r=>r.json()).then(data=>{
+    document.getElementById('hotdealMsg').innerText = 'Hot Deal submitted successfully!';
+    document.getElementById('hotdealForm').reset();
+  }).catch(err=>console.error(err));
 });
 
-// FAQ Content
-const visitorFAQ = `
-  <div class="accordion" id="visitorFAQ">
-    <div class="accordion-item"><h2 class="accordion-header">
-      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q1">How do I start lending?</button>
-    </h2><div id="q1" class="accordion-collapse collapse"><div class="accordion-body">You can start with our hot deals instantly.</div></div></div>
-    <div class="accordion-item"><h2 class="accordion-header">
-      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q2">What returns can I expect?</button>
-    </h2><div id="q2" class="accordion-collapse collapse"><div class="accordion-body">Returns depend on the scheme. Average fixed monthly returns apply.</div></div></div>
-  </div>
-`;
-const investorFAQ = `
-  <div class="accordion" id="investorFAQ">
-    <div class="accordion-item"><h2 class="accordion-header">
-      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q1i">When is my next payout?</button>
-    </h2><div id="q1i" class="accordion-collapse collapse"><div class="accordion-body">Check your dashboard for the payout cycle details.</div></div></div>
-    <div class="accordion-item"><h2 class="accordion-header">
-      <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#q2i">How can I get my TDS certificate?</button>
-    </h2><div id="q2i" class="accordion-collapse collapse"><div class="accordion-body">Download from the Documents tab anytime.</div></div></div>
-  </div>
-`;
-document.getElementById("faqContent").innerHTML = visitorFAQ; // default
+// FAQ load
+fetch(scriptURL+'?action=faq')
+.then(r=>r.json())
+.then(faq=>{
+  const faqList = document.getElementById('faqList');
+  faq.forEach(f=>{ faqList.innerHTML += `<li><strong>${f.question}</strong> ${f.answer}</li>`; });
+});
 
-// Buttons for document download
-document.getElementById("downloadAgreement").addEventListener("click", () => {
+// Visitor vs Investor view
+window.onload = function(){
   let email = localStorage.getItem("investorEmail");
-  window.open(`${scriptURL}?action=download&type=agreement&email=${encodeURIComponent(email)}`, "_blank");
-});
-document.getElementById("downloadTDS").addEventListener("click", () => {
-  let email = localStorage.getItem("investorEmail");
-  window.open(`${scriptURL}?action=download&type=tds&email=${encodeURIComponent(email)}`, "_blank");
-});
+  if(email){
+    fetch(scriptURL+'?email='+encodeURIComponent(email))
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.exists){
+        document.getElementById('investorDashboard').style.display='block';
+        document.getElementById('investorName').innerText = data.name;
+        document.getElementById('investorEmail').innerText = data.email;
+        document.getElementById('investorPhone').innerText = data.phone;
+        document.getElementById('investorConsent').innerText = data.consent;
+        document.getElementById('visitorOverview').style.display='none';
+      } else {
+        document.getElementById('visitorOverview').style.display='block';
+        document.getElementById('investorDashboard').style.display='none';
+      }
+    });
+  } else {
+    document.getElementById('visitorOverview').style.display='block';
+    document.getElementById('investorDashboard').style.display='none';
+  }
 
-// Charts (static demo – later link to Sheet)
-new Chart(document.getElementById("performanceChart"), {
-  type: 'line',
-  data: { labels: ["Jan","Feb","Mar"], datasets:[{ label:"Payouts", data:[10000,12000,15000] }] }
-});
-new Chart(document.getElementById("myPerformanceChart"), {
-  type: 'bar',
-  data: { labels: ["Jan","Feb","Mar"], datasets:[{ label:"My Payouts", data:[2000,2500,2600] }] }
-});
+  // Load totals for visitor overview
+  fetch(scriptURL+'?action=totals')
+  .then(r=>r.json())
+  .then(data=>{
+    document.getElementById('totalInvestments').innerText = '₹'+data.totalFunds.toLocaleString();
+    document.getElementById('totalPayouts').innerText = '₹'+data.totalPayouts.toLocaleString();
+    document.getElementById('activeInvestors').innerText = data.investors;
+  });
+};
 </script>
 </body>
 </html>
