@@ -2,143 +2,197 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Omkar Enterprises | Investor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investor Dashboard | Omkar Enterprises</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f4f6f9; }
-    header { background:#2c3e50; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; }
-    header h1 { font-size:20px; margin:0; }
-    nav button { background:none; border:none; color:white; padding:10px 15px; cursor:pointer; }
-    nav button.active { background:#1abc9c; border-radius:5px; }
-    #dashboard { display:none; padding:20px; }
+    body { margin: 0; font-family: Arial, sans-serif; background:#f4f6f9; color:#333; }
+    header {
+      background:#0A2540; color:#fff; padding:15px 20px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    header h1 { margin:0; font-size:20px; }
+    nav button {
+      margin:0 5px; padding:8px 15px; border:none; border-radius:5px;
+      background:#fff; color:#0A2540; cursor:pointer;
+    }
+    nav button.active { background:#C9A227; color:#000; }
+    #logoutBtn {
+      background:#C9A227; color:#000; border:none; border-radius:5px;
+      padding:8px 15px; cursor:pointer;
+    }
+    #logoutBtn:hover { background:#fff; color:#0A2540; }
+    .container { padding:20px; }
     .tab { display:none; }
     .tab.active { display:block; }
-    #consentPopup { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; }
-    #consentPopup form { background:white; padding:20px; border-radius:8px; width:300px; }
-    label { display:block; margin-top:10px; }
-    input { width:100%; padding:8px; margin-top:5px; }
-    button { margin-top:15px; padding:10px 15px; border:none; cursor:pointer; background:#1abc9c; color:white; border-radius:5px; }
+    #consentPopup {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center;
+      z-index:9999;
+    }
+    #consentBox {
+      background:#fff; padding:20px; border-radius:10px;
+      width:90%; max-width:400px; text-align:center;
+    }
+    #consentBox input, #consentBox button {
+      width:90%; margin:8px 0; padding:10px; font-size:14px;
+    }
+    #consentBox button {
+      background:#0A2540; color:#fff; border:none; border-radius:5px; cursor:pointer;
+    }
+    #consentBox button:hover { background:#C9A227; color:#000; }
   </style>
 </head>
 <body>
+
   <!-- Consent Popup -->
   <div id="consentPopup">
-    <form id="consentForm" method="POST" action="YOUR_WEBAPP_URL">
-      <h2>Investor Consent</h2>
-      <label>Name:</label>
-      <input type="text" name="name" required>
-      <label>Email:</label>
-      <input type="email" name="email" required>
-      <button type="submit">I Agree & Continue</button>
-    </form>
+    <div id="consentBox">
+      <h2>Consent Required</h2>
+      <p>
+        Omkar Enterprises is a private consultancy firm.<br>
+        We are not a bank or NBFC and do not raise public deposits under the 
+        <b>Companies Act, 2013</b> or the <b>BUDS Act, 2019</b>.<br>
+        This discussion is strictly private and contractual.
+      </p>
+      <form id="consentForm" 
+        action="https://script.google.com/macros/s/AKfycbzH9_aevj4qyuJd0laAwvT1jn6j6T-pdy_wPllEItuPZoIjPm8gm87L92MsHQ_cqgIQ/exec" 
+        method="post" target="hiddenFrame">
+        
+        <label style="font-size:13px;">
+          <input type="checkbox" name="consent" value="true" required>
+          I have read, understood, and voluntarily consent to proceed.
+        </label><br><br>
+        <input type="text" name="name" placeholder="Full Name" required><br>
+        <input type="email" name="email" placeholder="Email Address" required><br>
+        <input type="tel" name="phone" placeholder="Contact Number" required><br>
+        <button type="submit">Proceed</button>
+      </form>
+      <!-- Hidden iframe for form submit -->
+      <iframe name="hiddenFrame" style="display:none;"></iframe>
+    </div>
   </div>
 
   <!-- Dashboard -->
-  <div id="dashboard">
+  <div id="dashboard" style="display:none;">
     <header>
       <h1>Omkar Enterprises | Investor Dashboard</h1>
-      <div style="display:flex; align-items:center; gap:15px;">
+      <div style="display:flex; align-items:center; gap:10px;">
         <span id="investorInfo" style="font-size:13px; color:#fff;"></span>
         <button id="logoutBtn">Logout</button>
       </div>
     </header>
-    <nav>
-      <button data-tab="home" class="active">Home</button>
-      <button data-tab="terms">Investor Terms</button>
-      <button data-tab="agreements">Agreements</button>
-      <button data-tab="reports">Reports</button>
-      <button data-tab="documents">Documents</button>
-    </nav>
-    <section id="home" class="tab active">
-      <h2>Welcome</h2>
-      <p>Welcome to Omkar Enterprises Investor Relations. Here you can view information about our consultancy firm, investor terms, and official documents.</p>
-    </section>
-    <section id="terms" class="tab">
-      <h2>Investor Terms</h2>
-      <p>Details about investor terms will be displayed here.</p>
-    </section>
-    <section id="agreements" class="tab">
-      <h2>Agreements</h2>
-      <p>Investor agreements and related content.</p>
-    </section>
-    <section id="reports" class="tab">
-      <h2>Reports</h2>
-      <p>Quarterly and annual reports will be shown here.</p>
-    </section>
-    <section id="documents" class="tab">
-      <h2>Documents</h2>
-      <p>Important investor documents and resources.</p>
-    </section>
+    <div class="container">
+      <nav>
+        <button data-tab="home" class="active">Home</button>
+        <button data-tab="terms">Investor Terms</button>
+        <button data-tab="agreements">Agreements</button>
+        <button data-tab="reports">Reports</button>
+        <button data-tab="documents">Documents</button>
+      </nav>
+
+      <div id="home" class="tab active">
+        <h2>Welcome</h2>
+        <p>Access information about our consultancy firm, investor terms, and official documents.</p>
+      </div>
+
+      <div id="terms" class="tab">
+        <h2>Investor Terms</h2>
+        <p>[Investor Terms go here]</p>
+      </div>
+
+      <div id="agreements" class="tab">
+        <h2>Agreements</h2>
+        <p>[Agreements go here]</p>
+      </div>
+
+      <div id="reports" class="tab">
+        <h2>Reports</h2>
+        <p>[Reports and returns cycle]</p>
+      </div>
+
+      <div id="documents" class="tab">
+        <h2>Documents</h2>
+        <p>[Download official documents]</p>
+      </div>
+    </div>
   </div>
 
-  <script>
-    const consentPopup = document.getElementById("consentPopup");
-    const dashboard = document.getElementById("dashboard");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const investorInfo = document.getElementById("investorInfo");
-    const WEBAPP_URL = "YOUR_WEBAPP_URL"; // replace with deployed script URL
+<script>
+const consentPopup = document.getElementById("consentPopup");
+const dashboard = document.getElementById("dashboard");
+const investorInfo = document.getElementById("investorInfo");
+const logoutBtn = document.getElementById("logoutBtn");
 
-    // On load: check localStorage first
-    window.onload = async function() {
-      let email = localStorage.getItem("investorEmail");
-      if (email) {
-        await fetchInvestorData(email);
+// Your WebApp URL
+const scriptURL = "https://script.google.com/macros/s/AKfycbzH9_aevj4qyuJd0laAwvT1jn6j6T-pdy_wPllEItuPZoIjPm8gm87L92MsHQ_cqgIQ/exec";
+
+// ✅ After consent form submission
+document.getElementById("consentForm").addEventListener("submit", function(e){
+  let email = document.querySelector("input[name=email]").value;
+  localStorage.setItem("investorEmail", email);
+
+  setTimeout(() => {
+    consentPopup.style.display = "none";
+    dashboard.style.display = "block";
+    loadInvestorInfo(email); // fetch name/email from Sheet
+    alert("Consent recorded successfully!");
+  }, 800);
+});
+
+// ✅ On page load, check login
+window.onload = function() {
+  let email = localStorage.getItem("investorEmail");
+  if (email) {
+    consentPopup.style.display = "none";
+    dashboard.style.display = "block";
+    loadInvestorInfo(email); // fetch official record
+  } else {
+    consentPopup.style.display = "flex";
+  }
+};
+
+// ✅ Fetch investor record from Sheet
+function loadInvestorInfo(email) {
+  fetch(scriptURL + "?email=" + encodeURIComponent(email))
+    .then(r => r.json())
+    .then(data => {
+      if (data.exists) {
+        investorInfo.textContent = data.name 
+          ? `${data.name} (${data.email})`
+          : data.email;
       } else {
-        consentPopup.style.display = "flex";
+        investorInfo.textContent = email;
       }
-    };
-
-    // Fetch investor details from Google Sheet
-    async function fetchInvestorData(email) {
-      try {
-        const res = await fetch(`${WEBAPP_URL}?email=${encodeURIComponent(email)}`);
-        const data = await res.json();
-        if (data.success) {
-          investorInfo.textContent = `${data.name} (${data.email})`;
-          dashboard.style.display = "block";
-          consentPopup.style.display = "none";
-        } else {
-          consentPopup.style.display = "flex";
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        consentPopup.style.display = "flex";
-      }
-    }
-
-    // Handle consent submit
-    document.getElementById("consentForm").addEventListener("submit", function(e) {
-      let email = document.querySelector("input[name=email]").value;
-      let name = document.querySelector("input[name=name]").value;
-
-      localStorage.setItem("investorEmail", email);
-      localStorage.setItem("investorName", name);
-
-      setTimeout(() => {
-        fetchInvestorData(email);
-        alert("Consent recorded successfully!");
-      }, 800);
+    })
+    .catch(err => {
+      console.error("Error fetching investor info:", err);
+      investorInfo.textContent = email;
     });
+}
 
-    // Tab switching
-    const buttons = document.querySelectorAll("nav button");
-    const tabs = document.querySelectorAll(".tab");
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        buttons.forEach(b => b.classList.remove("active"));
-        tabs.forEach(t => t.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
-      });
-    });
+// ✅ Tab switching
+const buttons = document.querySelectorAll("nav button");
+const tabs = document.querySelectorAll(".tab");
 
-    // Logout clears consent
-    logoutBtn.addEventListener("click", () => {
-      localStorage.clear();
-      dashboard.style.display = "none";
-      consentPopup.style.display = "flex";
-      investorInfo.textContent = "";
-      alert("You have logged out. Please provide consent again to continue.");
-    });
-  </script>
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    buttons.forEach(b => b.classList.remove("active"));
+    tabs.forEach(t => t.classList.remove("active"));
+
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+// ✅ Logout
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("investorEmail");
+  dashboard.style.display = "none";
+  consentPopup.style.display = "flex";
+  investorInfo.textContent = "";
+  alert("You have logged out. Please provide consent again to continue.");
+});
+</script>
+
 </body>
 </html>
