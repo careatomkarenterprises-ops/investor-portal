@@ -1461,13 +1461,21 @@ document.getElementById('consentForm').addEventListener('submit', function(e) {
   .then(r=>r.json())
   .then(data=>{
     if(data.success){
+      // New investor created
+      localStorage.setItem("investorEmail", email);
+      consentPopup.style.display="none";
+      fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
+        .then(r=>r.json())
+        .then(showDashboard);
+    } else if (data.message && data.message.includes("already exists")) {
+      // Investor exists -> load dashboard anyway
       localStorage.setItem("investorEmail", email);
       consentPopup.style.display="none";
       fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
         .then(r=>r.json())
         .then(showDashboard);
     } else {
-      alert(data.message);
+      alert(data.message || "Error saving consent.");
     }
   })
   .catch(err=>alert("Error saving consent. Please try again."));
