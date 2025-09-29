@@ -1,0 +1,348 @@
+:root {
+  --primary: #0A2540;
+  --secondary: #C9A227;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --success: #28a745;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --gray: #6c757d;
+  --light-gray: #e9ecef;
+}
+
+body { 
+  background-color: var(--light); 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-card { 
+  border-radius: 1rem; 
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); 
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+#consentPopup { 
+  display: none; 
+  position: fixed; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  background: rgba(0,0,0,0.7); 
+  align-items:center; 
+  justify-content:center; 
+  z-index:9999; 
+}
+
+#consentBox { 
+  background:#fff; 
+  padding:30px; 
+  border-radius:15px; 
+  width:90%; 
+  max-width:600px; 
+  text-align:center; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#consentBox input, #consentBox button { 
+  width: 100%; 
+  margin: 10px 0; 
+  padding:12px; 
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+#consentBox button { 
+  background:var(--primary); 
+  color:#fff; 
+  border:none; 
+  font-weight: 600;
+  cursor:pointer; 
+  transition: all 0.3s;
+}
+
+#consentBox button:hover { 
+  background:var(--secondary); 
+  color:#000; 
+}
+
+.navbar-header { 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+  margin-bottom:20px; 
+  padding: 15px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.navbar-header h2 { 
+  margin:0; 
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.nav-tabs .nav-link {
+  color: var(--gray);
+  font-weight: 500;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px 8px 0 0;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary);
+  background-color: white;
+  border-bottom: 3px solid var(--secondary);
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--primary);
+  border-color: transparent;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stat-card h5 {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.stat-card h3 {
+  color: var(--primary);
+  font-weight: 700;
+  margin: 0;
+}
+
+.investment-item {
+  border-left: 4px solid var(--secondary);
+  padding: 15px;
+  margin-bottom: 15px;
+  background: white;
+  border-radius: 0 8px 8px 0;
+}
+
+.investment-item h6 {
+  margin: 0 0 5px 0;
+  color: var(--primary);
+}
+
+.investment-item p {
+  margin: 0;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.badge-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success);
+}
+
+.badge-pending {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: var(--warning);
+}
+
+.badge-completed {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: var(--gray);
+}
+
+.timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--light-gray);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--secondary);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--secondary);
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+.timeline-content {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--secondary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.alert-custom {
+  border-left: 4px solid var(--secondary);
+  border-radius: 8px;
+}
+
+.hot-deal-card {
+  border: 1px solid var(--secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.hot-deal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(201, 162, 39, 0.2);
+}
+
+.hot-deal-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--danger);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.faq-item {
+  margin-bottom: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.faq-question {
+  background: white;
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.faq-answer {
+  background: var(--light-gray);
+  padding: 0 15px;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+  padding: 15px;
+  max-height: 500px;
+}
+
+.footer {
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid var(--light-gray);
+  color: var(--gray);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.legal-text {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: left;
+  background: #fff8e1;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--warning);
+}
+
+.risk-warning {
+  background: #fff3cd;
+  border-color: var(--warning);
+  color: #856404;
+}
+
+@media (max-width: 768px) {
+  .navbar-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .navbar-header h2 {
+    margin-bottom: 10px;
+  }
+  
+  .nav-tabs .nav-link {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  
+  #consentBox {
+    padding: 20px;
+    margin: 20px;
+  }
+}
