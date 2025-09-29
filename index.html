@@ -1453,16 +1453,6 @@ document.getElementById('consentForm').addEventListener('submit', function(e) {
   const phone = document.getElementById('phone').value;
   const consent = true;
 
-  // In a real implementation, you would send this data to your backend
-  // For this demo, we'll simulate a successful submission
-  setTimeout(() => {
-    localStorage.setItem("investorEmail", email);
-    consentPopup.style.display = "none";
-    showDashboard({...mockInvestorData, name, email, phone});
-  }, 1000);
-  
-  // Real implementation would be:
-  /*
   fetch(scriptURL, {
     method: "POST",
     headers: {"Content-Type":"application/x-www-form-urlencoded"},
@@ -1470,14 +1460,17 @@ document.getElementById('consentForm').addEventListener('submit', function(e) {
   })
   .then(r=>r.json())
   .then(data=>{
-    localStorage.setItem("investorEmail", email);
-    consentPopup.style.display="none";
-    fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
-      .then(r=>r.json())
-      .then(showDashboard);
+    if(data.success){
+      localStorage.setItem("investorEmail", email);
+      consentPopup.style.display="none";
+      fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
+        .then(r=>r.json())
+        .then(showDashboard);
+    } else {
+      alert(data.message);
+    }
   })
   .catch(err=>alert("Error saving consent. Please try again."));
-  */
 });
 </script>
 </body>
