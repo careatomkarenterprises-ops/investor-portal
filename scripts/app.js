@@ -1,4 +1,4 @@
-// scripts/app.js - COMPLETE WORKING VERSION
+// scripts/app.js - COMPLETE WORKING VERSION (READY TO DEPLOY)
 class ChartManager {
     constructor() {
         this.charts = {};
@@ -161,7 +161,7 @@ const chartManager = new ChartManager();
 // Main application JavaScript
 class InvestorDashboard {
     constructor() {
-        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL AFTER DEPLOYMENT
+        // ✅ YOUR ACTUAL GOOGLE APPS SCRIPT URL - ALREADY UPDATED
         this.scriptURL = "https://script.google.com/macros/s/AKfycbwDI4zbTKZDPupfMQGVyTWKSC264583ppfxCHY4_dtadWQ4_HWaNdnoUigDJE19P5Lt/exec";
         this.currentInvestor = null;
         this.isDemoMode = false;
@@ -212,7 +212,10 @@ class InvestorDashboard {
         submitBtn.disabled = true;
 
         try {
-            // Try to save to Google Sheets
+            console.log('=== STARTING CONSENT PROCESS ===');
+            console.log('Sending data to:', this.scriptURL);
+            console.log('Data:', { name, email, phone });
+            
             const formData = new URLSearchParams();
             formData.append('name', name);
             formData.append('email', email);
@@ -228,17 +231,18 @@ class InvestorDashboard {
             });
             
             const data = await response.json();
-            console.log('Response from server:', data);
+            console.log('✅ Response from Google Apps Script:', data);
             
             if (data.success) {
                 localStorage.setItem("investorEmail", email);
                 document.getElementById('consentPopup').style.display = "none";
-                this.loadInvestorData(email);
+                await this.loadInvestorData(email);
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Unknown error from server');
             }
         } catch (error) {
-            console.error("Error saving consent:", error);
+            console.error("❌ Error saving consent:", error);
+            alert("Connection issue: " + error.message + ". Using demo mode.");
             // Fallback to demo mode
             this.isDemoMode = true;
             localStorage.setItem("investorEmail", email);
@@ -278,19 +282,23 @@ class InvestorDashboard {
 
     async loadInvestorData(email) {
         try {
-            const response = await fetch(`${this.scriptURL}?email=${encodeURIComponent(email)}`);
+            console.log('🔄 Loading investor data for:', email);
+            const url = `${this.scriptURL}?email=${encodeURIComponent(email)}`;
+            console.log('📡 Fetching from:', url);
+            
+            const response = await fetch(url);
             const data = await response.json();
+            console.log('✅ Investor data response:', data);
             
             if (data.success && data.exists) {
                 this.currentInvestor = data;
+                this.isDemoMode = false;
                 this.showDashboard();
             } else {
-                // Use demo data if real data not available
-                this.isDemoMode = true;
-                this.useDemoData("Demo User", email, "+91 XXXXX XXXXX");
+                throw new Error(data.message || 'Investor data not found');
             }
         } catch (error) {
-            console.error("Error loading investor data:", error);
+            console.error("❌ Error loading investor data:", error);
             // Use demo data on error
             this.isDemoMode = true;
             this.useDemoData("Demo User", email, "+91 XXXXX XXXXX");
