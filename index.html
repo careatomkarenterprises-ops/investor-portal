@@ -1262,11 +1262,34 @@ async function loadOverviewData() {
 
 // Load investor data
 
-async function loadInvestorData(email) {
+async loadInvestorData(email) {
   try {
-    const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
+    console.log('🔄 Loading investor data for:', email);
+    const url = `${this.scriptURL}?email=${encodeURIComponent(email)}`;
+    console.log('📡 Fetching from:', url);
+    
+    const response = await fetch(url);
     const data = await response.json();
-
+    console.log('✅ FULL RESPONSE FROM GOOGLE SHEETS:', data);
+    
+    if (data.success) {
+      if (data.exists) {
+        // Data is now directly in the response, not nested under 'investor'
+        this.currentInvestor = data;
+        console.log('📊 CURRENT INVESTOR DATA:', this.currentInvestor);
+        this.showDashboard();
+      } else {
+        throw new Error(data.message || 'Investor not found in Google Sheets');
+      }
+    } else {
+      throw new Error(data.message || 'Failed to load data from Google Sheets');
+    }
+  } catch (error) {
+    console.error("❌ Error loading investor data:", error);
+    alert("Failed to load investor data: " + error.message);
+    this.showConsentPopup();
+  }
+}
     if (data.success) {
       const inv = data.investor;
 
