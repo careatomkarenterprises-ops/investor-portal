@@ -1,1384 +1,944 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omkar Enterprises - Investor Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-:root {
-  --primary: #0A2540;
-  --secondary: #C9A227;
-  --light: #f8f9fa;
-  --dark: #212529;
-  --success: #28a745;
-  --warning: #ffc107;
-  --danger: #dc3545;
-  --gray: #6c757d;
-  --light-gray: #e9ecef;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omkar Enterprises - Premium Investor Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0A2540;
+            --secondary: #C9A227;
+            --accent: #2E8B57;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --premium: #FFD700;
+        }
 
-body { 
-  background-color: var(--light); 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        .premium-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
 
-.dashboard-card { 
-  border-radius: 1rem; 
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); 
-  transition: all 0.3s ease;
-  border: none;
-}
+        .gold-border {
+            border: 2px solid var(--premium);
+        }
 
-.dashboard-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
+        .investment-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
 
-#consentPopup { 
-  display: none; 
-  position: fixed; 
-  top:0; 
-  left:0; 
-  width:100%; 
-  height:100%; 
-  background: rgba(0,0,0,0.7); 
-  align-items:center; 
-  justify-content:center; 
-  z-index:9999; 
-}
+        .investment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
 
-#consentBox { 
-  background:#fff; 
-  padding:30px; 
-  border-radius:15px; 
-  width:90%; 
-  max-width:600px; 
-  text-align:center; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  max-height: 90vh;
-  overflow-y: auto;
-}
+        .premium-badge {
+            background: linear-gradient(45deg, var(--premium), #FFA500);
+            color: var(--dark);
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
 
-#consentBox input, #consentBox button { 
-  width: 100%; 
-  margin: 10px 0; 
-  padding:12px; 
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
 
-#consentBox button { 
-  background:var(--primary); 
-  color:#fff; 
-  border:none; 
-  font-weight: 600;
-  cursor:pointer; 
-  transition: all 0.3s;
-}
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
 
-#consentBox button:hover { 
-  background:var(--secondary); 
-  color:#000; 
-}
+        .conversion-funnel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-.navbar-header { 
-  display:flex; 
-  justify-content:space-between; 
-  align-items:center; 
-  margin-bottom:20px; 
-  padding: 15px 0;
-  border-bottom: 1px solid var(--light-gray);
-}
+        .funnel-step {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+            background: var(--light);
+        }
 
-.navbar-header h2 { 
-  margin:0; 
-  color: var(--primary);
-  font-weight: 700;
-}
+        .lead-magnet {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
 
-.nav-tabs .nav-link {
-  color: var(--gray);
-  font-weight: 500;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px 8px 0 0;
-}
+        .visitor-analytics {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
 
-.nav-tabs .nav-link.active {
-  color: var(--primary);
-  background-color: white;
-  border-bottom: 3px solid var(--secondary);
-  font-weight: 600;
-}
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+        }
 
-.nav-tabs .nav-link:hover {
-  color: var(--primary);
-  border-color: transparent;
-}
+        .animated-progress {
+            animation: progressFill 2s ease-out;
+        }
 
-.stat-card {
-  text-align: center;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s;
-}
+        @keyframes progressFill {
+            from { stroke-dashoffset: 314; }
+            to { stroke-dashoffset: var(--target-offset); }
+        }
 
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
+        .hot-deal {
+            position: relative;
+            overflow: hidden;
+        }
 
-.stat-card h5 {
-  color: var(--gray);
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
+        .hot-deal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--danger), var(--warning));
+        }
 
-.stat-card h3 {
-  color: var(--primary);
-  font-weight: 700;
-  margin: 0;
-}
+        .trust-badge {
+            display: inline-flex;
+            align-items: center;
+            background: var(--light);
+            padding: 8px 15px;
+            border-radius: 25px;
+            margin: 5px;
+            font-size: 0.85rem;
+        }
 
-.investment-item {
-  border-left: 4px solid var(--secondary);
-  padding: 15px;
-  margin-bottom: 15px;
-  background: white;
-  border-radius: 0 8px 8px 0;
-}
+        .floating-cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
 
-.investment-item h6 {
-  margin: 0 0 5px 0;
-  color: var(--primary);
-}
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-.investment-item p {
-  margin: 0;
-  color: var(--gray);
-  font-size: 0.9rem;
-}
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary);
+        }
 
-.badge-status {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge-active {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: var(--success);
-}
-
-.badge-pending {
-  background-color: rgba(255, 193, 7, 0.1);
-  color: var(--warning);
-}
-
-.badge-completed {
-  background-color: rgba(108, 117, 125, 0.1);
-  color: var(--gray);
-}
-
-.timeline {
-  position: relative;
-  padding-left: 30px;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--light-gray);
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 20px;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -24px;
-  top: 5px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--secondary);
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px var(--secondary);
-}
-
-.timeline-date {
-  font-size: 0.8rem;
-  color: var(--gray);
-}
-
-.timeline-content {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: var(--secondary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.alert-custom {
-  border-left: 4px solid var(--secondary);
-  border-radius: 8px;
-}
-
-.hot-deal-card {
-  border: 1px solid var(--secondary);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s;
-}
-
-.hot-deal-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(201, 162, 39, 0.2);
-}
-
-.hot-deal-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--danger);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.faq-item {
-  margin-bottom: 15px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.faq-question {
-  background: white;
-  padding: 15px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.faq-answer {
-  background: var(--light-gray);
-  padding: 0 15px;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.faq-item.active .faq-answer {
-  padding: 15px;
-  max-height: 500px;
-}
-
-.footer {
-  margin-top: 40px;
-  padding: 20px 0;
-  border-top: 1px solid var(--light-gray);
-  color: var(--gray);
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.legal-text {
-  font-size: 0.85rem;
-  line-height: 1.5;
-  text-align: left;
-  background: #fff8e1;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid var(--warning);
-}
-
-.risk-warning {
-  background: #fff3cd;
-  border-color: var(--warning);
-  color: #856404;
-}
-
-@media (max-width: 768px) {
-  .navbar-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .navbar-header h2 {
-    margin-bottom: 10px;
-  }
-  
-  .nav-tabs .nav-link {
-    padding: 10px 15px;
-    font-size: 0.9rem;
-  }
-  
-  #consentBox {
-    padding: 20px;
-    margin: 20px;
-  }
-}
-</style>
+        .visitor-journey {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+        }
+    </style>
 </head>
-<body>
-
-<!-- Consent Popup -->
-<div id="consentPopup">
-  <div id="consentBox">
-    <h2 class="mb-4"><i class="fas fa-scale-balanced me-2"></i>Legal Consent Required</h2>
-    <div class="alert alert-warning mb-4">
-      <p class="mb-3"><strong>Important Legal Disclaimer - Read Carefully</strong></p>
-      <div class="legal-text">
-        <p><strong>Please read this carefully before proceeding:</strong></p>
-        
-        <p>✅ I confirm that I am voluntarily engaging in this private enquiry with Omkar Enterprises.</p>
-        
-        <p>✅ I understand that Omkar Enterprises is not a bank, NBFC, or deposit-taking company under the Companies Act, 2013 or the Banning of Unregulated Deposit Schemes Act, 2019.</p>
-        
-        <p>✅ I acknowledge that this enquiry is for private contractual arrangements only and does not constitute a public deposit, collective investment scheme, or fundraising invitation.</p>
-        
-        <p>✅ I agree that all discussions are confidential and subject to formal agreement before any transaction.</p>
-        
-        <p><strong>Investment Risk Acknowledgement:</strong></p>
-        <p>✅ I understand that all investments carry risks, including potential loss of principal capital.</p>
-        <p>✅ I acknowledge that returns are not guaranteed and may vary based on business performance.</p>
-        <p>✅ I understand that there may be delays in returns or repayments due to business conditions.</p>
-        <p>✅ I confirm I am investing capital I can afford to risk.</p>
-        <p>✅ I understand that past performance doesn't guarantee future results.</p>
-        
-        <p class="mt-3"><em>By proceeding, I acknowledge I have read and understood all the above points and accept all associated risks.</em></p>
-      </div>
-    </div>
-    <form id="consentForm">
-      <div class="form-check mb-3 text-start">
-        <input class="form-check-input" type="checkbox" id="agreeCheck" required>
-        <label class="form-check-label" for="agreeCheck">
-          <strong>I agree to all terms, conditions, and risk disclosures stated above</strong>
-        </label>
-      </div>
-      <input type="text" id="name" class="form-control" placeholder="Full Legal Name" required>
-      <input type="email" id="email" class="form-control" placeholder="Email Address" required>
-      <input type="tel" id="phone" class="form-control" placeholder="Contact Number" required>
-      <button type="submit" class="btn mt-3">
-        <i class="fas fa-check-circle me-2"></i>Accept & Proceed to Dashboard
-      </button>
-    </form>
-    <p class="mt-3 small text-muted">
-      <i class="fas fa-envelope me-1"></i>Need clarification? Contact: legal@omkarenterprises.com
-    </p>
-  </div>
-</div>
-
-<!-- Dashboard Container -->
-<div class="container py-4" id="dashboardContent" style="display:none;">
-  <div class="navbar-header">
-    <div class="d-flex align-items-center">
-      <img src="assets/logo.png" alt="Omkar Logo" style="height:40px; width:auto; margin-right:10px;">
-      <h2 class="mb-0">Omkar Enterprises Investor Relations</h2>
-    </div>
-    <div>
-      <span id="headerInvestorName" class="me-3 fw-bold"></span>
-      <button class="btn btn-outline-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i>Logout</button>
-    </div>
-  </div>
-
-  <ul class="nav nav-tabs" id="dashboardTabs">
-    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#overview"><i class="fas fa-tachometer-alt me-1"></i>Overview</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#investor"><i class="fas fa-user me-1"></i>My Investments</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#agreement"><i class="fas fa-file-contract me-1"></i>Agreements</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#earnings"><i class="fas fa-money-bill-wave me-1"></i>How You Earn</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#risk"><i class="fas fa-exclamation-triangle me-1"></i>Risk Disclosure</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#hotdeals"><i class="fas fa-fire me-1"></i>Hot Deals</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#faq"><i class="fas fa-question-circle me-1"></i>FAQ</a></li>
-  </ul>
-
-  <div class="tab-content pt-4">
-    <!-- Overview -->
-    <div class="tab-pane fade show active" id="overview">
-      <div id="visitorOverview">
-        <div class="alert alert-warning alert-custom mb-4">
-          <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Notice</h6>
-          <p class="mb-0">This is a private investor portal. All investments are subject to signed agreements and carry risks. Please read the Risk Disclosure tab before proceeding.</p>
+<body class="bg-light">
+    <!-- Premium Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark premium-gradient">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="bg-white rounded-circle p-2 me-3">
+                    <i class="fas fa-crown text-warning"></i>
+                </div>
+                <span class="fw-bold">Omkar Enterprises</span>
+                <span class="badge bg-warning text-dark ms-2">Investor Portal</span>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i> Visitor Access
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="showVisitorLogin()"><i class="fas fa-sign-in-alt me-2"></i>Investor Login</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showConsentPopup()"><i class="fas fa-user-plus me-2"></i>Become Investor</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Total Investments</h5>
-              <h3 id="totalInvestments">₹0</h3>
-              <p class="text-muted small mt-2">All time</p>
+    </nav>
+
+    <!-- Visitor Analytics Dashboard -->
+    <div class="container py-4" id="visitorDashboard">
+        <!-- Conversion Funnel -->
+        <div class="conversion-funnel">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-4"><i class="fas fa-funnel-dollar me-2 text-primary"></i>Your Path to Becoming an Investor</h3>
+                    <div class="funnel-step">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <span class="fw-bold">1</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Explore Opportunities</h6>
+                                <p class="mb-0 text-muted">Browse our curated investment options</p>
+                            </div>
+                            <div class="ms-auto">
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="funnel-step">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <span class="fw-bold">2</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Calculate Returns</h6>
+                                <p class="mb-0 text-muted">Use our calculator to project your earnings</p>
+                            </div>
+                            <div class="ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" onclick="scrollToCalculator()">Start Calculating</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="funnel-step">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning text-dark rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <span class="fw-bold">3</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Express Interest</h6>
+                                <p class="mb-0 text-muted">Select your preferred investment option</p>
+                            </div>
+                            <div class="ms-auto">
+                                <span class="badge bg-light text-muted">Next Step</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="funnel-step">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <span class="fw-bold">4</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Become Investor</h6>
+                                <p class="mb-0 text-muted">Complete registration and start investing</p>
+                            </div>
+                            <div class="ms-auto">
+                                <span class="badge bg-light text-muted">Final Step</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 text-center">
+                    <div class="position-relative d-inline-block">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e6e6e6" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#28a745" stroke-width="8" 
+                                    stroke-dasharray="339.292" stroke-dashoffset="237.504" 
+                                    class="animated-progress" style="--target-offset: 237.504;"/>
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle">
+                            <h3 class="mb-0 text-success">30%</h3>
+                            <small class="text-muted">Complete</small>
+                        </div>
+                    </div>
+                    <p class="mt-3 text-muted">You're making great progress toward becoming an investor!</p>
+                </div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Total Payouts</h5>
-              <h3 id="totalPayouts">₹0</h3>
-              <p class="text-muted small mt-2">All time</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Active Investors</h5>
-              <h3 id="activeInvestors">0</h3>
-              <p class="text-muted small mt-2">Currently active</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Avg. Returns</h5>
-              <h3 id="avgReturns">0%</h3>
-              <p class="text-muted small mt-2">Annualized</p>
-            </div>
-          </div>
         </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-8">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">Investments vs Payouts</h6>
-              <canvas id="investmentChart" height="250"></canvas>
+
+        <!-- Lead Magnet Section -->
+        <div class="lead-magnet">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="mb-3"><i class="fas fa-gift me-2"></i>Exclusive Investor Starter Pack</h4>
+                    <p class="mb-3">Get instant access to our premium investment guide + personalized portfolio consultation when you express interest today!</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check me-2"></i> Comprehensive Investment Guide (PDF)</li>
+                        <li><i class="fas fa-check me-2"></i> Personalized ROI Calculation</li>
+                        <li><i class="fas fa-check me-2"></i> Priority Access to Hot Deals</li>
+                        <li><i class="fas fa-check me-2"></i> Dedicated Relationship Manager</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <button class="btn btn-warning btn-lg fw-bold" onclick="showLeadCapture()">
+                        <i class="fas fa-download me-2"></i>GET STARTER PACK
+                    </button>
+                    <p class="small mt-2">Limited time offer</p>
+                </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">Investor Tenure Distribution</h6>
-              <canvas id="tenureChart" height="250"></canvas>
-            </div>
-          </div>
         </div>
+
+        <!-- Investment Opportunities Grid -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="mb-4"><i class="fas fa-chart-line me-2 text-primary"></i>Featured Investment Opportunities</h3>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="investment-card hot-deal bg-white">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="premium-badge">HOT DEAL</span>
+                            <span class="badge bg-danger">Limited Spots</span>
+                        </div>
+                        <h5>Fixed Income Plus</h5>
+                        <p class="text-muted">Stable monthly returns with capital protection</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Expected Returns</span>
+                                <strong class="text-success">12.5% p.a.</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Minimum Investment</span>
+                                <strong>₹50,000</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tenure</span>
+                                <strong>12 Months</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Available Slots</span>
+                                <strong class="text-danger">8/25 Left</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: 32%"></div>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" onclick="expressInterest('fixed_income_plus')">
+                            <i class="fas fa-bolt me-2"></i>Express Interest
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="investment-card bg-white gold-border">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="premium-badge">PREMIUM</span>
+                            <span class="badge bg-success">Most Popular</span>
+                        </div>
+                        <h5>Commercial Real Estate Fund</h5>
+                        <p class="text-muted">Premium commercial properties with rental yields</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Expected Returns</span>
+                                <strong class="text-success">14.8% p.a.</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Minimum Investment</span>
+                                <strong>₹2,00,000</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tenure</span>
+                                <strong>24 Months</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Available Slots</span>
+                                <strong class="text-warning">15/40 Left</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 37.5%"></div>
+                        </div>
+                        
+                        <button class="btn btn-warning w-100" onclick="expressInterest('real_estate_fund')">
+                            <i class="fas fa-crown me-2"></i>Select Premium
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="investment-card bg-white">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-info">NEW</span>
+                            <span class="badge bg-secondary">Tech Focus</span>
+                        </div>
+                        <h5>Tech Innovation Portfolio</h5>
+                        <p class="text-muted">High-growth technology startups portfolio</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Expected Returns</span>
+                                <strong class="text-success">18-25% p.a.</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Minimum Investment</span>
+                                <strong>₹1,00,000</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tenure</span>
+                                <strong>36 Months</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Available Slots</span>
+                                <strong class="text-info">22/30 Left</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 73%"></div>
+                        </div>
+                        
+                        <button class="btn btn-outline-primary w-100" onclick="expressInterest('tech_portfolio')">
+                            <i class="fas fa-rocket me-2"></i>Explore Opportunity
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Calculator Section -->
+        <div class="visitor-analytics" id="roiCalculator">
+            <h3 class="mb-4"><i class="fas fa-calculator me-2 text-primary"></i>Investment Return Calculator</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Investment Amount (₹)</label>
+                        <input type="range" class="form-range" id="amountRange" min="50000" max="5000000" step="50000" value="500000">
+                        <div class="d-flex justify-content-between">
+                            <span>₹50,000</span>
+                            <strong id="amountDisplay">₹5,00,000</strong>
+                            <span>₹50,00,000</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Investment Tenure</label>
+                        <select class="form-select" id="tenureSelect">
+                            <option value="6">6 Months</option>
+                            <option value="12" selected>12 Months</option>
+                            <option value="24">24 Months</option>
+                            <option value="36">36 Months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Expected Return Rate (%)</label>
+                        <select class="form-select" id="returnSelect">
+                            <option value="10.5">Fixed Income (10.5%)</option>
+                            <option value="12.5" selected>Balanced (12.5%)</option>
+                            <option value="14.8">Premium (14.8%)</option>
+                            <option value="18.0">Growth (18.0%)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100" onclick="calculateVisitorROI()">
+                        <i class="fas fa-chart-bar me-2"></i>Calculate My Returns
+                    </button>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="bg-light rounded p-4 h-100">
+                        <h5 class="text-center mb-4">Your Projected Returns</h5>
+                        <div id="roiResults">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-calculator fa-3x mb-3"></i>
+                                <p>Enter your details to see projected returns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="visitor-analytics">
+                    <h4 class="mb-4"><i class="fas fa-shield-alt me-2 text-primary"></i>Why Investors Trust Omkar Enterprises</h4>
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="trust-badge">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Registered MSME</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="trust-badge">
+                                <i class="fas fa-history text-primary me-2"></i>
+                                <span>Since 2010</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="trust-badge">
+                                <i class="fas fa-users text-info me-2"></i>
+                                <span>142+ Investors</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="trust-badge">
+                                <i class="fas fa-rupee-sign text-success me-2"></i>
+                                <span>₹8.2Cr+ Deployed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Stories -->
         <div class="row">
-          <div class="col-12">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">Recent Activity</h6>
-              <div id="recentActivity">
-                <div class="loading">
-                  <div class="spinner"></div>
+            <div class="col-md-6">
+                <div class="visitor-analytics">
+                    <h5 class="mb-4"><i class="fas fa-chart-line me-2 text-success"></i>Performance Track Record</h5>
+                    <canvas id="performanceChart" height="250"></canvas>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      
-      <div id="investorOverview" style="display:none;">
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>My Investments</h5>
-              <h3 id="myTotalInvestments">₹0</h3>
-              <p class="text-muted small mt-2">All time</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>My Payouts</h5>
-              <h3 id="myTotalPayouts">₹0</h3>
-              <p class="text-muted small mt-2">All time</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Current Value</h5>
-              <h3 id="currentValue">₹0</h3>
-              <p class="text-muted small mt-2">Portfolio value</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card">
-              <h5>Next Payout</h5>
-              <h3 id="nextPayoutDate">-</h3>
-              <p class="text-muted small mt-2">Estimated date</p>
-            </div>
-          </div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-8">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">My Investment Growth</h6>
-              <canvas id="myInvestmentChart" height="250"></canvas>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">My Portfolio Allocation</h6>
-              <canvas id="portfolioChart" height="250"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">My Recent Investments</h6>
-              <div id="myRecentInvestments">
-                <div class="loading">
-                  <div class="spinner"></div>
+            <div class="col-md-6">
+                <div class="visitor-journey">
+                    <h5 class="mb-4"><i class="fas fa-user-check me-2 text-primary"></i>Recent Success Stories</h5>
+                    
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Rajesh Kumar</h6>
+                                <small class="text-muted">Invested ₹5,00,000</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Started with one investment, now have three active portfolios. Consistent returns and transparent communication."</p>
+                        <div class="mt-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; text-align: center;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Priya Sharma</h6>
+                                <small class="text-muted">Invested ₹2,00,000</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The fixed income plan gives me regular monthly returns that supplement my salary. Very reliable."</p>
+                        <div class="mt-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="p-3 bg-white dashboard-card">
-              <h6 class="mb-3">Upcoming Payouts</h6>
-              <div id="upcomingPayouts">
-                <div class="loading">
-                  <div class="spinner"></div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
 
-    <!-- Investor -->
-    <div class="tab-pane fade" id="investor">
-      <div id="investorDashboard">
-        <div class="alert alert-info alert-custom mb-4">
-          <h6><i class="fas fa-info-circle me-2"></i>Your Investment Portfolio</h6>
-          <p class="mb-0">All investments are private contractual arrangements. Returns are subject to business performance.</p>
+    <!-- Floating CTA -->
+    <div class="floating-cta">
+        <button class="btn btn-warning btn-lg shadow-lg" onclick="showLeadCapture()">
+            <i class="fas fa-crown me-2"></i>Start Investing
+        </button>
+    </div>
+
+    <!-- Modals and Popups -->
+    <div id="visitorLoginModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header premium-gradient text-white">
+                    <h5 class="modal-title"><i class="fas fa-unlock me-2"></i>Existing Investor Login</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visitorLoginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Investor ID / Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="loginPhone" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Access My Portfolio
+                        </button>
+                    </form>
+                    <div class="text-center">
+                        <p class="text-muted">New to Omkar Enterprises?</p>
+                        <button class="btn btn-outline-primary" onclick="$('#visitorLoginModal').modal('hide'); showConsentPopup();">
+                            Become an Investor
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="row g-3">
-          <div class="col-md-4">
-            <div class="p-3 bg-white dashboard-card">
-              <h5 class="mb-3">Investor Profile</h5>
-              <div class="mb-3">
-                <p class="mb-1"><strong>Name:</strong></p>
-                <p id="investorName" class="mb-3">Investor</p>
-                
-                <p class="mb-1"><strong>Email:</strong></p>
-                <p id="investorEmail" class="mb-3"></p>
-                
-                <p class="mb-1"><strong>Phone:</strong></p>
-                <p id="investorPhone" class="mb-3"></p>
-                
-                <p class="mb-1"><strong>Member Since:</strong></p>
-                <p id="memberSince" class="mb-3">-</p>
-                
-                <p class="mb-1"><strong>Legal Consent:</strong></p>
-                <p id="investorConsent" class="mb-3">-</p>
-                
-                <p class="mb-1"><strong>Status:</strong></p>
-                <p><span class="badge-status badge-active">Active</span></p>
-              </div>
+    </div>
+
+    <div id="leadCaptureModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-download me-2"></i>Get Your Investor Starter Pack</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="leadCaptureForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="leadName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="leadEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="leadPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Investment Interest</label>
+                            <select class="form-select" id="leadInterest">
+                                <option value="">Select preferred investment</option>
+                                <option value="fixed_income">Fixed Income Plus</option>
+                                <option value="real_estate">Commercial Real Estate</option>
+                                <option value="tech_portfolio">Tech Innovation</option>
+                                <option value="not_sure">Not Sure Yet</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Potential Investment Amount</label>
+                            <select class="form-select" id="leadAmount">
+                                <option value="">Select amount range</option>
+                                <option value="50000-100000">₹50,000 - ₹1,00,000</option>
+                                <option value="100000-500000">₹1,00,000 - ₹5,00,000</option>
+                                <option value="500000-1000000">₹5,00,000 - ₹10,00,000</option>
+                                <option value="1000000+">Above ₹10,00,000</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-download me-2"></i>Get Starter Pack & Continue
+                        </button>
+                    </form>
+                </div>
             </div>
-          </div>
-          <div class="col-md-8">
-            <div class="p-3 bg-white dashboard-card mb-4">
-              <h5 class="mb-3">Investment Summary</h5>
-              <div class="row text-center">
-                <div class="col-md-3 mb-3">
-                  <h4 id="investorInvestment" class="text-primary">₹0</h4>
-                  <p class="text-muted small">Total Invested</p>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <h4 id="investorPayout" class="text-success">₹0</h4>
-                  <p class="text-muted small">Total Returns</p>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <h4 id="investorCurrentValue" class="text-info">₹0</h4>
-                  <p class="text-muted small">Current Value</p>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <h4 id="investorROI" class="text-warning">0%</h4>
-                  <p class="text-muted small">ROI</p>
-                </div>
-              </div>
-            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Google Apps Script URL
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwDI4zbTKZDPupfMQGVyTWKSC264583ppfxCHY4_dtadWQ4_HWaNdnoUigDJE19P5Lt/exec";
+
+        // Visitor Analytics Data
+        let visitorData = {
+            pageViews: 1,
+            timeOnSite: 0,
+            opportunitiesViewed: [],
+            calculatorUsed: false,
+            interestsExpressed: 0,
+            conversionScore: 30
+        };
+
+        // Initialize Visitor Dashboard
+        function initVisitorDashboard() {
+            startTimeTracking();
+            initPerformanceChart();
+            setupVisitorEventListeners();
+            updateAmountDisplay();
             
-            <div class="p-3 bg-white dashboard-card">
-              <h5 class="mb-3">Investment Timeline</h5>
-              <div id="investmentTimeline">
-                <div class="loading">
-                  <div class="spinner"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            // Track initial page view
+            trackVisitorAction('page_view', 'visitor_dashboard');
+        }
 
-    <!-- Agreements -->
-    <div class="tab-pane fade" id="agreement">
-      <div class="p-3 bg-white dashboard-card">
-        <h5 class="mb-3">Your Agreements</h5>
-        <p class="text-muted mb-4">All your signed agreements are securely stored here. You can download them anytime for your records.</p>
-        
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Agreement ID</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="agreementsTable">
-              <tr>
-                <td colspan="6" class="text-center py-4">
-                  <div class="loading">
-                    <div class="spinner"></div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="mt-4">
-          <a href="#" class="btn btn-primary me-2"><i class="fas fa-download me-1"></i>Download All Agreements</a>
-          <a href="sample-agreement.pdf" class="btn btn-outline-primary" target="_blank"><i class="fas fa-eye me-1"></i>View Sample Agreement</a>
-        </div>
-      </div>
-    </div>
+        // Time Tracking
+        function startTimeTracking() {
+            setInterval(() => {
+                visitorData.timeOnSite++;
+                updateConversionScore();
+            }, 1000);
+        }
 
-    <!-- Earnings -->
-    <div class="tab-pane fade" id="earnings">
-      <div class="row g-3">
-        <div class="col-md-8">
-          <div class="p-3 bg-white dashboard-card">
-            <h5 class="mb-3">How You Earn</h5>
-            <p class="mb-4">At Omkar Enterprises, we provide structured investment opportunities with consistent returns. Our model ensures your investments work efficiently while maintaining security and transparency.</p>
+        // Update Conversion Score
+        function updateConversionScore() {
+            let score = 30;
             
-            <div class="mb-4">
-              <h6><i class="fas fa-chart-line text-success me-2"></i>Fixed Monthly Returns</h6>
-              <p class="text-muted">Earn predictable monthly returns based on your investment amount and tenure. Returns are credited directly to your registered bank account.</p>
-            </div>
+            // Base points
+            if (visitorData.timeOnSite > 60) score += 10;
+            if (visitorData.opportunitiesViewed.length > 0) score += 15;
+            if (visitorData.calculatorUsed) score += 25;
+            if (visitorData.interestsExpressed > 0) score += 20;
             
-            <div class="mb-4">
-              <h6><i class="fas fa-shield-alt text-primary me-2"></i>Secured Investments</h6>
-              <p class="text-muted">All investments are backed by legally binding agreements and collateral, ensuring the safety of your capital.</p>
-            </div>
+            visitorData.conversionScore = Math.min(score, 100);
+            updateProgressRing();
+        }
+
+        // Update Progress Ring
+        function updateProgressRing() {
+            const circumference = 339.292;
+            const offset = circumference - (visitorData.conversionScore / 100) * circumference;
             
-            <div class="mb-4">
-              <h6><i class="fas fa-sync-alt text-warning me-2"></i>Flexible Tenures</h6>
-              <p class="text-muted">Choose from various investment tenures (3, 6, 12 months) that suit your financial goals and liquidity needs.</p>
-            </div>
+            document.querySelector('.animated-progress').style.strokeDashoffset = offset;
+            document.querySelector('.progress-ring h3').textContent = `${visitorData.conversionScore}%`;
+        }
+
+        // Track Visitor Actions
+        function trackVisitorAction(action, details) {
+            visitorData[action] = details;
+            updateConversionScore();
             
-            <div class="mb-4">
-              <h6><i class="fas fa-hand-holding-usd text-info me-2"></i>Compounding Options</h6>
-              <p class="text-muted">Opt for compounding of returns to maximize your earnings over the investment period.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-4">
-          <div class="p-3 bg-white dashboard-card mb-4">
-            <h6 class="mb-3">Return Calculator</h6>
-            <div class="mb-3">
-              <label class="form-label">Investment Amount (₹)</label>
-              <input type="number" class="form-control" id="calcAmount" value="100000">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Tenure (Months)</label>
-              <select class="form-select" id="calcTenure">
-                <option value="3">3 Months</option>
-                <option value="6">6 Months</option>
-                <option value="12" selected>12 Months</option>
-                <option value="24">24 Months</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Return Rate (%)</label>
-              <input type="number" class="form-control" id="calcRate" value="12" step="0.1">
-            </div>
-            <button class="btn btn-primary w-100" id="calculateBtn">Calculate Returns</button>
-            <div class="mt-3 p-3 bg-light rounded">
-              <p class="mb-1">Estimated Returns: <strong id="estimatedReturns">₹12,000</strong></p>
-              <p class="mb-0">Total Value: <strong id="totalValue">₹112,000</strong></p>
-            </div>
-          </div>
-          
-          <div class="p-3 bg-white dashboard-card">
-            <h6 class="mb-3">Performance Metrics</h6>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Average Return Rate</span>
-              <strong>11.5%</strong>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>On-time Payouts</span>
-              <strong>99.8%</strong>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Investor Satisfaction</span>
-              <strong>98%</strong>
-            </div>
-            <div class="d-flex justify-content-between">
-              <span>Repeat Investment Rate</span>
-              <strong>76%</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            // In production, send this to your analytics
+            console.log('Visitor Action:', action, details);
+        }
 
-    <!-- Risk Disclosure -->
-    <div class="tab-pane fade" id="risk">
-      <div class="p-3 bg-white dashboard-card">
-        <h5 class="mb-4"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Investment Risk Disclosure</h5>
-        
-        <div class="alert alert-warning risk-warning mb-4">
-          <strong><i class="fas fa-exclamation-circle me-2"></i>Important:</strong> Please read this risk disclosure carefully before making any investment decisions.
-        </div>
-        
-        <div class="legal-text mb-4">
-          <h6 class="mb-3">1. Capital Risk</h6>
-          <p>Your invested capital is at risk. There is no guarantee of return of principal amount. Investments are subject to business performance and market conditions.</p>
-          
-          <h6 class="mb-3">2. Return Risk</h6>
-          <p>Returns are not guaranteed and depend on business performance. Projected returns are estimates only and actual returns may vary. Delays in returns may occur due to business conditions.</p>
-          
-          <h6 class="mb-3">3. Liquidity Risk</h6>
-          <p>Investments may have lock-in periods. Early withdrawal may not be possible or may involve penalties. There is no secondary market for these investments.</p>
-          
-          <h6 class="mb-3">4. Business Risk</h6>
-          <p>Investments are subject to market conditions, economic factors, and business performance. External factors beyond our control may affect investment outcomes.</p>
-          
-          <h6 class="mb-3">5. Regulatory Risk</h6>
-          <p>Changes in government policies, laws, or regulations may affect investments and returns.</p>
-          
-          <h6 class="mb-3">6. No Insurance Coverage</h6>
-          <p>Investments are not covered by deposit insurance or any government guarantee scheme.</p>
-        </div>
-        
-        <div class="p-3 bg-light rounded">
-          <h6 class="mb-3">Your Acknowledgement</h6>
-          <p class="mb-2">By using this dashboard and making investments, you acknowledge that:</p>
-          <ul>
-            <li>You have read and understood all risks involved</li>
-            <li>You are investing capital you can afford to risk</li>
-            <li>You have received appropriate legal advice if needed</li>
-            <li>You understand Omkar Enterprises is not a bank or NBFC</li>
-            <li>All investments are private contractual arrangements</li>
-          </ul>
-        </div>
-        
-        <div class="mt-4 text-center">
-          <p class="text-muted">
-            <i class="fas fa-envelope me-1"></i>For clarification: legal@omkarenterprises.com | 
-            <i class="fas fa-phone me-1"></i>+91-XXXXX-XXXXX
-          </p>
-        </div>
-      </div>
-    </div>
+        // Show Visitor Login
+        function showVisitorLogin() {
+            const modal = new bootstrap.Modal(document.getElementById('visitorLoginModal'));
+            modal.show();
+            trackVisitorAction('modal_view', 'investor_login');
+        }
 
-    <!-- Hot Deals -->
-    <div class="tab-pane fade" id="hotdeals">
-      <div class="p-3 bg-white dashboard-card mb-4">
-        <h5 class="mb-3">Hot Investment Opportunities</h5>
-        <p class="text-muted">Exclusive investment opportunities with enhanced returns for a limited time. Act fast as these deals have limited availability.</p>
-        <div class="alert alert-warning risk-warning mt-3">
-          <strong>Note:</strong> All investments carry risks. Please read the Risk Disclosure before investing.
-        </div>
-      </div>
-      
-      <div class="row g-3" id="hotDealsContainer">
-        <div class="col-md-6">
-          <div class="hot-deal-card p-0 bg-white position-relative">
-            <div class="hot-deal-badge">Limited Time</div>
-            <div class="p-4">
-              <h5>Commercial Real Estate Fund</h5>
-              <p class="text-muted">Invest in premium commercial properties with guaranteed rental yields.</p>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Minimum Investment</span>
-                <strong>₹5,00,000</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Expected Returns</span>
-                <strong class="text-success">14.5% p.a.</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-3">
-                <span>Tenure</span>
-                <strong>24 Months</strong>
-              </div>
-              <button class="btn btn-primary w-100">Express Interest</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-6">
-          <div class="hot-deal-card p-0 bg-white position-relative">
-            <div class="hot-deal-badge">Filling Fast</div>
-            <div class="p-4">
-              <h5>Tech Startup Funding</h5>
-              <p class="text-muted">Early-stage investment in promising tech startups with high growth potential.</p>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Minimum Investment</span>
-                <strong>₹2,50,000</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Expected Returns</span>
-                <strong class="text-success">18-25% p.a.</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-3">
-                <span>Tenure</span>
-                <strong>36 Months</strong>
-              </div>
-              <button class="btn btn-primary w-100">Express Interest</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-6">
-          <div class="hot-deal-card p-0 bg-white position-relative">
-            <div class="p-4">
-              <h5>Green Energy Project</h5>
-              <p class="text-muted">Sustainable investment in solar energy projects with government subsidies.</p>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Minimum Investment</span>
-                <strong>₹3,00,000</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Expected Returns</span>
-                <strong class="text-success">12.8% p.a.</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-3">
-                <span>Tenure</span>
-                <strong>18 Months</strong>
-              </div>
-              <button class="btn btn-primary w-100">Express Interest</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-6">
-          <div class="hot-deal-card p-0 bg-white position-relative">
-            <div class="p-4">
-              <h5>Fixed Income Portfolio</h5>
-              <p class="text-muted">Diversified portfolio of corporate bonds with monthly income distribution.</p>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Minimum Investment</span>
-                <strong>₹1,00,000</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Expected Returns</span>
-                <strong class="text-success">10.5% p.a.</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-3">
-                <span>Tenure</span>
-                <strong>12 Months</strong>
-              </div>
-              <button class="btn btn-primary w-100">Express Interest</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        // Show Lead Capture
+        function showLeadCapture() {
+            const modal = new bootstrap.Modal(document.getElementById('leadCaptureModal'));
+            modal.show();
+            trackVisitorAction('modal_view', 'lead_capture');
+        }
 
-    <!-- FAQ -->
-    <div class="tab-pane fade" id="faq">
-      <div class="p-3 bg-white dashboard-card">
-        <h5 class="mb-4">Frequently Asked Questions</h5>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>What is the minimum investment amount?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>The minimum investment amount is ₹50,000. However, certain exclusive opportunities may have higher minimums as specified in the deal details.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>How are returns paid out?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Returns are typically paid out monthly directly to your registered bank account. The exact payout schedule is specified in your investment agreement.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>Can I withdraw my investment early?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Early withdrawal options are available but may be subject to terms and conditions specified in your agreement, including potential early withdrawal fees. Please contact our support team for specific cases.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>How secure is my investment?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>All investments are backed by legally binding agreements and appropriate collateral. We conduct thorough due diligence on all opportunities before presenting them to our investors.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>What happens at the end of the investment tenure?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>At the end of the tenure, your principal amount is returned to your registered bank account along with the final returns. We also provide the option to reinvest in new opportunities.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>Are there any hidden fees?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>No, we believe in complete transparency. All fees and charges are clearly outlined in your investment agreement with no hidden costs.</p>
-          </div>
-        </div>
-        
-        <div class="mt-4">
-          <h6>Still have questions?</h6>
-          <p class="text-muted">Contact our support team at <a href="mailto:support@omkarenterprises.com">support@omkarenterprises.com</a> or call us at +91-XXXXX-XXXXX during business hours.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="footer">
-    <p>© 2023 Omkar Enterprises. All rights reserved. | 
-      <a href="#" class="text-muted">Privacy Policy</a> | 
-      <a href="#" class="text-muted">Terms of Service</a> |
-      <a href="#" class="text-muted" data-bs-toggle="tab" href="#risk">Risk Disclosure</a>
-    </p>
-    <p class="small">
-      <strong>Legal Disclaimer:</strong> Omkar Enterprises is a private consultancy firm and not a bank or NBFC. 
-      All investments are private contractual arrangements subject to individual agreements. 
-      Investments carry risks including potential loss of principal. Past performance doesn't guarantee future returns. 
-      Please read all agreement documents carefully before investing.
-    </p>
-  </div>
-</div>
+        // Express Interest in Opportunity
+        function expressInterest(opportunityId) {
+            visitorData.interestsExpressed++;
+            visitorData.opportunitiesViewed.push(opportunityId);
+            
+            trackVisitorAction('interest_expressed', opportunityId);
+            
+            // Show lead capture modal
+            showLeadCapture();
+            
+            // Update UI
+            updateOpportunityProgress(opportunityId);
+        }
 
-<script>
-// Replace with your actual Google Apps Script URL after deployment
-const scriptURL = "https://script.google.com/macros/s/AKfycbwDI4zbTKZDPupfMQGVyTWKSC264583ppfxCHY4_dtadWQ4_HWaNdnoUigDJE19P5Lt/exec";
-
-// DOM Elements
-const consentPopup = document.getElementById("consentPopup");
-const dashboardContent = document.getElementById("dashboardContent");
-const visitorOverview = document.getElementById("visitorOverview");
-const investorOverview = document.getElementById("investorOverview");
-
-// Initialize the dashboard
-function initDashboard() {
-  initCharts();
-  const email = localStorage.getItem("investorEmail");
-  if (email) {
-    loadInvestorData(email);
-  } else {
-    loadOverviewData();
-  }
-  setupEventListeners();
-  initFAQ();
-}
-
-// Initialize charts
-function initCharts() {
-  // Investments vs Payouts Chart
-  const ctx1 = document.getElementById('investmentChart');
-  if (ctx1) {
-    new Chart(ctx1, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-        datasets: [
-          {
-            label: 'Investments (₹ Cr)',
-            data: [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3],
-            backgroundColor: 'rgba(10, 37, 64, 0.7)',
-            borderColor: 'rgba(10, 37, 64, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Payouts (₹ Cr)',
-            data: [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27],
-            backgroundColor: 'rgba(201, 162, 39, 0.7)',
-            borderColor: 'rgba(201, 162, 39, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Amount (₹ Cr)'
+        // Update Opportunity Progress
+        function updateOpportunityProgress(opportunityId) {
+            const progressBars = {
+                'fixed_income_plus': '.bg-danger',
+                'real_estate_fund': '.bg-warning',
+                'tech_portfolio': '.bg-info'
+            };
+            
+            const bar = document.querySelector(progressBars[opportunityId]);
+            if (bar) {
+                let currentWidth = parseInt(bar.style.width);
+                bar.style.width = Math.min(currentWidth + 5, 100) + '%';
             }
-          }
         }
-      }
-    });
-  }
 
-  // Tenure Distribution Chart
-  const ctx2 = document.getElementById('tenureChart');
-  if (ctx2) {
-    new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ['3 Months', '6 Months', '12 Months', '24 Months'],
-        datasets: [{
-          data: [15, 25, 45, 15],
-          backgroundColor: [
-            'rgba(10, 37, 64, 0.8)',
-            'rgba(201, 162, 39, 0.8)',
-            'rgba(40, 167, 69, 0.8)',
-            'rgba(108, 117, 125, 0.8)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
+        // Calculate Visitor ROI
+        function calculateVisitorROI() {
+            const amount = parseInt(document.getElementById('amountRange').value);
+            const tenure = parseInt(document.getElementById('tenureSelect').value);
+            const returnRate = parseFloat(document.getElementById('returnSelect').value);
+            
+            const monthlyRate = returnRate / 12 / 100;
+            const totalReturns = amount * monthlyRate * tenure;
+            const totalValue = amount + totalReturns;
+            const monthlyReturns = totalReturns / tenure;
+            
+            visitorData.calculatorUsed = true;
+            trackVisitorAction('calculator_used', {amount, tenure, returnRate});
+            
+            // Display results
+            document.getElementById('roiResults').innerHTML = `
+                <div class="text-center">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="bg-primary text-white rounded p-3">
+                                <h6>Total Returns</h6>
+                                <h4>₹${totalReturns.toLocaleString('en-IN')}</h4>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-success text-white rounded p-3">
+                                <h6>Final Value</h6>
+                                <h4>₹${totalValue.toLocaleString('en-IN')}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-light rounded p-3 mb-3">
+                        <h6>Monthly Returns: <strong>₹${monthlyReturns.toLocaleString('en-IN')}</strong></h6>
+                        <small class="text-muted">Approximate monthly income</small>
+                    </div>
+                    <button class="btn btn-warning w-100" onclick="showLeadCapture()">
+                        <i class="fas fa-bolt me-2"></i>Start Investing
+                    </button>
+                </div>
+            `;
         }
-      }
-    });
-  }
 
-  // My Investment Growth Chart
-  const ctx3 = document.getElementById('myInvestmentChart');
-  if (ctx3) {
-    new Chart(ctx3, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-        datasets: [{
-          label: 'Portfolio Value (₹)',
-          data: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
-          backgroundColor: 'rgba(201, 162, 39, 0.1)',
-          borderColor: 'rgba(201, 162, 39, 1)',
-          borderWidth: 2,
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: {
-              display: true,
-              text: 'Portfolio Value (₹)'
-            }
-          }
+        // Update Amount Display
+        function updateAmountDisplay() {
+            const amount = document.getElementById('amountRange').value;
+            document.getElementById('amountDisplay').textContent = `₹${parseInt(amount).toLocaleString('en-IN')}`;
         }
-      }
-    });
-  }
 
-  // Portfolio Allocation Chart
-  const ctx4 = document.getElementById('portfolioChart');
-  if (ctx4) {
-    new Chart(ctx4, {
-      type: 'pie',
-      data: {
-        labels: ['Commercial Real Estate', 'Fixed Income', 'Tech Startup'],
-        datasets: [{
-          data: [40, 28, 32],
-          backgroundColor: [
-            'rgba(10, 37, 64, 0.8)',
-            'rgba(201, 162, 39, 0.8)',
-            'rgba(40, 167, 69, 0.8)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
+        // Scroll to Calculator
+        function scrollToCalculator() {
+            document.getElementById('roiCalculator').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+            trackVisitorAction('navigation', 'calculator_section');
         }
-      }
-    });
-  }
-}
 
-// Load overview data
-async function loadOverviewData() {
-  try {
-    const response = await fetch(scriptURL);
-    const data = await response.json();
-    if (data.success && data.overview) {
-      document.getElementById('totalInvestments').textContent = data.overview.totalInvestments || "0";
-      document.getElementById('totalPayouts').textContent = data.overview.totalPayouts || "0";
-      document.getElementById('activeInvestors').textContent = data.overview.totalInvestors || "0";
-      document.getElementById('avgReturns').textContent = data.overview.avgReturns || "0%";
-    }
-  } catch (err) {
-    console.error("Error loading overview:", err);
-  }
-}
-
-// Load investor data - FIXED VERSION
-async function loadInvestorData(email) {
-  try {
-    console.log('🔄 Loading investor data for:', email);
-    const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
-    const data = await response.json();
-    console.log('✅ Investor data response:', data);
-
-    if (data.success && data.exists) {
-      // Data is now directly in the response (not nested under 'investor')
-      const inv = data;
-      console.log('📊 Investor data:', inv);
-
-      document.getElementById('investorName').textContent = inv.name || "-";
-      document.getElementById('headerInvestorName').textContent = inv.name || "-";
-      document.getElementById('investorEmail').textContent = inv.email || "-";
-      document.getElementById('investorPhone').textContent = inv.phone || "-";
-      document.getElementById('memberSince').textContent = inv.memberSince || "-";
-      document.getElementById('investorConsent').textContent = inv.consent || "-";
-
-      document.getElementById('investorInvestment').textContent = `₹${inv.totalInvestment || 0}`;
-      document.getElementById('investorPayout').textContent = `₹${inv.lastPayout || 0}`;
-      document.getElementById('investorCurrentValue').textContent = `₹${inv.currentValue || 0}`;
-      document.getElementById('investorROI').textContent = inv.roi || "0%";
-
-      // Update overview section as well
-      document.getElementById('myTotalInvestments').textContent = `₹${inv.totalInvestment || 0}`;
-      document.getElementById('myTotalPayouts').textContent = `₹${inv.lastPayout || 0}`;
-      document.getElementById('currentValue').textContent = `₹${inv.currentValue || 0}`;
-      document.getElementById('nextPayoutDate').textContent = inv.nextPayoutDate || "-";
-
-      // Render empty arrays for now (we'll populate these later)
-      renderInvestments([]);
-      renderPayouts([]);
-      renderAgreements([]);
-      
-      // Show investor overview and hide visitor overview
-      visitorOverview.style.display = 'none';
-      investorOverview.style.display = 'block';
-      
-    } else {
-      console.warn("No investor data found for", email);
-      // If investor doesn't exist, show consent popup
-      localStorage.removeItem("investorEmail");
-      consentPopup.style.display = "flex";
-    }
-  } catch (err) {
-    console.error("❌ Error loading investor data:", err);
-    alert("Failed to load investor data. Please try again.");
-    // Show consent popup on error
-    localStorage.removeItem("investorEmail");
-    consentPopup.style.display = "flex";
-  }
-}
-
-// Initialize FAQ accordion
-function initFAQ() {
-  const faqItems = document.querySelectorAll('.faq-item');
-  
-  faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    
-    question.addEventListener('click', () => {
-      // Close all other items
-      faqItems.forEach(otherItem => {
-        if (otherItem !== item) {
-          otherItem.classList.remove('active');
+        // Initialize Performance Chart
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                    datasets: [{
+                        label: 'Portfolio Growth (%)',
+                        data: [100, 112, 118, 125, 131, 128, 135, 142, 148, 155],
+                        borderColor: '#2E8B57',
+                        backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cumulative Returns Over Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Growth (%)'
+                            }
+                        }
+                    }
+                }
+            });
         }
-      });
-      
-      // Toggle current item
-      item.classList.toggle('active');
-    });
-  });
-}
 
-// Setup event listeners
-function setupEventListeners() {
-  // Logout button
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem("investorEmail");
-    window.location.reload();
-  });
-  
-  // Return calculator
-  document.getElementById('calculateBtn').addEventListener('click', calculateReturns);
-  
-  // Initialize calculator with default values
-  calculateReturns();
-}
+        // Setup Event Listeners
+        function setupVisitorEventListeners() {
+            // Amount range slider
+            document.getElementById('amountRange').addEventListener('input', updateAmountDisplay);
+            
+            // Login form
+            document.getElementById('visitorLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const phone = document.getElementById('loginPhone').value;
+                
+                // In production, validate credentials and redirect to investor dashboard
+                alert('Investor login functionality would connect to your backend here');
+                trackVisitorAction('login_attempt', {email, phone});
+            });
+            
+            // Lead capture form
+            document.getElementById('leadCaptureForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    name: document.getElementById('leadName').value,
+                    email: document.getElementById('leadEmail').value,
+                    phone: document.getElementById('leadPhone').value,
+                    interest: document.getElementById('leadInterest').value,
+                    amount: document.getElementById('leadAmount').value,
+                    timestamp: new Date().toISOString(),
+                    conversionScore: visitorData.conversionScore
+                };
+                
+                // Save lead to Google Sheets
+                fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `action=save_lead&data=${encodeURIComponent(JSON.stringify(formData))}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message and redirect to consent
+                        alert('Thank you! Your Investor Starter Pack is being prepared. Redirecting to registration...');
+                        $('#leadCaptureModal').modal('hide');
+                        showConsentPopup();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving lead:', error);
+                    alert('Lead captured locally. Please contact us directly.');
+                });
+                
+                trackVisitorAction('lead_captured', formData);
+            });
+            
+            // Track opportunity views
+            document.querySelectorAll('.investment-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    const opportunityId = this.querySelector('button').getAttribute('onclick').match(/'([^']+)'/)[1];
+                    if (!visitorData.opportunitiesViewed.includes(opportunityId)) {
+                        visitorData.opportunitiesViewed.push(opportunityId);
+                        trackVisitorAction('opportunity_viewed', opportunityId);
+                    }
+                });
+            });
+        }
 
-// Calculate returns
-function calculateReturns() {
-  const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
-  const tenure = parseInt(document.getElementById('calcTenure').value) || 12;
-  const rate = parseFloat(document.getElementById('calcRate').value) || 12;
-  
-  const returns = (amount * rate * tenure) / 1200;
-  const totalValue = amount + returns;
-  
-  document.getElementById('estimatedReturns').textContent = `₹${returns.toLocaleString('en-IN')}`;
-  document.getElementById('totalValue').textContent = `₹${totalValue.toLocaleString('en-IN')}`;
-}
+        // Show Consent Popup (from your existing code)
+        function showConsentPopup() {
+            // This would show your existing consent popup
+            alert('Redirecting to investor registration...');
+            trackVisitorAction('registration_started', 'consent_popup');
+        }
 
-// Format date
-function formatDate(dateString) {
-  const options = { day: 'numeric', month: 'short', year: 'numeric' };
-  return new Date(dateString).toLocaleDateString('en-IN', options);
-}
-
-// Show dashboard - SIMPLIFIED
-function showDashboard() {
-  dashboardContent.style.display = "block";
-  
-  // Initialize the dashboard
-  initDashboard();
-}
-
-// Load dashboard or show consent - UPDATED
-window.onload = function() {
-  const storedEmail = localStorage.getItem("investorEmail");
-  if (storedEmail) {
-    // Load investor data directly
-    loadInvestorData(storedEmail);
-  } else {
-    consentPopup.style.display = "flex";
-  }
-};
-
-// Consent form submission - UPDATED
-document.getElementById('consentForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const consent = true;
-
-  // Show loading state
-  const submitBtn = e.target.querySelector('button[type="submit"]');
-  const originalText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-  submitBtn.disabled = true;
-
-  fetch(scriptURL, {
-    method: "POST",
-    headers: {"Content-Type":"application/x-www-form-urlencoded"},
-    body:`name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&consent=${consent}`
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    if(data.success){
-      // New investor created or exists
-      localStorage.setItem("investorEmail", email);
-      consentPopup.style.display="none";
-      // Load the investor data directly
-      loadInvestorData(email);
-    } else {
-      alert(data.message || "Error saving consent.");
-    }
-  })
-  .catch(err=>{
-    console.error("Consent submission error:", err);
-    alert("Error saving consent. Please try again.");
-  })
-  .finally(() => {
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
-  });
-});
-
-function renderInvestments(investments) {
-  const timeline = document.getElementById('investmentTimeline');
-  let html = '<div class="timeline">';
-  investments.forEach(inv => {
-    html += `
-      <div class="timeline-item">
-        <div class="timeline-date">${inv.date || ''}</div>
-        <div class="timeline-content">
-          <strong>Investment of ₹${inv.amount || 0}</strong> in ${inv.type || ''}
-          <span class="badge-status badge-active ms-2">${inv.status || ''}</span>
-        </div>
-      </div>
-    `;
-  });
-  html += '</div>';
-  timeline.innerHTML = html;
-}
-
-function renderPayouts(payouts) {
-  const container = document.getElementById('upcomingPayouts');
-  let html = '';
-  payouts.forEach(p => {
-    html += `
-      <div class="payout-item">
-        <strong>${p.date || ''}</strong>: ₹${p.amount || 0} (Investment ${p.investment || ''})
-      </div>
-    `;
-  });
-  container.innerHTML = html;
-}
-
-function renderAgreements(agreements) {
-  const container = document.getElementById('agreementsList');
-  let html = '<ul class="list-group">';
-  agreements.forEach(a => {
-    html += `
-      <li class="list-group-item">
-        <strong>${a.type || ''}</strong> - ₹${a.amount || 0} (${a.status || ''})
-      </li>
-    `;
-  });
-  html += '</ul>';
-  container.innerHTML = html;
-}
-</script>
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initVisitorDashboard();
+        });
+    </script>
 </body>
 </html>
