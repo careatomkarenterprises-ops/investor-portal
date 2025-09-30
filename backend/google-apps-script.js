@@ -1,196 +1,172 @@
-// Google Apps Script for Omkar Enterprises Investor Dashboard
-function doGet(e) {
-  return handleRequest(e);
-}
+// === CONFIGURATION ===
+const SHEET_ID = "YOUR_SHEET_ID_HERE"; // <--- Replace with your Google Sheet ID
 
+// Sheet names
+const SHEETS = {
+  investors: "Investors",
+  investments: "Investments",
+  payouts: "Payouts",
+  agreements: "Agreements",
+  legalConsents: "LegalConsents"
+};
+
+// === ENTRY POINTS ===
+
+// Handle POST (new investor consent)
 function doPost(e) {
-  return handleRequest(e);
-}
-
-function handleRequest(e) {
   try {
-    // Set CORS headers
-    var response = {
-      'contentType': 'application/json',
-      'headers': {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
+    const params = e.parameter;
+    const email = params.email;
+    const name = params.name;
+    const phone = params.phone;
+    const timestamp = params.timestamp;
+
+    if (!email || !name || !phone) {
+      return jsonResponse({ success: false, message: "Missing required fields" });
+    }
+
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const investorSheet = ss.getSheetByName(SHEETS.investors);
+
+    // Check if email already exists
+    const data = investorSheet.getDataRange().getValues();
+    let exists = false;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][1] === email) { // assuming 2nd col is email
+        exists = true;
+        break;
       }
-    };
+    }
 
-    var action = e.parameter.action;
-    var email = e.parameter.email;
-    
-    // Open the spreadsheet - REPLACE WITH YOUR ACTUAL SPREADSHEET ID
-    var sheet = SpreadsheetApp.openById('1kkZbYC3UzeFI47Iym8V8EQzz6Y2G_-t7dZk1V4VPKEM').getActiveSheet();
-    var data = sheet.getDataRange().getValues();
-    var headers = data[0];
-    
-    // Handle POST requests (consent form submission)
-    if (e.postData) {
-      var postData = JSON.parse(e.postData.contents);
-      return handleConsentSubmission(sheet, headers, postData, response);
+    if (!exists) {
+      investorSheet.appendRow([name, email, phone, timestamp, "consent given"]);
     }
-    
-    // Handle GET requests
-    if (email) {
-      return handleInvestorDataRequest(data, headers, email, response);
-    } else {
-      return handleOverviewDataRequest(data, headers, response);
-    }
-    
-  } catch (error) {
-    return createErrorResponse(error, response);
+
+    // Log consent separately
+    const consentSheet = ss.getSheetByName(SHEETS.legalConsents);
+    consentSheet.appendRow([name, email, phone, timestamp, "consent"]);
+
+    return jsonResponse({ success: true, message: exists ? "Investor already exists" : "New investor added" });
+  } catch (err) {
+    return jsonResponse({ success: false, message: err.message });
   }
 }
 
-function handleConsentSubmission(sheet, headers, postData, response) {
-  var email = postData.email;
-  var data = sheet.getDataRange().getValues();
-  
-  // Check if investor already exists
-  var existingInvestor = findInvestorByEmail(data, headers, email);
-  
-  if (existingInvestor) {
-    response.data = {
-      success: true,
-      message: "Investor already exists",
-      exists: true
-    };
-  } else {
-    // Add new investor with proper data structure
-    var newRow = [
-      new Date(), // Timestamp
-      postData.name,
-      postData.email,
-      postData.phone,
-      'Consent Given', // ConsentStatus
-      'Active', // Status
-      0, // TotalInvestment
-      0, // TotalPayouts
-      0, // CurrentPortfolioValue
-      '0%', // ROI
-      'Not Set', // NextPayoutDate
-      new Date().toLocaleDateString(), // MemberSince
-      JSON.stringify([]), // Investments
-      JSON.stringify([]), // UpcomingPayouts
-      JSON.stringify([]) // Agreements
-    ];
-    
-    sheet.appendRow(newRow);
-    response.data = {
-      success: true,
-      message: "Investor created successfully",
-      exists: false
-    };
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify(response.data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(response.headers);
-}
+// Handle GET (overview or investor data)
+function doGet(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const email = e.parameter.email;
 
-function handleInvestorDataRequest(data, headers, email, response) {
-  var investor = findInvestorByEmail(data, headers, email);
-  
-  if (investor) {
-    var investments = JSON.parse(investor[headers.indexOf('Investments')] || '[]');
-    var payouts = JSON.parse(investor[headers.indexOf('UpcomingPayouts')] || '[]');
-    var agreements = JSON.parse(investor[headers.indexOf('Agreements')] || '[]');
-    
-    response.data = {
-      success: true,
-      exists: true,
-      name: investor[headers.indexOf('Name')],
-      email: investor[headers.indexOf('Email')],
-      phone: investor[headers.indexOf('Phone')],
-      consent: investor[headers.indexOf('ConsentStatus')],
-      status: investor[headers.indexOf('Status')],
-      totalInvestment: investor[headers.indexOf('TotalInvestment')],
-      totalPayouts: investor[headers.indexOf('TotalPayouts')],
-      currentPortfolioValue: investor[headers.indexOf('CurrentPortfolioValue')],
-      roi: investor[headers.indexOf('ROI')],
-      nextPayoutDate: investor[headers.indexOf('NextPayoutDate')],
-      memberSince: investor[headers.indexOf('MemberSince')],
-      investments: investments,
-      upcomingPayouts: payouts,
-      agreements: agreements,
-      
-      // Chart data
-      investmentHistory: [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3],
-      payoutHistory: [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27],
-      tenureDistribution: [15, 25, 45, 15],
-      portfolioGrowth: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
-      portfolioAllocation: [40, 28, 32]
-    };
-  } else {
-    response.data = {
-      success: false,
-      exists: false,
-      message: "Investor not found"
-    };
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify(response.data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(response.headers);
-}
-
-function handleOverviewDataRequest(data, headers, response) {
-  var totalInvestors = data.length - 1; // exclude header
-  var totalInvestment = 0;
-  var totalPayouts = 0;
-  
-  for (var i = 1; i < data.length; i++) {
-    totalInvestment += Number(data[i][headers.indexOf('TotalInvestment')]) || 0;
-    totalPayouts += Number(data[i][headers.indexOf('TotalPayouts')]) || 0;
-  }
-  
-  response.data = {
-    success: true,
-    overview: {
-      totalInvestments: '₹' + (totalInvestment / 10000000).toFixed(1) + 'Cr',
-      totalPayouts: '₹' + (totalPayouts / 100000).toFixed(0) + 'L',
-      totalInvestors: totalInvestors,
-      avgReturns: '12.5%'
+    if (!email) {
+      // Visitor overview
+      return jsonResponse({ success: true, overview: getOverviewData(ss) });
     }
+
+    const investor = getInvestorByEmail(ss, email);
+    if (!investor) {
+      return jsonResponse({ success: false, message: "Investor not found" });
+    }
+
+    return jsonResponse({
+      success: true,
+      investor: investor,
+      investments: getInvestmentsByEmail(ss, email),
+      payouts: getPayoutsByEmail(ss, email),
+      agreements: getAgreementsByEmail(ss, email)
+    });
+  } catch (err) {
+    return jsonResponse({ success: false, message: err.message });
+  }
+}
+
+// === HELPERS ===
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getOverviewData(ss) {
+  // Dummy aggregator (replace with SUM formulas if you want live)
+  const investors = ss.getSheetByName(SHEETS.investors).getLastRow() - 1;
+  return {
+    totalInvestments: "₹2.8Cr",
+    totalPayouts: "₹32L",
+    totalInvestors: investors,
+    avgReturns: "12.5%"
   };
-  
-  return ContentService.createTextOutput(JSON.stringify(response.data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(response.headers);
 }
 
-function findInvestorByEmail(data, headers, email) {
-  var emailIndex = headers.indexOf('Email');
-  for (var i = 1; i < data.length; i++) {
-    if (data[i][emailIndex] === email) {
-      return data[i];
+function getInvestorByEmail(ss, email) {
+  const sheet = ss.getSheetByName(SHEETS.investors);
+  const rows = sheet.getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][1] === email) { // assuming col B = Email
+      return {
+        name: rows[i][0],
+        email: rows[i][1],
+        phone: rows[i][2],
+        memberSince: rows[i][3],
+        consent: rows[i][4],
+        totalInvestment: 500000, // placeholder, sum from investments
+        lastPayout: 20000,       // placeholder, from payouts
+        currentValue: 520000,    // placeholder
+        roi: "12%",
+        nextPayout: "2025-10-10" // placeholder
+      };
     }
   }
   return null;
 }
 
-function createErrorResponse(error, response) {
-  var errorResponse = {
-    success: false,
-    message: "Error: " + error.toString()
-  };
-  
-  return ContentService.createTextOutput(JSON.stringify(errorResponse))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(response.headers);
+function getInvestmentsByEmail(ss, email) {
+  const sheet = ss.getSheetByName(SHEETS.investments);
+  const rows = sheet.getDataRange().getValues();
+  let list = [];
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][1] === email) { // assume col B = email
+      list.push({
+        date: rows[i][0],
+        amount: rows[i][2],
+        type: rows[i][3],
+        status: rows[i][4]
+      });
+    }
+  }
+  return list;
 }
 
-// Handle preflight OPTIONS request
-function doOptions() {
-  return ContentService.createTextOutput(JSON.stringify({}))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '86400'
-    });
+function getPayoutsByEmail(ss, email) {
+  const sheet = ss.getSheetByName(SHEETS.payouts);
+  const rows = sheet.getDataRange().getValues();
+  let list = [];
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][1] === email) {
+      list.push({
+        date: rows[i][0],
+        amount: rows[i][2],
+        investment: rows[i][3]
+      });
+    }
+  }
+  return list;
+}
+
+function getAgreementsByEmail(ss, email) {
+  const sheet = ss.getSheetByName(SHEETS.agreements);
+  const rows = sheet.getDataRange().getValues();
+  let list = [];
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][1] === email) {
+      list.push({
+        id: rows[i][0],
+        date: rows[i][2],
+        type: rows[i][3],
+        amount: rows[i][4],
+        status: rows[i][5],
+        documentUrl: rows[i][6]
+      });
+    }
+  }
+  return list;
 }
