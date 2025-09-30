@@ -5,7 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Omkar Enterprises - Investor Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+function renderInvestments(investments) {
+  const timeline = document.getElementById('investmentTimeline');
+  let html = '<div class="timeline">';
+  investments.forEach(inv => {
+    html += `
+      <div class="timeline-item">
+        <div class="timeline-date">${inv.date || ''}</div>
+        <div class="timeline-content">
+          <strong>Investment of ₹${inv.amount || 0}</strong> in ${inv.type || ''}
+          <span class="badge-status badge-active ms-2">${inv.status || ''}</span>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  timeline.innerHTML = html;
+}
+
+function renderPayouts(payouts) {
+  const container = document.getElementById('upcomingPayouts');
+  let html = '';
+  payouts.forEach(p => {
+    html += `
+      <div class="payout-item">
+        <strong>${p.date || ''}</strong>: ₹${p.amount || 0} (Investment ${p.investment || ''})
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderAgreements(agreements) {
+  const container = document.getElementById('agreementsList');
+  let html = '<ul class="list-group">';
+  agreements.forEach(a => {
+    html += `
+      <li class="list-group-item">
+        <strong>${a.type || ''}</strong> - ₹${a.amount || 0} (${a.status || ''})
+      </li>
+    `;
+  });
+  html += '</ul>';
+  container.innerHTML = html;
+}
+
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
@@ -995,7 +1041,53 @@ body {
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+function renderInvestments(investments) {
+  const timeline = document.getElementById('investmentTimeline');
+  let html = '<div class="timeline">';
+  investments.forEach(inv => {
+    html += `
+      <div class="timeline-item">
+        <div class="timeline-date">${inv.date || ''}</div>
+        <div class="timeline-content">
+          <strong>Investment of ₹${inv.amount || 0}</strong> in ${inv.type || ''}
+          <span class="badge-status badge-active ms-2">${inv.status || ''}</span>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  timeline.innerHTML = html;
+}
+
+function renderPayouts(payouts) {
+  const container = document.getElementById('upcomingPayouts');
+  let html = '';
+  payouts.forEach(p => {
+    html += `
+      <div class="payout-item">
+        <strong>${p.date || ''}</strong>: ₹${p.amount || 0} (Investment ${p.investment || ''})
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderAgreements(agreements) {
+  const container = document.getElementById('agreementsList');
+  let html = '<ul class="list-group">';
+  agreements.forEach(a => {
+    html += `
+      <li class="list-group-item">
+        <strong>${a.type || ''}</strong> - ₹${a.amount || 0} (${a.status || ''})
+      </li>
+    `;
+  });
+  html += '</ul>';
+  container.innerHTML = html;
+}
+
+</script>
 <script>
 // Replace with your actual Google Apps Script URL after deployment
 const scriptURL = "https://script.google.com/macros/s/AKfycbwDI4zbTKZDPupfMQGVyTWKSC264583ppfxCHY4_dtadWQ4_HWaNdnoUigDJE19P5Lt/exec";
@@ -1007,9 +1099,9 @@ const visitorOverview = document.getElementById("visitorOverview");
 const investorOverview = document.getElementById("investorOverview");
 
 // Mock data for demonstration (will be replaced with real data from Google Sheets)
-// MOCK DATA REMOVED - switched to live Google Sheets data
+// MOCK INVESTOR DATA REMOVED - switched to live Google Sheets data
 
-// MOCK DATA REMOVED - switched to live Google Sheets data
+// MOCK OVERVIEW DATA REMOVED - switched to live Google Sheets data
 
 // Initialize the dashboard
 function initDashboard() {
@@ -1150,22 +1242,24 @@ function initCharts() {
 }
 
 // Load overview data
-
-async function loadOverviewData() {
-  try {
-    const response = await fetch(scriptURL);
-    const data = await response.json();
-
-    if (data.success && data.overview) {
-      const ov = data.overview;
-      document.getElementById('totalInvestments').textContent = ov.totalInvestments || "0";
-      document.getElementById('totalPayouts').textContent = ov.totalPayouts || "0";
-      document.getElementById('activeInvestors').textContent = ov.activeInvestors || "0";
-      document.getElementById('avgReturns').textContent = ov.avgReturns || "0%";
-    }
-  } catch (err) {
-    console.error("Error loading overview data:", err);
-  }
+function loadOverviewData() {
+  // Set overview stats
+  document.getElementById('totalInvestments').textContent = mockOverviewData.totalInvestments;
+  document.getElementById('totalPayouts').textContent = mockOverviewData.totalPayouts;
+  document.getElementById('activeInvestors').textContent = mockOverviewData.activeInvestors;
+  document.getElementById('avgReturns').textContent = mockOverviewData.avgReturns;
+  
+  // Set investor stats
+  document.getElementById('myTotalInvestments').textContent = `₹${mockInvestorData.totalInvestment}`;
+  document.getElementById('myTotalPayouts').textContent = `₹${mockInvestorData.lastPayout}`;
+  document.getElementById('currentValue').textContent = `₹${mockInvestorData.currentValue}`;
+  document.getElementById('nextPayoutDate').textContent = '5 Nov 2023';
+  
+  // Load recent activity
+  loadRecentActivity();
+  
+  // Load investor data
+  loadInvestorData();
 }
 
 // Load recent activity
@@ -1211,7 +1305,7 @@ async function loadInvestorData(email) {
     const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
     const data = await response.json();
 
-    if (data.success && data.investor) {
+    if (data.success) {
       const inv = data.investor;
 
       document.getElementById('investorName').textContent = inv.name || "-";
@@ -1225,8 +1319,12 @@ async function loadInvestorData(email) {
       document.getElementById('investorPayout').textContent = `₹${inv.lastPayout || 0}`;
       document.getElementById('investorCurrentValue').textContent = `₹${inv.currentValue || 0}`;
       document.getElementById('investorROI').textContent = inv.roi || "0%";
+
+      renderInvestments(data.investments || []);
+      renderPayouts(data.payouts || []);
+      renderAgreements(data.agreements || []);
     } else {
-      console.warn("No investor data found");
+      console.warn("No investor data found for", email);
     }
   } catch (err) {
     console.error("Error loading investor data:", err);
@@ -1445,6 +1543,52 @@ document.getElementById('consentForm').addEventListener('submit', function(e) {
   })
   .catch(err=>alert("Error saving consent. Please try again."));
 });
+
+function renderInvestments(investments) {
+  const timeline = document.getElementById('investmentTimeline');
+  let html = '<div class="timeline">';
+  investments.forEach(inv => {
+    html += `
+      <div class="timeline-item">
+        <div class="timeline-date">${inv.date || ''}</div>
+        <div class="timeline-content">
+          <strong>Investment of ₹${inv.amount || 0}</strong> in ${inv.type || ''}
+          <span class="badge-status badge-active ms-2">${inv.status || ''}</span>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  timeline.innerHTML = html;
+}
+
+function renderPayouts(payouts) {
+  const container = document.getElementById('upcomingPayouts');
+  let html = '';
+  payouts.forEach(p => {
+    html += `
+      <div class="payout-item">
+        <strong>${p.date || ''}</strong>: ₹${p.amount || 0} (Investment ${p.investment || ''})
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderAgreements(agreements) {
+  const container = document.getElementById('agreementsList');
+  let html = '<ul class="list-group">';
+  agreements.forEach(a => {
+    html += `
+      <li class="list-group-item">
+        <strong>${a.type || ''}</strong> - ₹${a.amount || 0} (${a.status || ''})
+      </li>
+    `;
+  });
+  html += '</ul>';
+  container.innerHTML = html;
+}
+
 </script>
 </body>
 </html>
