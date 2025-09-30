@@ -998,7 +998,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Replace with your actual Google Apps Script URL after deployment
-const scriptURL = "https://script.google.com/macros/s/AKfycbwsAG2uqUswgkZ8U3yhBUz7K9T5X9O_WZRssXEuQVcpxF7HGnPbQWkhf1dhj-_moDui/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbwDI4zbTKZDPupfMQGVyTWKSC264583ppfxCHY4_dtadWQ4_HWaNdnoUigDJE19P5Lt/exec";
 
 // DOM Elements
 const consentPopup = document.getElementById("consentPopup");
@@ -1007,42 +1007,9 @@ const visitorOverview = document.getElementById("visitorOverview");
 const investorOverview = document.getElementById("investorOverview");
 
 // Mock data for demonstration (will be replaced with real data from Google Sheets)
-const mockInvestorData = {
-  name: "Rahul Sharma",
-  email: "rahul.sharma@example.com",
-  phone: "+91 98765 43210",
-  consent: "LEGAL_CONSENT_ACCEPTED",
-  totalInvestment: "12,50,000",
-  lastPayout: "45,000",
-  currentValue: "13,75,000",
-  roi: "12.5%",
-  memberSince: "Jan 2022",
-  investments: [
-    { id: "INV001", date: "2023-01-15", amount: "5,00,000", type: "Commercial Real Estate", status: "Active" },
-    { id: "INV002", date: "2023-03-22", amount: "3,50,000", type: "Fixed Income", status: "Active" },
-    { id: "INV003", date: "2023-06-10", amount: "4,00,000", type: "Tech Startup", status: "Active" }
-  ],
-  payouts: [
-    { date: "2023-10-01", amount: "15,000", investment: "INV001" },
-    { date: "2023-09-01", amount: "15,000", investment: "INV001" },
-    { date: "2023-10-01", amount: "10,500", investment: "INV002" },
-    { date: "2023-09-01", amount: "10,500", investment: "INV002" },
-    { date: "2023-10-01", amount: "12,000", investment: "INV003" },
-    { date: "2023-09-01", amount: "12,000", investment: "INV003" }
-  ],
-  agreements: [
-    { id: "AGR001", date: "2023-01-15", type: "Commercial Real Estate", amount: "5,00,000", status: "Active" },
-    { id: "AGR002", date: "2023-03-22", type: "Fixed Income", amount: "3,50,000", status: "Active" },
-    { id: "AGR003", date: "2023-06-10", type: "Tech Startup", amount: "4,00,000", status: "Active" }
-  ]
-};
+// MOCK DATA REMOVED - switched to live Google Sheets data
 
-const mockOverviewData = {
-  totalInvestments: "₹8.75 Cr",
-  totalPayouts: "₹2.34 Cr",
-  activeInvestors: "342",
-  avgReturns: "11.5%"
-};
+// MOCK DATA REMOVED - switched to live Google Sheets data
 
 // Initialize the dashboard
 function initDashboard() {
@@ -1183,24 +1150,22 @@ function initCharts() {
 }
 
 // Load overview data
-function loadOverviewData() {
-  // Set overview stats
-  document.getElementById('totalInvestments').textContent = mockOverviewData.totalInvestments;
-  document.getElementById('totalPayouts').textContent = mockOverviewData.totalPayouts;
-  document.getElementById('activeInvestors').textContent = mockOverviewData.activeInvestors;
-  document.getElementById('avgReturns').textContent = mockOverviewData.avgReturns;
-  
-  // Set investor stats
-  document.getElementById('myTotalInvestments').textContent = `₹${mockInvestorData.totalInvestment}`;
-  document.getElementById('myTotalPayouts').textContent = `₹${mockInvestorData.lastPayout}`;
-  document.getElementById('currentValue').textContent = `₹${mockInvestorData.currentValue}`;
-  document.getElementById('nextPayoutDate').textContent = '5 Nov 2023';
-  
-  // Load recent activity
-  loadRecentActivity();
-  
-  // Load investor data
-  loadInvestorData();
+
+async function loadOverviewData() {
+  try {
+    const response = await fetch(scriptURL);
+    const data = await response.json();
+
+    if (data.success && data.overview) {
+      const ov = data.overview;
+      document.getElementById('totalInvestments').textContent = ov.totalInvestments || "0";
+      document.getElementById('totalPayouts').textContent = ov.totalPayouts || "0";
+      document.getElementById('activeInvestors').textContent = ov.activeInvestors || "0";
+      document.getElementById('avgReturns').textContent = ov.avgReturns || "0%";
+    }
+  } catch (err) {
+    console.error("Error loading overview data:", err);
+  }
 }
 
 // Load recent activity
@@ -1240,32 +1205,32 @@ function loadRecentActivity() {
 }
 
 // Load investor data
-function loadInvestorData() {
-  // Set investor profile
-  document.getElementById('investorName').textContent = mockInvestorData.name;
-  document.getElementById('headerInvestorName').textContent = mockInvestorData.name;
-  document.getElementById('investorEmail').textContent = mockInvestorData.email;
-  document.getElementById('investorPhone').textContent = mockInvestorData.phone;
-  document.getElementById('memberSince').textContent = mockInvestorData.memberSince;
-  document.getElementById('investorConsent').textContent = mockInvestorData.consent;
-  
-  // Set investment summary
-  document.getElementById('investorInvestment').textContent = `₹${mockInvestorData.totalInvestment}`;
-  document.getElementById('investorPayout').textContent = `₹${mockInvestorData.lastPayout}`;
-  document.getElementById('investorCurrentValue').textContent = `₹${mockInvestorData.currentValue}`;
-  document.getElementById('investorROI').textContent = mockInvestorData.roi;
-  
-  // Load investment timeline
-  loadInvestmentTimeline();
-  
-  // Load recent investments
-  loadRecentInvestments();
-  
-  // Load upcoming payouts
-  loadUpcomingPayouts();
-  
-  // Load agreements
-  loadAgreements();
+
+async function loadInvestorData(email) {
+  try {
+    const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
+    const data = await response.json();
+
+    if (data.success && data.investor) {
+      const inv = data.investor;
+
+      document.getElementById('investorName').textContent = inv.name || "-";
+      document.getElementById('headerInvestorName').textContent = inv.name || "-";
+      document.getElementById('investorEmail').textContent = inv.email || "-";
+      document.getElementById('investorPhone').textContent = inv.phone || "-";
+      document.getElementById('memberSince').textContent = inv.memberSince || "-";
+      document.getElementById('investorConsent').textContent = inv.consent || "-";
+
+      document.getElementById('investorInvestment').textContent = `₹${inv.totalInvestment || 0}`;
+      document.getElementById('investorPayout').textContent = `₹${inv.lastPayout || 0}`;
+      document.getElementById('investorCurrentValue').textContent = `₹${inv.currentValue || 0}`;
+      document.getElementById('investorROI').textContent = inv.roi || "0%";
+    } else {
+      console.warn("No investor data found");
+    }
+  } catch (err) {
+    console.error("Error loading investor data:", err);
+  }
 }
 
 // Load investment timeline
