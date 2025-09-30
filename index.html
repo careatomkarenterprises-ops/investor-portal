@@ -1258,40 +1258,7 @@ async function loadOverviewData() {
 }
 
 // Load recent activity
-function loadRecentActivity() {
-  const recentActivity = document.getElementById('recentActivity');
-  
-  setTimeout(() => {
-    recentActivity.innerHTML = `
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-date">Today</div>
-          <div class="timeline-content">
-            <strong>New investment</strong> of ₹4,00,000 in Tech Startup funding
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2 days ago</div>
-          <div class="timeline-content">
-            <strong>Payout processed</strong> of ₹37,500 for October returns
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">1 week ago</div>
-          <div class="timeline-content">
-            <strong>New investor onboarded</strong> with initial investment of ₹7,50,000
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2 weeks ago</div>
-          <div class="timeline-content">
-            <strong>Agreement renewed</strong> for Commercial Real Estate Fund
-          </div>
-        </div>
-      </div>
-    `;
-  }, 1000);
-}
+// REMOVED OLD MOCK FUNCTION
 
 // Load investor data
 
@@ -1327,18 +1294,7 @@ async function loadInvestorData(email) {
 }
 
 // Load investment timeline
-function loadInvestmentTimeline() {
-  const timeline = document.getElementById('investmentTimeline');
-  
-  setTimeout(() => {
-    let timelineHTML = '<div class="timeline">';
-    
-    mockInvestorData.investments.forEach(inv => {
-      timelineHTML += `
-        <div class="timeline-item">
-          <div class="timeline-date">${formatDate(inv.date)}</div>
-          <div class="timeline-content">
-            <strong>Investment of ₹${inv.amount}</strong> in ${inv.type}
+// REMOVED OLD MOCK FUNCTION
             <span class="badge-status badge-active ms-2">${inv.status}</span>
           </div>
         </div>
@@ -1351,76 +1307,13 @@ function loadInvestmentTimeline() {
 }
 
 // Load recent investments
-function loadRecentInvestments() {
-  const container = document.getElementById('myRecentInvestments');
-  
-  setTimeout(() => {
-    let html = '';
-    
-    mockInvestorData.investments.forEach(inv => {
-      html += `
-        <div class="investment-item">
-          <h6>${inv.type}</h6>
-          <p>Amount: ₹${inv.amount} | Date: ${formatDate(inv.date)}</p>
-          <span class="badge-status badge-active">${inv.status}</span>
-        </div>
-      `;
-    });
-    
-    container.innerHTML = html;
-  }, 1000);
-}
+// REMOVED OLD MOCK FUNCTION
 
 // Load upcoming payouts
-function loadUpcomingPayouts() {
-  const container = document.getElementById('upcomingPayouts');
-  
-  setTimeout(() => {
-    container.innerHTML = `
-      <div class="investment-item">
-        <h6>Commercial Real Estate Fund</h6>
-        <p>Amount: ₹15,000 | Due: 5 Nov 2023</p>
-        <span class="badge-status badge-pending">Pending</span>
-      </div>
-      <div class="investment-item">
-        <h6>Fixed Income Portfolio</h6>
-        <p>Amount: ₹10,500 | Due: 5 Nov 2023</p>
-        <span class="badge-status badge-pending">Pending</span>
-      </div>
-      <div class="investment-item">
-        <h6>Tech Startup Funding</h6>
-        <p>Amount: ₹12,000 | Due: 5 Nov 2023</p>
-        <span class="badge-status badge-pending">Pending</span>
-      </div>
-    `;
-  }, 1000);
-}
+// REMOVED OLD MOCK FUNCTION
 
 // Load agreements
-function loadAgreements() {
-  const table = document.getElementById('agreementsTable');
-  
-  setTimeout(() => {
-    let html = '';
-    
-    mockInvestorData.agreements.forEach(agr => {
-      html += `
-        <tr>
-          <td>${agr.id}</td>
-          <td>${formatDate(agr.date)}</td>
-          <td>${agr.type}</td>
-          <td>₹${agr.amount}</td>
-          <td><span class="badge-status badge-active">${agr.status}</span></td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>Download</button>
-          </td>
-        </tr>
-      `;
-    });
-    
-    table.innerHTML = html;
-  }, 1000);
-}
+// REMOVED OLD MOCK FUNCTION
 
 // Initialize FAQ accordion
 function initFAQ() {
