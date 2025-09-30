@@ -1445,13 +1445,64 @@ window.onload = function() {
   }
 };
 
-// Consent form submission
-document.getElementById('consentForm').addEventListener('submit', function(e) {
+// --- Robust consent handler (paste in place of existing handler) ---
+document.getElementById('consentForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const consent = true;
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+
+  const body = `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&consent=true`;
+
+  try {
+    // POST consent -> backend
+    const postResp = await fetch(scriptURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body
+    });
+
+    const text = await postResp.text(); // safer: get raw text first
+    let data;
+    try { data = JSON.parse(text); } catch (err) { data = { success: false, message: text }; }
+
+    // Helper to fetch investor by email (GET)
+    async function fetchInvestor(emailParam) {
+      const getResp = await fetch(`${scriptURL}?email=${encodeURIComponent(emailParam)}`);
+      const txt = await getResp.text();
+      try { return JSON.parse(txt); } catch (err) { return null; }
+    }
+
+    if (data && data.success) {
+      localStorage.setItem("investorEmail", email);
+      consentPopup.style.display = "none";
+      // If backend returned investor data directly, use it; otherwise fetch it
+      if (data.investor) {
+        showDashboard(data.investor);
+      } else {
+        const investorData = await fetchInvestor(email);
+        if (investorData) showDashboard(investorData); else showDashboard({});
+      }
+      return;
+    }
+
+    // If backend returned a text message that includes "already exists"
+    if (data && data.message && /already exists/i.test(String(data.message))) {
+      localStorage.setItem("investorEmail", email);
+      consentPopup.style.display = "none";
+      const investorData = await fetchInvestor(email);
+      if (investorData) showDashboard(investorData); else showDashboard({});
+      return;
+    }
+
+    // fallback - show message from backend or generic
+    alert(data && data.message ? data.message : "Error saving consent. Please check console.");
+    console.warn("Consent POST response:", data);
+  } catch (err) {
+    console.error("Consent submit failed:", err);
+    alert("Error saving consent. Check browser console (F12) for details.");
+  }
+});
 
   fetch(scriptURL, {
     method: "POST",
