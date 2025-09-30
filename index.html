@@ -1429,21 +1429,33 @@ function showDashboard(data) {
   initDashboard();
 }
 
-// Check for stored investor
-let storedEmail = localStorage.getItem("investorEmail");
-
-// Load dashboard or show consent
 window.onload = function() {
+  const storedEmail = localStorage.getItem("investorEmail");
   if (storedEmail) {
-    // In a real implementation, you would fetch data from your backend
-    // For this demo, we'll use mock data after a short delay
-    setTimeout(() => {
-      showDashboard(mockInvestorData);
-    }, 500);
+    // try to fetch investor data from backend first (safer)
+    fetch(`${scriptURL}?email=${encodeURIComponent(storedEmail)}`)
+      .then(r => r.text())
+      .then(text => {
+        try {
+          const data = JSON.parse(text);
+          // if backend returns investor object directly, pass it
+          showDashboard(data || {});
+        } catch (e) {
+          // fallback to mock if parsing fails
+          console.warn("GET ?email response not JSON, falling back to mock", text);
+          showDashboard(mockInvestorData);
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching investor on load:", err);
+        // fall back to mock so UI still loads while you debug backend
+        showDashboard(mockInvestorData);
+      });
   } else {
     consentPopup.style.display = "flex";
   }
 };
+
 
 // --- Robust consent handler (paste in place of existing handler) ---
 document.getElementById('consentForm').addEventListener('submit', async function(e) {
