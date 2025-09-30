@@ -3,7 +3,31 @@ class ChartManager {
     constructor() {
         this.charts = {};
     }
+// In your app.js, add this CORS proxy approach
+async function fetchWithCORS(url, options = {}) {
+  try {
+    // Try direct fetch first
+    const response = await fetch(url, options);
+    return await response.json();
+  } catch (error) {
+    console.log('Direct fetch failed, trying CORS proxy...');
+    
+    // Use CORS proxy as fallback
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/' + url;
+    const proxyResponse = await fetch(proxyUrl, options);
+    return await proxyResponse.json();
+  }
+}
 
+// Update your fetch calls to use this function
+async function loadOverviewData() {
+  try {
+    const data = await fetchWithCORS(this.scriptURL);
+    // ... rest of your code
+  } catch (error) {
+    // Handle error
+  }
+}
     initAllCharts(investorData) {
         this.initInvestmentChart(investorData);
         this.initTenureChart(investorData);
