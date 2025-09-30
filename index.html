@@ -6,11 +6,8 @@
 <title>Omkar Enterprises - Investor Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- Load external scripts properly -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <style>
 :root {
   --primary: #0A2540;
@@ -414,11 +411,10 @@ body {
 <!-- Dashboard Container -->
 <div class="container py-4" id="dashboardContent" style="display:none;">
   <div class="navbar-header">
-<div class="d-flex align-items-center">
-  <img src="assets/logo.png" alt="Omkar Logo" 
-       style="height:40px; width:auto; margin-right:10px;">
-  <h2 class="mb-0">Omkar Enterprises Investor Relations</h2>
-</div>
+    <div class="d-flex align-items-center">
+      <img src="assets/logo.png" alt="Omkar Logo" style="height:40px; width:auto; margin-right:10px;">
+      <h2 class="mb-0">Omkar Enterprises Investor Relations</h2>
+    </div>
     <div>
       <span id="headerInvestorName" class="me-3 fw-bold"></span>
       <button class="btn btn-outline-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i>Logout</button>
@@ -1169,14 +1165,18 @@ async function loadOverviewData() {
   }
 }
 
-// Load investor data
+// Load investor data - FIXED VERSION
 async function loadInvestorData(email) {
   try {
+    console.log('🔄 Loading investor data for:', email);
     const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
     const data = await response.json();
+    console.log('✅ Investor data response:', data);
 
-    if (data.success) {
-      const inv = data.investor;
+    if (data.success && data.exists) {
+      // Data is now directly in the response (not nested under 'investor')
+      const inv = data;
+      console.log('📊 Investor data:', inv);
 
       document.getElementById('investorName').textContent = inv.name || "-";
       document.getElementById('headerInvestorName').textContent = inv.name || "-";
@@ -1190,14 +1190,33 @@ async function loadInvestorData(email) {
       document.getElementById('investorCurrentValue').textContent = `₹${inv.currentValue || 0}`;
       document.getElementById('investorROI').textContent = inv.roi || "0%";
 
-      renderInvestments(data.investments || []);
-      renderPayouts(data.payouts || []);
-      renderAgreements(data.agreements || []);
+      // Update overview section as well
+      document.getElementById('myTotalInvestments').textContent = `₹${inv.totalInvestment || 0}`;
+      document.getElementById('myTotalPayouts').textContent = `₹${inv.lastPayout || 0}`;
+      document.getElementById('currentValue').textContent = `₹${inv.currentValue || 0}`;
+      document.getElementById('nextPayoutDate').textContent = inv.nextPayoutDate || "-";
+
+      // Render empty arrays for now (we'll populate these later)
+      renderInvestments([]);
+      renderPayouts([]);
+      renderAgreements([]);
+      
+      // Show investor overview and hide visitor overview
+      visitorOverview.style.display = 'none';
+      investorOverview.style.display = 'block';
+      
     } else {
       console.warn("No investor data found for", email);
+      // If investor doesn't exist, show consent popup
+      localStorage.removeItem("investorEmail");
+      consentPopup.style.display = "flex";
     }
   } catch (err) {
-    console.error("Error loading investor data:", err);
+    console.error("❌ Error loading investor data:", err);
+    alert("Failed to load investor data. Please try again.");
+    // Show consent popup on error
+    localStorage.removeItem("investorEmail");
+    consentPopup.style.display = "flex";
   }
 }
 
@@ -1256,39 +1275,38 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('en-IN', options);
 }
 
-// Show dashboard
-function showDashboard(data) {
+// Show dashboard - SIMPLIFIED
+function showDashboard() {
   dashboardContent.style.display = "block";
-  visitorOverview.style.display = 'none';
-  investorOverview.style.display = 'block';
   
   // Initialize the dashboard
   initDashboard();
 }
 
-// Check for stored investor
-let storedEmail = localStorage.getItem("investorEmail");
-
-// Load dashboard or show consent
+// Load dashboard or show consent - UPDATED
 window.onload = function() {
+  const storedEmail = localStorage.getItem("investorEmail");
   if (storedEmail) {
-    // In a real implementation, you would fetch data from your backend
-    // For this demo, we'll use mock data after a short delay
-    setTimeout(() => {
-      showDashboard();
-    }, 500);
+    // Load investor data directly
+    loadInvestorData(storedEmail);
   } else {
     consentPopup.style.display = "flex";
   }
 };
 
-// Consent form submission
+// Consent form submission - UPDATED
 document.getElementById('consentForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const name = document.getElementById('name').value;
   const email = document.getElementById('email').value;
   const phone = document.getElementById('phone').value;
   const consent = true;
+
+  // Show loading state
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+  submitBtn.disabled = true;
 
   fetch(scriptURL, {
     method: "POST",
@@ -1298,24 +1316,23 @@ document.getElementById('consentForm').addEventListener('submit', function(e) {
   .then(r=>r.json())
   .then(data=>{
     if(data.success){
-      // New investor created
+      // New investor created or exists
       localStorage.setItem("investorEmail", email);
       consentPopup.style.display="none";
-      fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
-        .then(r=>r.json())
-        .then(showDashboard);
-    } else if (data.message && data.message.includes("already exists")) {
-      // Investor exists -> load dashboard anyway
-      localStorage.setItem("investorEmail", email);
-      consentPopup.style.display="none";
-      fetch(`${scriptURL}?email=${encodeURIComponent(email)}`)
-        .then(r=>r.json())
-        .then(showDashboard);
+      // Load the investor data directly
+      loadInvestorData(email);
     } else {
       alert(data.message || "Error saving consent.");
     }
   })
-  .catch(err=>alert("Error saving consent. Please try again."));
+  .catch(err=>{
+    console.error("Consent submission error:", err);
+    alert("Error saving consent. Please try again.");
+  })
+  .finally(() => {
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  });
 });
 
 function renderInvestments(investments) {
