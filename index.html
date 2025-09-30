@@ -160,6 +160,11 @@
             border-radius: 15px;
             padding: 25px;
         }
+        
+        .alert-custom {
+            border-left: 4px solid var(--secondary);
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -673,26 +678,53 @@
             conversionScore: 30
         };
 
-        // Initialize Visitor Dashboard
+        // Initialize Visitor Dashboard - FIXED VERSION
         function initVisitorDashboard() {
-            startTimeTracking();
-            initPerformanceChart();
-            setupVisitorEventListeners();
-            updateAmountDisplay();
+            // Only initialize if visitor dashboard exists
+            const visitorDashboard = document.getElementById('visitorDashboard');
+            if (!visitorDashboard) {
+                console.log('Visitor dashboard not found - user might be logged in as investor');
+                return;
+            }
             
-            // Track initial page view
-            trackVisitorAction('page_view', 'visitor_dashboard');
+            console.log('Initializing visitor dashboard...');
+            
+            // Initialize only what's available
+            try {
+                initPerformanceChart();
+                setupVisitorEventListeners();
+                updateAmountDisplay();
+                
+                // Load data from Google Sheets
+                loadOpportunitiesFromSheet();
+                loadFAQFromSheet();
+                loadStatsFromSheet();
+                
+                // Start time tracking safely
+                startTimeTracking();
+                
+                // Track initial page view
+                trackVisitorAction('page_view', 'visitor_dashboard');
+                
+            } catch (error) {
+                console.error('Error initializing visitor dashboard:', error);
+            }
         }
 
-        // Time Tracking
+        // Time Tracking - FIXED VERSION
         function startTimeTracking() {
-            setInterval(() => {
-                visitorData.timeOnSite++;
-                updateConversionScore();
-            }, 1000);
+            // Only start tracking if we're on visitor dashboard
+            if (document.getElementById('visitorDashboard')) {
+                setInterval(() => {
+                    if (visitorData) {
+                        visitorData.timeOnSite++;
+                        updateConversionScore();
+                    }
+                }, 1000);
+            }
         }
 
-        // Update Conversion Score
+        // Update Conversion Score - FIXED VERSION
         function updateConversionScore() {
             let score = 30;
             
@@ -703,24 +735,36 @@
             if (visitorData.interestsExpressed > 0) score += 20;
             
             visitorData.conversionScore = Math.min(score, 100);
+            
+            // Safely update progress ring only if elements exist
             updateProgressRing();
         }
 
-        // Update Progress Ring
+        // Update Progress Ring - FIXED VERSION
         function updateProgressRing() {
-            const circumference = 339.292;
-            const offset = circumference - (visitorData.conversionScore / 100) * circumference;
-            
-            document.querySelector('.animated-progress').style.strokeDashoffset = offset;
-            document.querySelector('.progress-ring h3').textContent = `${visitorData.conversionScore}%`;
+            try {
+                const progressCircle = document.querySelector('.animated-progress');
+                const scoreDisplay = document.querySelector('.progress-ring h3');
+                
+                if (progressCircle && scoreDisplay) {
+                    const circumference = 339.292;
+                    const offset = circumference - (visitorData.conversionScore / 100) * circumference;
+                    
+                    progressCircle.style.strokeDashoffset = offset;
+                    scoreDisplay.textContent = `${visitorData.conversionScore}%`;
+                }
+            } catch (error) {
+                console.log('Progress ring not available');
+            }
         }
 
-        // Track Visitor Actions
+        // Track Visitor Actions - FIXED VERSION
         function trackVisitorAction(action, details) {
-            visitorData[action] = details;
-            updateConversionScore();
+            if (visitorData) {
+                visitorData[action] = details;
+                updateConversionScore();
+            }
             
-            // In production, send this to your analytics
             console.log('Visitor Action:', action, details);
         }
 
@@ -740,16 +784,18 @@
 
         // Express Interest in Opportunity
         function expressInterest(opportunityId) {
-            visitorData.interestsExpressed++;
-            visitorData.opportunitiesViewed.push(opportunityId);
-            
-            trackVisitorAction('interest_expressed', opportunityId);
-            
-            // Show lead capture modal
-            showLeadCapture();
-            
-            // Update UI
-            updateOpportunityProgress(opportunityId);
+            if (visitorData) {
+                visitorData.interestsExpressed++;
+                visitorData.opportunitiesViewed.push(opportunityId);
+                
+                trackVisitorAction('interest_expressed', opportunityId);
+                
+                // Show lead capture modal
+                showLeadCapture();
+                
+                // Update UI
+                updateOpportunityProgress(opportunityId);
+            }
         }
 
         // Update Opportunity Progress
@@ -778,8 +824,10 @@
             const totalValue = amount + totalReturns;
             const monthlyReturns = totalReturns / tenure;
             
-            visitorData.calculatorUsed = true;
-            trackVisitorAction('calculator_used', {amount, tenure, returnRate});
+            if (visitorData) {
+                visitorData.calculatorUsed = true;
+                trackVisitorAction('calculator_used', {amount, tenure, returnRate});
+            }
             
             // Display results
             document.getElementById('roiResults').innerHTML = `
@@ -864,81 +912,266 @@
             });
         }
 
-        // Setup Event Listeners
+        // Setup Event Listeners - FIXED VERSION
         function setupVisitorEventListeners() {
-            // Amount range slider
-            document.getElementById('amountRange').addEventListener('input', updateAmountDisplay);
-            
-            // Login form
-            document.getElementById('visitorLoginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const phone = document.getElementById('loginPhone').value;
+            try {
+                // Amount range slider - only if it exists
+                const amountRange = document.getElementById('amountRange');
+                if (amountRange) {
+                    amountRange.addEventListener('input', updateAmountDisplay);
+                }
                 
-                // In production, validate credentials and redirect to investor dashboard
-                alert('Investor login functionality would connect to your backend here');
-                trackVisitorAction('login_attempt', {email, phone});
-            });
-            
-            // Lead capture form
-            document.getElementById('leadCaptureForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = {
-                    name: document.getElementById('leadName').value,
-                    email: document.getElementById('leadEmail').value,
-                    phone: document.getElementById('leadPhone').value,
-                    interest: document.getElementById('leadInterest').value,
-                    amount: document.getElementById('leadAmount').value,
-                    timestamp: new Date().toISOString(),
-                    conversionScore: visitorData.conversionScore
-                };
+                // Login form - only if it exists
+                const loginForm = document.getElementById('visitorLoginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const email = document.getElementById('loginEmail').value;
+                        const phone = document.getElementById('loginPhone').value;
+                        
+                        // In production, validate credentials and redirect to investor dashboard
+                        loginInvestor({ email: email, phone: phone });
+                        trackVisitorAction('login_attempt', {email, phone});
+                    });
+                }
                 
-                // Save lead to Google Sheets
-                fetch(scriptURL, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `action=save_lead&data=${encodeURIComponent(JSON.stringify(formData))}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show success message and redirect to consent
-                        alert('Thank you! Your Investor Starter Pack is being prepared. Redirecting to registration...');
-                        $('#leadCaptureModal').modal('hide');
-                        showConsentPopup();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error saving lead:', error);
-                    alert('Lead captured locally. Please contact us directly.');
+                // Lead capture form - only if it exists
+                const leadForm = document.getElementById('leadCaptureForm');
+                if (leadForm) {
+                    leadForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = {
+                            name: document.getElementById('leadName').value,
+                            email: document.getElementById('leadEmail').value,
+                            phone: document.getElementById('leadPhone').value,
+                            interest: document.getElementById('leadInterest').value,
+                            amount: document.getElementById('leadAmount').value,
+                            timestamp: new Date().toISOString(),
+                            conversionScore: visitorData.conversionScore
+                        };
+                        
+                        // Save lead to Google Sheets
+                        captureLead(formData).then(result => {
+                            if (result.success) {
+                                showMessage('Thank you! We will contact you shortly.', 'success');
+                                $('#leadCaptureModal').modal('hide');
+                                showConsentPopup();
+                            } else {
+                                showMessage('Error saving your information.', 'error');
+                            }
+                        }).catch(error => {
+                            console.error('Error saving lead:', error);
+                            showMessage('Lead captured locally. Please contact us directly.', 'info');
+                        });
+                        
+                        trackVisitorAction('lead_captured', formData);
+                    });
+                }
+                
+                // Track opportunity views safely
+                const investmentCards = document.querySelectorAll('.investment-card');
+                investmentCards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        const button = this.querySelector('button');
+                        if (button && visitorData) {
+                            const onclick = button.getAttribute('onclick');
+                            if (onclick) {
+                                const opportunityId = onclick.match(/'([^']+)'/);
+                                if (opportunityId && !visitorData.opportunitiesViewed.includes(opportunityId[1])) {
+                                    visitorData.opportunitiesViewed.push(opportunityId[1]);
+                                    trackVisitorAction('opportunity_viewed', opportunityId[1]);
+                                }
+                            }
+                        }
+                    });
                 });
                 
-                trackVisitorAction('lead_captured', formData);
-            });
-            
-            // Track opportunity views
-            document.querySelectorAll('.investment-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    const opportunityId = this.querySelector('button').getAttribute('onclick').match(/'([^']+)'/)[1];
-                    if (!visitorData.opportunitiesViewed.includes(opportunityId)) {
-                        visitorData.opportunitiesViewed.push(opportunityId);
-                        trackVisitorAction('opportunity_viewed', opportunityId);
-                    }
-                });
-            });
+            } catch (error) {
+                console.error('Error setting up event listeners:', error);
+            }
         }
 
-        // Show Consent Popup (from your existing code)
+        // Show message function
+        function showMessage(message, type = 'info') {
+            // Remove any existing alerts first
+            const existingAlerts = document.querySelectorAll('.alert-dismissible');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            const alertClass = {
+                'success': 'alert-success',
+                'error': 'alert-danger',
+                'warning': 'alert-warning',
+                'info': 'alert-info'
+            }[type] || 'alert-info';
+            
+            // Create temporary alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Show Consent Popup
         function showConsentPopup() {
             // This would show your existing consent popup
-            alert('Redirecting to investor registration...');
+            showMessage('Redirecting to investor registration...', 'info');
             trackVisitorAction('registration_started', 'consent_popup');
+            
+            // Simulate redirect to consent form
+            setTimeout(() => {
+                // In a real implementation, this would show the consent form
+                alert('Please complete the investor registration form');
+            }, 1000);
         }
 
-        // Initialize when page loads
+        // NEW FUNCTIONS FOR GOOGLE SHEETS INTEGRATION
+
+        // Capture lead function
+        async function captureLead(leadData) {
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `action=save_lead&data=${encodeURIComponent(JSON.stringify({
+                        ...leadData,
+                        opportunitiesViewed: visitorData.opportunitiesViewed,
+                        timeOnSite: visitorData.timeOnSite,
+                        calculatorUsed: visitorData.calculatorUsed,
+                        interestsExpressed: visitorData.interestsExpressed,
+                        conversionScore: visitorData.conversionScore
+                    }))}`
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error capturing lead:', error);
+                return {success: false, message: 'Network error'};
+            }
+        }
+
+        // Login investor function
+        async function loginInvestor(credentials) {
+            try {
+                // First check if investor exists
+                const checkResponse = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `action=check_investor_exists&data=${encodeURIComponent(JSON.stringify(credentials))}`
+                });
+                
+                const checkResult = await checkResponse.json();
+                
+                if (checkResult.success && checkResult.data.exists) {
+                    // Investor exists - load their data
+                    localStorage.setItem("investorEmail", credentials.email);
+                    localStorage.setItem("investorId", checkResult.data.investorId);
+                    showMessage('Login successful!', 'success');
+                    
+                    // In a real implementation, this would load the investor dashboard
+                    setTimeout(() => {
+                        showMessage('Investor dashboard would load here', 'info');
+                    }, 1000);
+                } else {
+                    showMessage('Investor not found. Please register first.', 'warning');
+                }
+                
+                return checkResult;
+            } catch (error) {
+                console.error('Error logging in:', error);
+                showMessage('Login failed. Please try again.', 'error');
+                return {success: false, message: 'Network error'};
+            }
+        }
+
+        // Load opportunities from Google Sheets
+        async function loadOpportunitiesFromSheet() {
+            try {
+                const response = await fetch(`${scriptURL}?action=get_opportunities`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Opportunities loaded:', result.data);
+                    // You can process the opportunities data here
+                }
+            } catch (error) {
+                console.error('Error loading opportunities:', error);
+            }
+        }
+
+        // Load FAQ from Google Sheets
+        async function loadFAQFromSheet() {
+            try {
+                const response = await fetch(`${scriptURL}?action=get_faq`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('FAQ loaded:', result.data);
+                    // You can process the FAQ data here
+                }
+            } catch (error) {
+                console.error('Error loading FAQ:', error);
+            }
+        }
+
+        // Load stats from Google Sheets
+        async function loadStatsFromSheet() {
+            try {
+                const response = await fetch(`${scriptURL}?action=get_dashboard_stats`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Stats loaded:', result.data);
+                    // Update your stats display here
+                    // document.getElementById('totalInvestments').textContent = result.data.totalInvestments;
+                    // etc.
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Initialize when page loads - FIXED VERSION
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing visitor dashboard...');
             initVisitorDashboard();
         });
+
+        // Initialize FAQ functionality
+        function initFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // Close all other items
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // Toggle current item
+                        item.classList.toggle('active');
+                    });
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
