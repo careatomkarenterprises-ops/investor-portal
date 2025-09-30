@@ -1099,22 +1099,21 @@ const visitorOverview = document.getElementById("visitorOverview");
 const investorOverview = document.getElementById("investorOverview");
 
 // Mock data for demonstration (will be replaced with real data from Google Sheets)
-// MOCK INVESTOR DATA REMOVED - switched to live Google Sheets data
+// MOCK INVESTOR DATA REMOVED
 
-// MOCK OVERVIEW DATA REMOVED - switched to live Google Sheets data
+// MOCK OVERVIEW DATA REMOVED
 
 // Initialize the dashboard
+
 function initDashboard() {
-  // Initialize charts
   initCharts();
-  
-  // Load overview data
-  loadOverviewData();
-  
-  // Setup event listeners
+  const email = localStorage.getItem("investorEmail");
+  if (email) {
+    loadInvestorData(email);
+  } else {
+    loadOverviewData();
+  }
   setupEventListeners();
-  
-  // Initialize FAQ accordion
   initFAQ();
 }
 
@@ -1242,24 +1241,20 @@ function initCharts() {
 }
 
 // Load overview data
-function loadOverviewData() {
-  // Set overview stats
-  document.getElementById('totalInvestments').textContent = mockOverviewData.totalInvestments;
-  document.getElementById('totalPayouts').textContent = mockOverviewData.totalPayouts;
-  document.getElementById('activeInvestors').textContent = mockOverviewData.activeInvestors;
-  document.getElementById('avgReturns').textContent = mockOverviewData.avgReturns;
-  
-  // Set investor stats
-  document.getElementById('myTotalInvestments').textContent = `₹${mockInvestorData.totalInvestment}`;
-  document.getElementById('myTotalPayouts').textContent = `₹${mockInvestorData.lastPayout}`;
-  document.getElementById('currentValue').textContent = `₹${mockInvestorData.currentValue}`;
-  document.getElementById('nextPayoutDate').textContent = '5 Nov 2023';
-  
-  // Load recent activity
-  loadRecentActivity();
-  
-  // Load investor data
-  loadInvestorData();
+
+async function loadOverviewData() {
+  try {
+    const response = await fetch(scriptURL); // No email -> overview
+    const data = await response.json();
+    if (data.success && data.overview) {
+      document.getElementById('totalInvestments').textContent = data.overview.totalInvestments || "0";
+      document.getElementById('totalPayouts').textContent = data.overview.totalPayouts || "0";
+      document.getElementById('activeInvestors').textContent = data.overview.totalInvestors || "0";
+      document.getElementById('avgReturns').textContent = data.overview.avgReturns || "0%";
+    }
+  } catch (err) {
+    console.error("Error loading overview:", err);
+  }
 }
 
 // Load recent activity
