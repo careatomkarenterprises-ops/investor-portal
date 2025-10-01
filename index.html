@@ -860,47 +860,84 @@ async function loadOverviewData() {
   }
 }
 
-// Load investor data
-async function loadInvestorData(email) {
-  try {
-    const response = await fetch(scriptURL + "?email=" + encodeURIComponent(email));
-    const data = await response.json();
+function loadInvestorData() {
+    fetch('/api/investor')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // ✅ NULL CHECK: Verify data exists and has expected structure
+            if (!data || typeof data !== 'object') {
+                console.error('Invalid data received:', data);
+                showErrorMessage('Invalid data received from server');
+                return;
+            }
 
-    if (data.success) {
-      const investor = data.investor;
+            // ✅ NULL CHECK: Verify critical properties exist
+            if (!data.exists) {
+                showErrorMessage('Investor data not found');
+                return;
+            }
 
-      // Update investor information
-      document.getElementById('investorName').textContent = investor.name || "-";
-      document.getElementById('headerInvestorName').textContent = investor.name || "-";
-      document.getElementById('investorEmail').textContent = investor.email || "-";
-      document.getElementById('investorPhone').textContent = investor.phone || "-";
-      document.getElementById('memberSince').textContent = investor.memberSince || "-";
-      document.getElementById('investorConsent').textContent = investor.consent || "-";
+            // ✅ MODERN JAVASCRIPT: Safe property access with optional chaining
+            const investor = {
+                name: data?.name || 'Not Available',
+                email: data?.email || 'Not Available',
+                phone: data?.phone || 'Not Available',
+                status: data?.status || 'Unknown',
+                totalInvestment: data?.totalInvestment || 0,
+                totalPayouts: data?.totalPayouts || 0,
+                currentPortfolioValue: data?.currentPortfolioValue || 0,
+                roi: data?.roi || 0,
+                nextPayoutDate: data?.nextPayoutDate || 'Not Scheduled',
+                memberSince: data?.memberSince || 'Unknown',
+                
+                // ✅ NULL CHECKS for arrays
+                investments: Array.isArray(data?.investments) ? data.investments : [],
+                agreements: Array.isArray(data?.agreements) ? data.agreements : [],
+                upcomingPayouts: Array.isArray(data?.upcomingPayouts) ? data.upcomingPayouts : [],
+                investmentHistory: Array.isArray(data?.investmentHistory) ? data.investmentHistory : [],
+                payoutHistory: Array.isArray(data?.payoutHistory) ? data.payoutHistory : [],
+                tenureDistribution: Array.isArray(data?.tenureDistribution) ? data.tenureDistribution : [],
+                portfolioGrowth: Array.isArray(data?.portfolioGrowth) ? data.portfolioGrowth : [],
+                portfolioAllocation: Array.isArray(data?.portfolioAllocation) ? data.portfolioAllocation : []
+            };
 
-      // Update investment summary
-      document.getElementById('investorInvestment').textContent = `₹${investor.totalInvestment || 0}`;
-      document.getElementById('investorPayout').textContent = `₹${investor.lastPayout || 0}`;
-      document.getElementById('investorCurrentValue').textContent = `₹${investor.currentValue || 0}`;
-      document.getElementById('investorROI').textContent = investor.roi || "0%";
+           function updateUI(investor) {
+    try {
+        // ✅ MODERN JAVASCRIPT: Safe DOM updates
+        document.getElementById('investor-name')?.textContent = investor.name;
+        document.getElementById('investor-email')?.textContent = investor.email;
+        document.getElementById('investor-phone')?.textContent = investor.phone;
+        document.getElementById('investor-status')?.textContent = investor.status;
+        
+        // ✅ NULL CHECK: Format currency safely
+        document.getElementById('total-investment')?.textContent = 
+            formatCurrency(investor.totalInvestment);
+        document.getElementById('total-payouts')?.textContent = 
+            formatCurrency(investor.totalPayouts);
+        document.getElementById('portfolio-value')?.textContent = 
+            formatCurrency(investor.currentPortfolioValue);
+        document.getElementById('roi-percentage')?.textContent = 
+            `${(investor.roi * 100).toFixed(2)}%`;
+        
+        // ✅ NULL CHECK: Safe date formatting
+        document.getElementById('next-payout-date')?.textContent = 
+            investor.nextPayoutDate !== 'Not Scheduled' ? 
+            new Date(investor.nextPayoutDate).toLocaleDateString() : 
+            'Not Scheduled';
 
-      // Update overview stats
-      document.getElementById('myTotalInvestments').textContent = `₹${investor.totalInvestment || 0}`;
-      document.getElementById('myTotalPayouts').textContent = `₹${investor.lastPayout || 0}`;
-      document.getElementById('currentValue').textContent = `₹${investor.currentValue || 0}`;
-      document.getElementById('nextPayoutDate').textContent = investor.nextPayout || "-";
-
-      // Render investment data
-      renderInvestments(data.investments || []);
-      renderPayouts(data.payouts || []);
-      renderAgreements(data.agreements || []);
-    } else {
-      console.warn("No investor data found for", email);
+        // ✅ NULL CHECK: Render investments safely
+        renderInvestments(investor.investments);
+        renderAgreements(investor.agreements);
+        
+    } catch (error) {
+        console.error('Error updating UI:', error);
     }
-  } catch (err) {
-    console.error("Error loading investor data:", err);
-  }
 }
-
 // Render functions
 function renderInvestments(investments) {
   const timeline = document.getElementById('investmentTimeline');
