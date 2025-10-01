@@ -336,6 +336,7 @@ body {
   color: #856404;
 }
 
+/* ✅ VIEW MANAGEMENT */
 .visitor-only, .investor-only {
   display: none;
 }
@@ -346,6 +347,29 @@ body {
 
 .investor-view .investor-only {
   display: block;
+}
+
+/* ✅ STATUS INDICATORS */
+.status-active { color: #27ae60; font-weight: bold; }
+.status-inactive { color: #e74c3c; font-weight: bold; }
+.status-pending { color: #f39c12; font-weight: bold; }
+.status-unknown { color: #7f8c8d; font-weight: bold; }
+
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
+}
+
+.error-message {
+    background: #e74c3c;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px;
+    text-align: center;
+    display: none;
 }
 
 @media (max-width: 768px) {
@@ -370,7 +394,7 @@ body {
 }
 </style>
 </head>
-<body>
+<body class="visitor-view">
 
 <!-- Consent Popup -->
 <div id="consentPopup">
@@ -431,6 +455,9 @@ body {
 
 <!-- Dashboard Container -->
 <div class="container py-4" id="dashboardContent">
+  <!-- Error Message Display -->
+  <div id="error-message" class="error-message"></div>
+
   <div class="navbar-header">
     <div class="d-flex align-items-center">
       <!-- Replace with your actual logo path -->
@@ -614,34 +641,232 @@ body {
       </div>
     </div>
 
-    <!-- Remaining tabs (Investor, Agreements, Earnings, Risk, Hot Deals, FAQ) -->
-    <!-- Keep the existing tab content from your file but add investor-only class to investor-specific tabs -->
-    
     <!-- Investor Tab -->
     <div class="tab-pane fade investor-only" id="investor">
-      <!-- Your existing investor tab content -->
+      <div class="row">
+        <div class="col-md-8">
+          <div class="p-3 bg-white dashboard-card">
+            <h6 class="mb-3">Investment Timeline</h6>
+            <div id="investmentTimeline">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-white dashboard-card">
+            <h6 class="mb-3">Investment Calculator</h6>
+            <div class="mb-3">
+              <label class="form-label">Investment Amount (₹)</label>
+              <input type="number" class="form-control" id="calcAmount" value="100000" min="50000" max="2000000">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tenure (Months)</label>
+              <select class="form-select" id="calcTenure">
+                <option value="6">6 Months</option>
+                <option value="12" selected>12 Months</option>
+                <option value="24">24 Months</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Expected Return Rate (%)</label>
+              <input type="number" class="form-control" id="calcRate" value="12" step="0.1">
+            </div>
+            <button class="btn btn-primary w-100" id="calculateBtn">Calculate Returns</button>
+            <div class="mt-3 p-3 bg-light rounded">
+              <p class="mb-1">Estimated Returns: <strong id="estimatedReturns">₹0</strong></p>
+              <p class="mb-0">Total Value: <strong id="totalValue">₹0</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Agreements Tab -->
     <div class="tab-pane fade investor-only" id="agreement">
-      <!-- Your existing agreements tab content -->
+      <div class="p-3 bg-white dashboard-card">
+        <h6 class="mb-3">My Agreements</h6>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Agreement ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="agreementsTable">
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <div class="loading">
+                    <div class="spinner"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- Keep other tabs as they are (they are visible to both visitors and investors) -->
+    <!-- Earnings Tab -->
     <div class="tab-pane fade" id="earnings">
-      <!-- Your existing earnings tab content -->
+      <div class="p-3 bg-white dashboard-card">
+        <h6 class="mb-3">How You Earn Returns</h6>
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="text-center p-3">
+              <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+              <h5>Capital Growth</h5>
+              <p class="text-muted">Your investment grows through carefully selected business opportunities with proven track records.</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="text-center p-3">
+              <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+              <h5>Regular Payouts</h5>
+              <p class="text-muted">Receive monthly or quarterly returns based on the performance of underlying assets.</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="text-center p-3">
+              <i class="fas fa-compound-interest fa-3x text-warning mb-3"></i>
+              <h5>Compounding</h5>
+              <p class="text-muted">Reinvest your returns to benefit from compounding and accelerate wealth creation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- Risk Disclosure Tab -->
     <div class="tab-pane fade" id="risk">
-      <!-- Your existing risk disclosure tab content -->
+      <div class="p-3 bg-white dashboard-card">
+        <h6 class="mb-3">Investment Risk Disclosure</h6>
+        <div class="alert alert-warning risk-warning">
+          <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Risk Notice</h6>
+          <p class="mb-0">All investments carry risks. Please read this disclosure carefully before making any investment decisions.</p>
+        </div>
+        
+        <div class="legal-text mt-4">
+          <h6 class="mb-3">1. Capital Risk</h6>
+          <p>Your invested capital is at risk. There is no guarantee that you will get back the full amount you invested. Business conditions, market fluctuations, and other factors may affect the value of your investment.</p>
+          
+          <h6 class="mb-3">2. Return Risk</h6>
+          <p>Returns are not guaranteed and may vary. Past performance does not guarantee future results. The projected returns are estimates based on current conditions and may change.</p>
+          
+          <h6 class="mb-3">3. Liquidity Risk</h6>
+          <p>Investments may have limited liquidity. You may not be able to withdraw your funds immediately and may need to wait until the completion of the investment tenure or as per the agreement terms.</p>
+          
+          <h6 class="mb-3">4. Business Risk</h6>
+          <p>Investments are subject to business risks including operational challenges, market competition, regulatory changes, and economic conditions that may affect performance.</p>
+          
+          <h6 class="mb-3">5. No Insurance Coverage</h6>
+          <p>Unlike bank deposits, these investments are not insured by any government insurance scheme. There is no deposit insurance protection.</p>
+          
+          <h6 class="mb-3">6. Regulatory Framework</h6>
+          <p>Omkar Enterprises operates as a private proprietorship. All investments are private contractual arrangements and not regulated as public deposits or collective investment schemes.</p>
+        </div>
+      </div>
     </div>
 
+    <!-- Hot Deals Tab -->
     <div class="tab-pane fade" id="hotdeals">
-      <!-- Your existing hot deals tab content -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="hot-deal-card position-relative">
+            <div class="hot-deal-badge">Limited Time</div>
+            <div class="p-4">
+              <h5>Monthly Income Plan</h5>
+              <p class="text-muted">Get regular monthly returns with stable capital protection</p>
+              <div class="row text-center">
+                <div class="col-4">
+                  <small class="text-muted">Returns</small>
+                  <h6 class="mb-0">12-15%</h6>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted">Tenure</small>
+                  <h6 class="mb-0">12-24 Months</h6>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted">Min Investment</small>
+                  <h6 class="mb-0">₹50,000</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="hot-deal-card position-relative">
+            <div class="hot-deal-badge">High Growth</div>
+            <div class="p-4">
+              <h5>Commercial Real Estate</h5>
+              <p class="text-muted">Invest in premium commercial properties with high appreciation potential</p>
+              <div class="row text-center">
+                <div class="col-4">
+                  <small class="text-muted">Returns</small>
+                  <h6 class="mb-0">15-18%</h6>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted">Tenure</small>
+                  <h6 class="mb-0">24-36 Months</h6>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted">Min Investment</small>
+                  <h6 class="mb-0">₹2,00,000</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- FAQ Tab -->
     <div class="tab-pane fade" id="faq">
-      <!-- Your existing FAQ tab content -->
+      <div class="p-3 bg-white dashboard-card">
+        <h6 class="mb-3">Frequently Asked Questions</h6>
+        <div class="faq-item">
+          <div class="faq-question">
+            How do I start investing?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>To start investing, you need to complete the legal consent process, provide your details, and then you can explore available investment opportunities. All investments require signed agreements.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            What is the minimum investment amount?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>The minimum investment amount is ₹50,000. However, specific opportunities may have different minimum requirements.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            How are returns paid out?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Returns are typically paid monthly or quarterly, depending on the investment plan. Payouts are made via bank transfer to your registered account.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            Can I withdraw my investment early?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Early withdrawal may be possible but is subject to terms in your agreement and may involve exit charges or reduced returns. Please refer to your specific agreement terms.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   
@@ -662,498 +887,623 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Replace with your actual Google Apps Script URL
-const scriptURL = "https://script.google.com/macros/s/AKfycbwsAG2uqUswgkZ8U3yhBUz7K9T5X9O_WZRssXEuQVcpxF7HGnPbQWkhf1dhj-_moDui/exec";
+// ✅ MAIN APPLICATION CODE WITH NULL CHECKS AND MODERN JAVASCRIPT
+
+// Configuration
+const API_URL = "https://script.google.com/macros/s/AKfycbwsAG2uqUswgkZ8U3yhBUz7K9T5X9O_WZRssXEuQVcpxF7HGnPbQWkhf1dhj-_moDui/exec";
 
 // DOM Elements
 const consentPopup = document.getElementById("consentPopup");
 const dashboardContent = document.getElementById("dashboardContent");
 
-// Investment limits for proprietorship
-const investmentLimits = {
-  minInvestment: 50000, // ₹50,000
-  maxInvestment: 2000000, // ₹20 Lakhs
-  maxInvestors: 50
-};
-
-// Initialize the dashboard
+// ✅ Initialize the dashboard
 function initDashboard() {
-  initCharts();
-  setupEventListeners();
-  initFAQ();
-  
-  const investorEmail = localStorage.getItem("investorEmail");
-  if (investorEmail) {
-    switchToInvestorView();
-    loadInvestorData(investorEmail);
-  } else {
-    switchToVisitorView();
-    loadOverviewData();
-  }
+    initCharts();
+    setupEventListeners();
+    initFAQ();
+    
+    const investorEmail = localStorage.getItem("investorEmail");
+    if (investorEmail) {
+        switchToInvestorView();
+        loadInvestorData(investorEmail);
+    } else {
+        switchToVisitorView();
+        loadOverviewData();
+    }
 }
 
-// Switch between visitor and investor views
+// ✅ Switch between visitor and investor views
 function switchToInvestorView() {
-  document.body.classList.remove('visitor-view');
-  document.body.classList.add('investor-view');
-  consentPopup.style.display = 'none';
+    document.body.classList.remove('visitor-view');
+    document.body.classList.add('investor-view');
+    consentPopup.style.display = 'none';
+    dashboardContent.style.display = 'block';
 }
 
 function switchToVisitorView() {
-  document.body.classList.remove('investor-view');
-  document.body.classList.add('visitor-view');
-  
-  const investorEmail = localStorage.getItem("investorEmail");
-  if (!investorEmail) {
-    consentPopup.style.display = 'flex';
-  }
-}
-
-// Initialize charts
-function initCharts() {
-  // Visitor Charts
-  const ctx1 = document.getElementById('investmentChart')?.getContext('2d');
-  if (ctx1) {
-    new Chart(ctx1, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-        datasets: [
-          {
-            label: 'Investments (₹ Lakhs)',
-            data: [8, 12, 9, 15, 18, 12, 16, 14, 17, 13],
-            backgroundColor: 'rgba(10, 37, 64, 0.7)',
-            borderColor: 'rgba(10, 37, 64, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Payouts (₹ Lakhs)',
-            data: [1.5, 1.8, 2.2, 2.5, 2.8, 2.4, 2.6, 2.9, 3.1, 2.7],
-            backgroundColor: 'rgba(201, 162, 39, 0.7)',
-            borderColor: 'rgba(201, 162, 39, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Amount (₹ Lakhs)'
-            }
-          }
-        }
-      }
-    });
-  }
-
-  const ctx2 = document.getElementById('tenureChart')?.getContext('2d');
-  if (ctx2) {
-    new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ['3 Months', '6 Months', '12 Months', '24 Months'],
-        datasets: [{
-          data: [15, 25, 45, 15],
-          backgroundColor: [
-            'rgba(10, 37, 64, 0.8)',
-            'rgba(201, 162, 39, 0.8)',
-            'rgba(40, 167, 69, 0.8)',
-            'rgba(108, 117, 125, 0.8)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
-  }
-
-  // Investor Charts
-  const ctx3 = document.getElementById('myInvestmentChart')?.getContext('2d');
-  if (ctx3) {
-    new Chart(ctx3, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-        datasets: [{
-          label: 'Portfolio Value (₹)',
-          data: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
-          backgroundColor: 'rgba(201, 162, 39, 0.1)',
-          borderColor: 'rgba(201, 162, 39, 1)',
-          borderWidth: 2,
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: {
-              display: true,
-              text: 'Portfolio Value (₹)'
-            }
-          }
-        }
-      }
-    });
-  }
-
-  const ctx4 = document.getElementById('portfolioChart')?.getContext('2d');
-  if (ctx4) {
-    new Chart(ctx4, {
-      type: 'pie',
-      data: {
-        labels: ['Commercial Real Estate', 'Fixed Income', 'Tech Startup'],
-        datasets: [{
-          data: [40, 28, 32],
-          backgroundColor: [
-            'rgba(10, 37, 64, 0.8)',
-            'rgba(201, 162, 39, 0.8)',
-            'rgba(40, 167, 69, 0.8)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
-  }
-}
-
-// Load overview data for visitors
-async function loadOverviewData() {
-  try {
-    const response = await fetch(scriptURL);
-    const data = await response.json();
-    if (data.success && data.overview) {
-      // Update visitor overview with real data
-      document.getElementById('totalInvestments').textContent = data.overview.totalInvestments || "₹2.8Cr";
-      document.getElementById('totalPayouts').textContent = data.overview.totalPayouts || "₹32L";
-      document.getElementById('activeInvestors').textContent = data.overview.totalInvestors || "47";
-      document.getElementById('avgReturns').textContent = data.overview.avgReturns || "12.5%";
+    document.body.classList.remove('investor-view');
+    document.body.classList.add('visitor-view');
+    dashboardContent.style.display = 'block';
+    
+    const investorEmail = localStorage.getItem("investorEmail");
+    if (!investorEmail) {
+        consentPopup.style.display = 'flex';
     }
-  } catch (err) {
-    console.error("Error loading overview:", err);
-    // Fallback to static data
-    document.getElementById('totalInvestments').textContent = "₹2.8Cr";
-    document.getElementById('totalPayouts').textContent = "₹32L";
-    document.getElementById('activeInvestors').textContent = "47";
-    document.getElementById('avgReturns').textContent = "12.5%";
-  }
 }
 
-function loadInvestorData() {
-    fetch('/api/investor')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+// ✅ Initialize charts
+function initCharts() {
+    // Visitor Charts
+    const ctx1 = document.getElementById('investmentChart')?.getContext('2d');
+    if (ctx1) {
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                datasets: [
+                    {
+                        label: 'Investments (₹ Lakhs)',
+                        data: [8, 12, 9, 15, 18, 12, 16, 14, 17, 13],
+                        backgroundColor: 'rgba(10, 37, 64, 0.7)',
+                        borderColor: 'rgba(10, 37, 64, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Payouts (₹ Lakhs)',
+                        data: [1.5, 1.8, 2.2, 2.5, 2.8, 2.4, 2.6, 2.9, 3.1, 2.7],
+                        backgroundColor: 'rgba(201, 162, 39, 0.7)',
+                        borderColor: 'rgba(201, 162, 39, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (₹ Lakhs)'
+                        }
+                    }
+                }
             }
-            return response.json();
-        })
-        .then(data => {
-            // ✅ NULL CHECK: Verify data exists and has expected structure
-            if (!data || typeof data !== 'object') {
-                console.error('Invalid data received:', data);
-                showErrorMessage('Invalid data received from server');
-                return;
+        });
+    }
+
+    const ctx2 = document.getElementById('tenureChart')?.getContext('2d');
+    if (ctx2) {
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['3 Months', '6 Months', '12 Months', '24 Months'],
+                datasets: [{
+                    data: [15, 25, 45, 15],
+                    backgroundColor: [
+                        'rgba(10, 37, 64, 0.8)',
+                        'rgba(201, 162, 39, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
             }
+        });
+    }
+}
 
-            // ✅ NULL CHECK: Verify critical properties exist
-            if (!data.exists) {
-                showErrorMessage('Investor data not found');
-                return;
-            }
-
-            // ✅ MODERN JAVASCRIPT: Safe property access with optional chaining
-            const investor = {
-                name: data?.name || 'Not Available',
-                email: data?.email || 'Not Available',
-                phone: data?.phone || 'Not Available',
-                status: data?.status || 'Unknown',
-                totalInvestment: data?.totalInvestment || 0,
-                totalPayouts: data?.totalPayouts || 0,
-                currentPortfolioValue: data?.currentPortfolioValue || 0,
-                roi: data?.roi || 0,
-                nextPayoutDate: data?.nextPayoutDate || 'Not Scheduled',
-                memberSince: data?.memberSince || 'Unknown',
-                
-                // ✅ NULL CHECKS for arrays
-                investments: Array.isArray(data?.investments) ? data.investments : [],
-                agreements: Array.isArray(data?.agreements) ? data.agreements : [],
-                upcomingPayouts: Array.isArray(data?.upcomingPayouts) ? data.upcomingPayouts : [],
-                investmentHistory: Array.isArray(data?.investmentHistory) ? data.investmentHistory : [],
-                payoutHistory: Array.isArray(data?.payoutHistory) ? data.payoutHistory : [],
-                tenureDistribution: Array.isArray(data?.tenureDistribution) ? data.tenureDistribution : [],
-                portfolioGrowth: Array.isArray(data?.portfolioGrowth) ? data.portfolioGrowth : [],
-                portfolioAllocation: Array.isArray(data?.portfolioAllocation) ? data.portfolioAllocation : []
-            };
-
-           function updateUI(investor) {
+// ✅ Load overview data for visitors
+async function loadOverviewData() {
     try {
-        // ✅ MODERN JAVASCRIPT: Safe DOM updates
-        document.getElementById('investor-name')?.textContent = investor.name;
-        document.getElementById('investor-email')?.textContent = investor.email;
-        document.getElementById('investor-phone')?.textContent = investor.phone;
-        document.getElementById('investor-status')?.textContent = investor.status;
-        
-        // ✅ NULL CHECK: Format currency safely
-        document.getElementById('total-investment')?.textContent = 
-            formatCurrency(investor.totalInvestment);
-        document.getElementById('total-payouts')?.textContent = 
-            formatCurrency(investor.totalPayouts);
-        document.getElementById('portfolio-value')?.textContent = 
-            formatCurrency(investor.currentPortfolioValue);
-        document.getElementById('roi-percentage')?.textContent = 
-            `${(investor.roi * 100).toFixed(2)}%`;
-        
-        // ✅ NULL CHECK: Safe date formatting
-        document.getElementById('next-payout-date')?.textContent = 
-            investor.nextPayoutDate !== 'Not Scheduled' ? 
-            new Date(investor.nextPayoutDate).toLocaleDateString() : 
-            'Not Scheduled';
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        if (data?.success && data?.overview) {
+            // Update visitor overview with real data
+            safeUpdateElement('totalInvestments', data.overview.totalInvestments || "₹2.8Cr");
+            safeUpdateElement('totalPayouts', data.overview.totalPayouts || "₹32L");
+            safeUpdateElement('activeInvestors', data.overview.totalInvestors || "47");
+            safeUpdateElement('avgReturns', data.overview.avgReturns || "12.5%");
+        }
+    } catch (err) {
+        console.error("Error loading overview:", err);
+        // Fallback to static data
+        safeUpdateElement('totalInvestments', "₹2.8Cr");
+        safeUpdateElement('totalPayouts', "₹32L");
+        safeUpdateElement('activeInvestors', "47");
+        safeUpdateElement('avgReturns', "12.5%");
+    }
+}
 
-        // ✅ NULL CHECK: Render investments safely
-        renderInvestments(investor.investments);
-        renderAgreements(investor.agreements);
+// ✅ LOAD INVESTOR DATA WITH NULL CHECKS
+async function loadInvestorData(email) {
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_URL}?email=${encodeURIComponent(email)}`);
+        
+        // ✅ NULL CHECK: Verify response exists and is OK
+        if (!response?.ok) {
+            throw new Error(`Network error: ${response?.status || 'Unknown status'}`);
+        }
+        
+        const data = await response.json();
+        
+        // ✅ NULL CHECK: Verify data exists and has expected structure
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid data received from server');
+        }
+
+        // ✅ NULL CHECK: Verify investor exists
+        if (!data?.exists) {
+            showErrorMessage('Investor data not found in our system');
+            return;
+        }
+
+        // ✅ MODERN JAVASCRIPT: Process data with comprehensive null checks
+        const processedData = {
+            // Personal Information
+            name: data?.name || 'Not Available',
+            email: data?.email || 'Not Available',
+            phone: data?.phone ? String(data.phone) : 'Not Available',
+            status: data?.status || 'Unknown',
+            consent: data?.consent || 'Not Specified',
+            
+            // Financial Data
+            totalInvestment: Number(data?.totalInvestment) || 0,
+            totalPayouts: Number(data?.totalPayouts) || 0,
+            currentPortfolioValue: Number(data?.currentPortfolioValue) || 0,
+            roi: Number(data?.roi) || 0,
+            
+            // Dates
+            nextPayoutDate: data?.nextPayoutDate || 'Not Scheduled',
+            memberSince: data?.memberSince || 'Unknown',
+            
+            // Arrays with comprehensive null checks
+            investments: Array.isArray(data?.investments) ? data.investments : [],
+            agreements: Array.isArray(data?.agreements) ? data.agreements : [],
+            upcomingPayouts: Array.isArray(data?.upcomingPayouts) ? data.upcomingPayouts : [],
+            investmentHistory: Array.isArray(data?.investmentHistory) ? data.investmentHistory : [],
+            payoutHistory: Array.isArray(data?.payoutHistory) ? data.payoutHistory : [],
+            tenureDistribution: Array.isArray(data?.tenureDistribution) ? data.tenureDistribution : [],
+            portfolioGrowth: Array.isArray(data?.portfolioGrowth) ? data.portfolioGrowth : [],
+            portfolioAllocation: Array.isArray(data?.portfolioAllocation) ? data.portfolioAllocation : []
+        };
+
+        // Update the UI
+        updateDashboardUI(processedData);
         
     } catch (error) {
-        console.error('Error updating UI:', error);
+        console.error('Error loading investor data:', error);
+        showErrorMessage(`Failed to load investor data: ${error?.message || 'Unknown error occurred'}`);
+        
+        // Fallback to demo data
+        showDemoDashboard();
+    } finally {
+        showLoading(false);
     }
 }
-// Render functions
-function renderInvestments(investments) {
-  const timeline = document.getElementById('investmentTimeline');
-  if (!timeline) return;
-  
-  let html = '<div class="timeline">';
-  investments.forEach(inv => {
-    html += `
-      <div class="timeline-item">
-        <div class="timeline-date">${inv.date || ''}</div>
-        <div class="timeline-content">
-          <strong>Investment of ₹${inv.amount || 0}</strong> in ${inv.type || ''}
-          <span class="badge-status badge-${inv.status === 'active' ? 'active' : 'completed'} ms-2">${inv.status || ''}</span>
-        </div>
-      </div>
-    `;
-  });
-  html += '</div>';
-  timeline.innerHTML = html;
+
+// ✅ UPDATE DASHBOARD UI WITH NULL CHECKS
+function updateDashboardUI(data) {
+    try {
+        // ✅ PERSONAL INFORMATION - Safe updates
+        safeUpdateElement('headerInvestorName', data.name);
+        safeUpdateElement('myTotalInvestments', formatCurrency(data.totalInvestment));
+        safeUpdateElement('myTotalPayouts', formatCurrency(data.totalPayouts));
+        safeUpdateElement('currentValue', formatCurrency(data.currentPortfolioValue));
+        safeUpdateElement('nextPayoutDate', formatDate(data.nextPayoutDate));
+
+        // ✅ INVESTMENTS AND AGREEMENTS - Safe rendering
+        renderInvestments(data.investments);
+        renderAgreements(data.agreements);
+        renderPayouts(data.upcomingPayouts);
+
+        // ✅ INITIALIZE INVESTOR CHARTS
+        initInvestorCharts(data);
+
+        console.log('Dashboard updated successfully with safe data handling');
+
+    } catch (error) {
+        console.error('Error updating dashboard UI:', error);
+        showErrorMessage('Error updating dashboard display: ' + error.message);
+    }
 }
 
-function renderPayouts(payouts) {
-  const container = document.getElementById('upcomingPayouts');
-  if (!container) return;
-  
-  let html = '';
-  payouts.forEach(p => {
-    html += `
-      <div class="payout-item mb-2 p-2 bg-light rounded">
-        <strong>${p.date || ''}</strong>: ₹${p.amount || 0} 
-        <span class="text-muted">(${p.investment || ''})</span>
-      </div>
-    `;
-  });
-  container.innerHTML = html || '<p class="text-muted">No upcoming payouts</p>';
+// ✅ INITIALIZE INVESTOR CHARTS
+function initInvestorCharts(investorData) {
+    // My Investment Chart
+    const ctx3 = document.getElementById('myInvestmentChart')?.getContext('2d');
+    if (ctx3) {
+        const portfolioGrowth = Array.isArray(investorData?.portfolioGrowth) ? investorData.portfolioGrowth : [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000];
+        
+        new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                datasets: [{
+                    label: 'Portfolio Value (₹)',
+                    data: portfolioGrowth,
+                    backgroundColor: 'rgba(201, 162, 39, 0.1)',
+                    borderColor: 'rgba(201, 162, 39, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Portfolio Value (₹)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Portfolio Chart
+    const ctx4 = document.getElementById('portfolioChart')?.getContext('2d');
+    if (ctx4) {
+        const portfolioAllocation = Array.isArray(investorData?.portfolioAllocation) ? investorData.portfolioAllocation : [40, 28, 32];
+        
+        new Chart(ctx4, {
+            type: 'pie',
+            data: {
+                labels: ['Commercial Real Estate', 'Fixed Income', 'Tech Startup'],
+                datasets: [{
+                    data: portfolioAllocation,
+                    backgroundColor: [
+                        'rgba(10, 37, 64, 0.8)',
+                        'rgba(201, 162, 39, 0.8)',
+                        'rgba(40, 167, 69, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+// ✅ RENDER FUNCTIONS WITH NULL CHECKS
+function renderInvestments(investments) {
+    const timeline = document.getElementById('investmentTimeline');
+    const recentContainer = document.getElementById('myRecentInvestments');
+    
+    if (!timeline || !recentContainer) return;
+    
+    // ✅ NULL CHECK: Verify investments array
+    if (!Array.isArray(investments) || investments.length === 0) {
+        timeline.innerHTML = '<div class="no-data">No investments found</div>';
+        recentContainer.innerHTML = '<div class="no-data">No recent investments</div>';
+        return;
+    }
+
+    // Timeline view
+    let timelineHtml = '<div class="timeline">';
+    investments.forEach(inv => {
+        timelineHtml += `
+            <div class="timeline-item">
+                <div class="timeline-date">${formatDate(inv?.date)}</div>
+                <div class="timeline-content">
+                    <strong>Investment of ${formatCurrency(inv?.amount || 0)}</strong> in ${inv?.fundName || 'Unknown Fund'}
+                    <span class="badge-status badge-${inv?.status?.toLowerCase() || 'unknown'} ms-2">${inv?.status || 'Unknown'}</span>
+                </div>
+            </div>
+        `;
+    });
+    timelineHtml += '</div>';
+    timeline.innerHTML = timelineHtml;
+
+    // Recent investments view
+    let recentHtml = '';
+    investments.slice(0, 3).forEach(inv => {
+        recentHtml += `
+            <div class="investment-item">
+                <h6>${inv?.fundName || 'Unknown Fund'}</h6>
+                <p><strong>Amount:</strong> ${formatCurrency(inv?.amount || 0)}</p>
+                <p><strong>Date:</strong> ${formatDate(inv?.date)}</p>
+                <p><strong>Status:</strong> <span class="badge-status badge-${inv?.status?.toLowerCase() || 'unknown'}">${inv?.status || 'Unknown'}</span></p>
+            </div>
+        `;
+    });
+    recentContainer.innerHTML = recentHtml;
 }
 
 function renderAgreements(agreements) {
-  const container = document.getElementById('agreementsTable');
-  if (!container) return;
-  
-  let html = '';
-  agreements.forEach(a => {
-    html += `
-      <tr>
-        <td>${a.id || 'N/A'}</td>
-        <td>${a.date || ''}</td>
-        <td>${a.type || ''}</td>
-        <td>₹${a.amount || 0}</td>
-        <td><span class="badge-status badge-${a.status === 'active' ? 'active' : 'completed'}">${a.status || ''}</span></td>
-        <td>
-          <a href="${a.documentUrl || '#'}" class="btn btn-sm btn-outline-primary" target="_blank">
-            <i class="fas fa-download me-1"></i>Download
-          </a>
-        </td>
-      </tr>
-    `;
-  });
-  
-  if (html === '') {
-    html = `<tr><td colspan="6" class="text-center py-4 text-muted">No agreements found</td></tr>`;
-  }
-  
-  container.innerHTML = html;
-}
+    const container = document.getElementById('agreementsTable');
+    if (!container) return;
 
-// Initialize FAQ accordion
-function initFAQ() {
-  const faqItems = document.querySelectorAll('.faq-item');
-  
-  faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    
-    question.addEventListener('click', () => {
-      // Close all other items
-      faqItems.forEach(otherItem => {
-        if (otherItem !== item) {
-          otherItem.classList.remove('active');
-        }
-      });
-      
-      // Toggle current item
-      item.classList.toggle('active');
+    // ✅ NULL CHECK: Verify agreements array
+    if (!Array.isArray(agreements) || agreements.length === 0) {
+        container.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No agreements found</td></tr>';
+        return;
+    }
+
+    let html = '';
+    agreements.forEach(agreement => {
+        html += `
+            <tr>
+                <td>${agreement?.agreementId || 'N/A'}</td>
+                <td>${formatDate(agreement?.date)}</td>
+                <td>${agreement?.type || 'Not Specified'}</td>
+                <td>${formatCurrency(agreement?.amount || 0)}</td>
+                <td><span class="badge-status badge-${agreement?.status?.toLowerCase() || 'unknown'}">${agreement?.status || 'Unknown'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>Download
+                    </button>
+                </td>
+            </tr>
+        `;
     });
-  });
+    
+    container.innerHTML = html;
 }
 
-// Setup event listeners
+function renderPayouts(payouts) {
+    const container = document.getElementById('upcomingPayouts');
+    if (!container) return;
+
+    // ✅ NULL CHECK: Verify payouts array
+    if (!Array.isArray(payouts) || payouts.length === 0) {
+        container.innerHTML = '<div class="no-data">No upcoming payouts</div>';
+        return;
+    }
+
+    let html = '';
+    payouts.forEach(payout => {
+        html += `
+            <div class="investment-item">
+                <h6>Payout</h6>
+                <p><strong>Amount:</strong> ${formatCurrency(payout?.amount || 0)}</p>
+                <p><strong>Date:</strong> ${formatDate(payout?.date)}</p>
+                <p><strong>Status:</strong> <span class="badge-status badge-pending">Pending</span></p>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// ✅ UTILITY FUNCTIONS
+function safeUpdateElement(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+function formatCurrency(amount) {
+    if (typeof amount !== 'number' || isNaN(amount)) {
+        return '₹0.00';
+    }
+    
+    try {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    } catch (error) {
+        return `₹${amount.toLocaleString('en-IN')}`;
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString || dateString === 'Not Scheduled' || dateString === 'Unknown') {
+        return 'Not Available';
+    }
+    
+    try {
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (error) {
+        return 'Invalid Date';
+    }
+}
+
+function showLoading(show) {
+    // You can implement a global loading indicator if needed
+}
+
+function showErrorMessage(message) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 8000);
+    }
+}
+
+// ✅ DEMO DATA FALLBACK
+function showDemoDashboard() {
+    const demoData = {
+        name: localStorage.getItem("investorName") || "Demo Investor",
+        email: localStorage.getItem("investorEmail") || "demo@example.com",
+        phone: localStorage.getItem("investorPhone") || "Not provided",
+        totalInvestment: 100000,
+        totalPayouts: 11500,
+        currentPortfolioValue: 88500,
+        roi: 0.10,
+        nextPayoutDate: "2025-11-05",
+        memberSince: "2024-01-01",
+        status: "Active",
+        investments: [
+            {
+                fundName: "MONTHLY INCOME",
+                amount: 100000,
+                date: "2023-01-15",
+                status: "Active",
+                returns: 10.5
+            }
+        ],
+        agreements: [
+            {
+                agreementId: "AGR001",
+                type: "Investment Agreement",
+                amount: 100000,
+                date: "2025-07-27",
+                status: "Active"
+            }
+        ],
+        upcomingPayouts: [],
+        portfolioGrowth: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
+        portfolioAllocation: [40, 28, 32]
+    };
+    
+    updateDashboardUI(demoData);
+}
+
+// ✅ EVENT LISTENERS AND INITIALIZATION
 function setupEventListeners() {
-  // Logout button
-  document.getElementById('logoutBtn')?.addEventListener('click', () => {
-    localStorage.removeItem("investorEmail");
-    localStorage.removeItem("consentDate");
-    window.location.reload();
-  });
-  
-  // Return calculator
-  document.getElementById('calculateBtn')?.addEventListener('click', calculateReturns);
-  
-  // Initialize calculator with default values
-  calculateReturns();
-  
-  // Phone number validation
-  document.getElementById('phone')?.addEventListener('input', function(e) {
-    this.value = this.value.replace(/\D/g, '').slice(0, 10);
-  });
+    // Logout button
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem("investorEmail");
+        localStorage.removeItem("investorName");
+        localStorage.removeItem("investorPhone");
+        window.location.reload();
+    });
+    
+    // Return calculator
+    document.getElementById('calculateBtn')?.addEventListener('click', calculateReturns);
+    
+    // Initialize calculator with default values
+    calculateReturns();
+    
+    // Phone number validation
+    document.getElementById('phone')?.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
 }
 
-// Calculate returns
 function calculateReturns() {
-  const amount = parseFloat(document.getElementById('calcAmount')?.value) || 0;
-  const tenure = parseInt(document.getElementById('calcTenure')?.value) || 12;
-  const rate = parseFloat(document.getElementById('calcRate')?.value) || 12;
-  
-  const returns = (amount * rate * tenure) / 1200;
-  const totalValue = amount + returns;
-  
-  const estimatedReturnsEl = document.getElementById('estimatedReturns');
-  const totalValueEl = document.getElementById('totalValue');
-  
-  if (estimatedReturnsEl) {
-    estimatedReturnsEl.textContent = `₹${returns.toLocaleString('en-IN')}`;
-  }
-  if (totalValueEl) {
-    totalValueEl.textContent = `₹${totalValue.toLocaleString('en-IN')}`;
-  }
+    const amount = parseFloat(document.getElementById('calcAmount')?.value) || 0;
+    const tenure = parseInt(document.getElementById('calcTenure')?.value) || 12;
+    const rate = parseFloat(document.getElementById('calcRate')?.value) || 12;
+    
+    const returns = (amount * rate * tenure) / 1200;
+    const totalValue = amount + returns;
+    
+    safeUpdateElement('estimatedReturns', formatCurrency(returns));
+    safeUpdateElement('totalValue', formatCurrency(totalValue));
 }
 
-// Validate Indian phone number
-function validateIndianPhone(phone) {
-  const indianPhoneRegex = /^[6-9]\d{9}$/;
-  return indianPhoneRegex.test(phone);
+function initFAQ() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        
+        question.addEventListener('click', () => {
+            // Close all other items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+            
+            // Toggle current item
+            item.classList.toggle('active');
+        });
+    });
 }
 
-// Check consent validity (annual reaffirmation)
-function checkConsentValidity() {
-  const lastConsent = localStorage.getItem('consentDate');
-  if (lastConsent) {
-    const monthsDiff = (new Date() - new Date(lastConsent)) / (1000 * 60 * 60 * 24 * 30);
-    if (monthsDiff > 12) {
-      // Show consent renewal notification
-      console.log("Consent requires annual renewal");
-      // You can implement a gentle reminder here
+// ✅ CONSENT FORM HANDLING
+document.getElementById('consentForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    
+    // Validate phone number
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+        alert('Please enter a valid 10-digit Indian mobile number');
+        return;
     }
-  }
-}
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    submitBtn.disabled = true;
 
-// Page load initialization
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&consent=true&timestamp=${encodeURIComponent(new Date().toISOString())}`
+        });
+        
+        const data = await response.json();
+        
+        if (data?.success) {
+            localStorage.setItem("investorEmail", email);
+            localStorage.setItem("investorName", name);
+            localStorage.setItem("investorPhone", phone);
+            
+            consentPopup.style.display = "none";
+            switchToInvestorView();
+            loadInvestorData(email);
+        } else {
+            alert(data?.message || "Error saving consent. Please try again.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        // Fallback: Store locally and proceed with demo data
+        localStorage.setItem("investorEmail", email);
+        localStorage.setItem("investorName", name);
+        localStorage.setItem("investorPhone", phone);
+        
+        consentPopup.style.display = "none";
+        switchToInvestorView();
+        showDemoDashboard();
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+// ✅ PAGE LOAD INITIALIZATION
 document.addEventListener('DOMContentLoaded', function() {
-  initDashboard();
-  checkConsentValidity();
+    initDashboard();
 });
 
-// Consent form submission
-document.getElementById('consentForm')?.addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  
-  // Validate phone number
-  if (!validateIndianPhone(phone)) {
-    alert('Please enter a valid 10-digit Indian mobile number');
-    return;
-  }
-  
-  const consentTimestamp = new Date().toISOString();
-  
-  // Send data to Google Sheets
-  fetch(scriptURL, {
-    method: "POST",
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-    body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&consent=true&timestamp=${encodeURIComponent(consentTimestamp)}`
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // Success - store investor info and switch view
-      localStorage.setItem("investorEmail", email);
-      localStorage.setItem("consentDate", consentTimestamp);
-      localStorage.setItem("investorName", name);
-      
-      consentPopup.style.display = "none";
-      switchToInvestorView();
-      loadInvestorData(email);
-      
-    } else if (data.message && data.message.includes("already exists")) {
-      // Investor exists - proceed anyway
-      localStorage.setItem("investorEmail", email);
-      localStorage.setItem("consentDate", consentTimestamp);
-      localStorage.setItem("investorName", name);
-      
-      consentPopup.style.display = "none";
-      switchToInvestorView();
-      loadInvestorData(email);
-    } else {
-      alert(data.message || "Error saving consent. Please try again.");
-    }
-  })
-  .catch(err => {
-    console.error("Error:", err);
-    alert("Error saving consent. Please try again.");
-  });
-});
-
-// Check if user is returning investor
+// ✅ CHECK FOR RETURNING INVESTOR
 window.onload = function() {
-  const investorEmail = localStorage.getItem("investorEmail");
-  if (investorEmail) {
-    // User has already given consent
-    switchToInvestorView();
-  } else {
-    // First time visitor - show consent
-    switchToVisitorView();
-  }
+    const investorEmail = localStorage.getItem("investorEmail");
+    if (investorEmail) {
+        switchToInvestorView();
+    } else {
+        switchToVisitorView();
+    }
 };
 </script>
 </body>
