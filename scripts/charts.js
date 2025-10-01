@@ -11,6 +11,63 @@ class ChartManager {
         this.initPortfolioChart();
     }
 
+    function renderInvestmentChart(investmentHistory) {
+    // ✅ NULL CHECK: Verify data exists and is valid
+    if (!Array.isArray(investmentHistory) || investmentHistory.length === 0) {
+        console.warn('No investment history data available');
+        return;
+    }
+    
+    // Your chart rendering code here
+    // investmentHistory?.map(item => item) // Optional chaining
+}
+
+function renderPortfolioAllocation(allocation) {
+    // ✅ NULL CHECK: Verify allocation data
+    if (!Array.isArray(allocation) || allocation.length === 0) {
+        console.warn('No portfolio allocation data available');
+        return;
+    }
+    
+    // Your allocation chart code here
+}
+    // ✅ SAFE currency formatting
+function formatCurrency(amount) {
+    if (typeof amount !== 'number' || isNaN(amount)) {
+        return '₹0.00';
+    }
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+    }).format(amount);
+}
+
+// ✅ SAFE date formatting
+function formatDate(dateString) {
+    if (!dateString || dateString === 'Not Scheduled') {
+        return 'Not Available';
+    }
+    try {
+        return new Date(dateString).toLocaleDateString('en-IN');
+    } catch (error) {
+        return 'Invalid Date';
+    }
+}
+    // ✅ MODERN JAVASCRIPT: Safe error display
+function showErrorMessage(message) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    } else {
+        console.error('Error message element not found:', message);
+    }
+}
     initInvestmentChart() {
         const ctx = document.getElementById('investmentChart');
         if (!ctx) return;
