@@ -136,6 +136,18 @@ body {
   margin: 0;
 }
 
+/* ✅ STATUS INDICATORS */
+.status-active { color: #27ae60; font-weight: bold; }
+.status-inactive { color: #e74c3c; font-weight: bold; }
+.status-pending { color: #f39c12; font-weight: bold; }
+.status-unknown { color: #7f8c8d; font-weight: bold; }
+
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
+}
 .investment-item {
   border-left: 4px solid var(--secondary);
   padding: 15px;
