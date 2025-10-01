@@ -1,4 +1,4 @@
-// scripts/app.js - FIXED VERSION
+// scripts/app.js - FIXED VERSION WITH NULL CHECKS
 class ChartManager {
     constructor() {
         this.charts = {};
@@ -15,8 +15,9 @@ class ChartManager {
         const ctx = document.getElementById('investmentChart');
         if (!ctx) return;
 
-        const investmentData = investorData.investmentHistory || [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3];
-        const payoutData = investorData.payoutHistory || [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27];
+        // ✅ NULL CHECK: Safe data access
+        const investmentData = Array.isArray(investorData?.investmentHistory) ? investorData.investmentHistory : [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3];
+        const payoutData = Array.isArray(investorData?.payoutHistory) ? investorData.payoutHistory : [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27];
 
         this.charts.investment = new Chart(ctx, {
             type: 'bar',
@@ -59,7 +60,8 @@ class ChartManager {
         const ctx = document.getElementById('tenureChart');
         if (!ctx) return;
 
-        const tenureData = investorData.tenureDistribution || [15, 25, 45, 15];
+        // ✅ NULL CHECK: Safe data access
+        const tenureData = Array.isArray(investorData?.tenureDistribution) ? investorData.tenureDistribution : [15, 25, 45, 15];
 
         this.charts.tenure = new Chart(ctx, {
             type: 'doughnut',
@@ -92,7 +94,8 @@ class ChartManager {
         const ctx = document.getElementById('myInvestmentChart');
         if (!ctx) return;
 
-        const portfolioGrowth = investorData.portfolioGrowth || [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000];
+        // ✅ NULL CHECK: Safe data access
+        const portfolioGrowth = Array.isArray(investorData?.portfolioGrowth) ? investorData.portfolioGrowth : [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000];
 
         this.charts.myInvestment = new Chart(ctx, {
             type: 'line',
@@ -128,7 +131,8 @@ class ChartManager {
         const ctx = document.getElementById('portfolioChart');
         if (!ctx) return;
 
-        const portfolioAllocation = investorData.portfolioAllocation || [40, 28, 32];
+        // ✅ NULL CHECK: Safe data access
+        const portfolioAllocation = Array.isArray(investorData?.portfolioAllocation) ? investorData.portfolioAllocation : [40, 28, 32];
 
         this.charts.portfolio = new Chart(ctx, {
             type: 'pie',
@@ -167,16 +171,6 @@ class InvestorDashboard {
         this.scriptURL = "https://script.google.com/macros/s/AKfycbwsAG2uqUswgkZ8U3yhBUz7K9T5X9O_WZRssXEuQVcpxF7HGnPbQWkhf1dhj-_moDui/exec";
         this.currentInvestor = null;
         
-        // Bind methods to maintain 'this' context
-        this.handleConsent = this.handleConsent.bind(this);
-        this.logout = this.logout.bind(this);
-        this.loadInvestorData = this.loadInvestorData.bind(this);
-        this.showDemoDashboard = this.showDemoDashboard.bind(this);
-        this.showDashboard = this.showDashboard.bind(this);
-        this.updateHeader = this.updateHeader.bind(this);
-        this.loadOverviewContent = this.loadOverviewContent.bind(this);
-        this.renderInvestments = this.renderInvestments.bind(this);
-        
         this.init();
     }
 
@@ -189,13 +183,7 @@ class InvestorDashboard {
         // Logout button
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', this.logout);
-        }
-        
-        // Consent form submission
-        const consentForm = document.getElementById('consentForm');
-        if (consentForm) {
-            consentForm.addEventListener('submit', this.handleConsent);
+            logoutBtn.addEventListener('click', this.logout.bind(this));
         }
     }
 
@@ -214,6 +202,175 @@ class InvestorDashboard {
         const consentPopup = document.getElementById('consentPopup');
         if (consentPopup) {
             consentPopup.style.display = "flex";
+        }
+    }
+
+    // Safe data processing with null checks
+    processInvestorData(data) {
+        // ✅ NULL CHECK: Verify data exists and has expected structure
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid data received from server');
+        }
+
+        // ✅ NULL CHECK: Verify investor exists
+        if (!data?.exists) {
+            throw new Error('Investor data not found');
+        }
+
+        // ✅ MODERN JAVASCRIPT: Safe property access with optional chaining
+        return {
+            name: data?.name || 'Not Available',
+            email: data?.email || 'Not Available',
+            phone: data?.phone || 'Not Available',
+            status: data?.status || 'Unknown',
+            totalInvestment: data?.totalInvestment || 0,
+            totalPayouts: data?.totalPayouts || 0,
+            currentPortfolioValue: data?.currentPortfolioValue || 0,
+            roi: data?.roi || 0,
+            nextPayoutDate: data?.nextPayoutDate || 'Not Scheduled',
+            memberSince: data?.memberSince || 'Unknown',
+            investments: Array.isArray(data?.investments) ? data.investments : [],
+            agreements: Array.isArray(data?.agreements) ? data.agreements : [],
+            upcomingPayouts: Array.isArray(data?.upcomingPayouts) ? data.upcomingPayouts : [],
+            investmentHistory: Array.isArray(data?.investmentHistory) ? data.investmentHistory : [],
+            payoutHistory: Array.isArray(data?.payoutHistory) ? data.payoutHistory : [],
+            tenureDistribution: Array.isArray(data?.tenureDistribution) ? data.tenureDistribution : [],
+            portfolioGrowth: Array.isArray(data?.portfolioGrowth) ? data.portfolioGrowth : [],
+            portfolioAllocation: Array.isArray(data?.portfolioAllocation) ? data.portfolioAllocation : []
+        };
+    }
+
+    async loadInvestorData(email) {
+        try {
+            console.log('🔄 Loading investor data for:', email);
+            
+            const data = await this.fetchWithCORS(this.scriptURL + "?email=" + encodeURIComponent(email));
+            console.log('📊 Investor data received:', data);
+            
+            if (data?.success && data?.exists) {
+                this.currentInvestor = this.processInvestorData(data);
+                this.showDashboard();
+            } else {
+                throw new Error(data?.message || 'Investor data not found');
+            }
+        } catch (error) {
+            console.error("❌ Error loading investor data:", error);
+            // Fallback to demo data
+            this.showDemoDashboard(
+                localStorage.getItem("investorName") || "Investor",
+                email,
+                localStorage.getItem("investorPhone") || "Not provided"
+            );
+        }
+    }
+
+    showDemoDashboard(name, email, phone) {
+        console.log('🔄 Showing demo dashboard for:', name);
+        
+        this.currentInvestor = {
+            name: name,
+            email: email,
+            phone: phone,
+            totalInvestment: 100000,
+            totalPayouts: 11500,
+            currentPortfolioValue: 88500,
+            roi: '10%',
+            nextPayoutDate: '2025-11-05',
+            memberSince: '2024-01-01',
+            consent: 'Given',
+            status: 'Active',
+            investments: [
+                { fundName: 'MONTHLY INCOME', amount: '100000', date: '2023-01-15', status: 'Active' }
+            ],
+            upcomingPayouts: [],
+            agreements: [
+                { agreementId: 'AGR001', type: 'Investment Agreement', amount: '100000', date: '2025-07-27', status: 'Active' }
+            ],
+            investmentHistory: [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3],
+            payoutHistory: [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27],
+            tenureDistribution: [15, 25, 45, 15],
+            portfolioGrowth: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
+            portfolioAllocation: [40, 28, 32]
+        };
+        
+        this.showDashboard();
+    }
+
+    showDashboard() {
+        console.log('🔄 Showing dashboard for:', this.currentInvestor?.name);
+        
+        // Switch to investor view
+        document.body.classList.remove('visitor-view');
+        document.body.classList.add('investor-view');
+        
+        const dashboardContent = document.getElementById('dashboardContent');
+        if (dashboardContent) {
+            dashboardContent.style.display = "block";
+        }
+        
+        this.updateHeader();
+        this.loadOverviewContent();
+    }
+
+    updateHeader() {
+        const headerElement = document.getElementById('headerInvestorName');
+        if (headerElement && this.currentInvestor) {
+            headerElement.textContent = this.currentInvestor.name;
+        }
+    }
+
+    loadOverviewContent() {
+        if (!this.currentInvestor) {
+            console.error('❌ Cannot load overview: currentInvestor is undefined');
+            return;
+        }
+
+        // Safe number formatting with null checks
+        const formatNumber = (num) => {
+            if (!num && num !== 0) return '0';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        };
+
+        // Update all overview elements with real data using safe updates
+        this.safeUpdateElement('myTotalInvestments', `₹${formatNumber(this.currentInvestor.totalInvestment)}`);
+        this.safeUpdateElement('myTotalPayouts', `₹${formatNumber(this.currentInvestor.totalPayouts)}`);
+        this.safeUpdateElement('currentValue', `₹${formatNumber(this.currentInvestor.currentPortfolioValue)}`);
+        this.safeUpdateElement('nextPayoutDate', this.currentInvestor.nextPayoutDate);
+
+        // Initialize charts with real data
+        setTimeout(() => {
+            if (typeof chartManager !== 'undefined' && this.currentInvestor) {
+                chartManager.initMyInvestmentChart(this.currentInvestor);
+                chartManager.initPortfolioChart(this.currentInvestor);
+            }
+        }, 100);
+    }
+
+    safeUpdateElement(elementId, text) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = text;
+        }
+    }
+
+    logout() {
+        localStorage.removeItem("investorEmail");
+        localStorage.removeItem("investorName");
+        localStorage.removeItem("investorPhone");
+        this.currentInvestor = null;
+        
+        // Switch back to visitor view
+        document.body.classList.remove('investor-view');
+        document.body.classList.add('visitor-view');
+        
+        this.showConsentPopup();
+        
+        // Clear charts
+        if (chartManager && chartManager.charts) {
+            Object.values(chartManager.charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            chartManager.charts = {};
         }
     }
 
@@ -284,251 +441,6 @@ class InvestorDashboard {
                 portfolioGrowth: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
                 portfolioAllocation: [40, 28, 32]
             };
-        }
-    }
-
-    async handleConsent(e) {
-        e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-
-        // Show loading state
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-        submitBtn.disabled = true;
-
-        try {
-            console.log('=== STARTING CONSENT PROCESS ===');
-            
-            const response = await this.fetchWithCORS(this.scriptURL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    consent: 'true'
-                })
-            });
-            
-            console.log('✅ Response from server:', response);
-            
-            if (response.success) {
-                localStorage.setItem("investorEmail", email);
-                localStorage.setItem("investorName", name);
-                localStorage.setItem("investorPhone", phone);
-                
-                const consentPopup = document.getElementById('consentPopup');
-                if (consentPopup) {
-                    consentPopup.style.display = "none";
-                }
-                
-                await this.loadInvestorData(email);
-            } else {
-                alert("Error: " + (response.message || "Unknown error"));
-            }
-        } catch (error) {
-            console.error("❌ Error in consent process:", error);
-            // Fallback: Store locally and proceed with demo data
-            localStorage.setItem("investorEmail", email);
-            localStorage.setItem("investorName", name);
-            localStorage.setItem("investorPhone", phone);
-            
-            const consentPopup = document.getElementById('consentPopup');
-            if (consentPopup) {
-                consentPopup.style.display = "none";
-            }
-            
-            this.showDemoDashboard(name, email, phone);
-        } finally {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    }
-
-    async loadInvestorData(email) {
-        try {
-            console.log('🔄 Loading investor data for:', email);
-            
-            const data = await this.fetchWithCORS(this.scriptURL + "?email=" + encodeURIComponent(email));
-            console.log('📊 Investor data received:', data);
-            
-            if (data.success && data.exists) {
-                this.currentInvestor = data;
-                this.showDashboard();
-            } else {
-                throw new Error(data.message || 'Investor data not found');
-            }
-        } catch (error) {
-            console.error("❌ Error loading investor data:", error);
-            // Fallback to demo data
-            this.showDemoDashboard(
-                localStorage.getItem("investorName") || "Investor",
-                email,
-                localStorage.getItem("investorPhone") || "Not provided"
-            );
-        }
-    }
-
-    showDemoDashboard(name, email, phone) {
-        console.log('🔄 Showing demo dashboard for:', name);
-        
-        this.currentInvestor = {
-            name: name,
-            email: email,
-            phone: phone,
-            totalInvestment: 100000,
-            totalPayouts: 11500,
-            currentPortfolioValue: 88500,
-            roi: '10%',
-            nextPayoutDate: '2025-11-05',
-            memberSince: '2024-01-01',
-            consent: 'Given',
-            status: 'Active',
-            investments: [
-                { fundName: 'MONTHLY INCOME', amount: '100000', date: '2023-01-15', status: 'Active' }
-            ],
-            upcomingPayouts: [],
-            agreements: [
-                { agreementId: 'AGR001', type: 'Investment Agreement', amount: '100000', date: '2025-07-27', status: 'Active' }
-            ],
-            investmentHistory: [0.8, 1.2, 0.9, 1.5, 1.8, 1.2, 1.6, 1.4, 1.7, 1.3],
-            payoutHistory: [0.15, 0.18, 0.22, 0.25, 0.28, 0.24, 0.26, 0.29, 0.31, 0.27],
-            tenureDistribution: [15, 25, 45, 15],
-            portfolioGrowth: [500000, 650000, 800000, 950000, 1100000, 1250000, 1300000, 1350000, 1375000, 1400000],
-            portfolioAllocation: [40, 28, 32]
-        };
-        
-        this.showDashboard();
-    }
-
-    showDashboard() {
-        console.log('🔄 Showing dashboard for:', this.currentInvestor?.name);
-        
-        const dashboardContent = document.getElementById('dashboardContent');
-        if (dashboardContent) {
-            dashboardContent.style.display = "block";
-        }
-        
-        this.updateHeader();
-        this.loadOverviewContent();
-    }
-
-    updateHeader() {
-        const headerElement = document.getElementById('headerInvestorName');
-        if (headerElement && this.currentInvestor) {
-            headerElement.textContent = this.currentInvestor.name;
-        }
-    }
-
-    loadOverviewContent() {
-        if (!this.currentInvestor) {
-            console.error('❌ Cannot load overview: currentInvestor is undefined');
-            return;
-        }
-
-        const formatNumber = (num) => {
-            if (!num && num !== 0) return '0';
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        };
-
-        // Update all overview elements with real data
-        this.updateElementText('myTotalInvestments', `₹${formatNumber(this.currentInvestor.totalInvestment)}`);
-        this.updateElementText('myTotalPayouts', `₹${formatNumber(this.currentInvestor.totalPayouts)}`);
-        this.updateElementText('currentValue', `₹${formatNumber(this.currentInvestor.currentPortfolioValue)}`);
-        this.updateElementText('nextPayoutDate', this.currentInvestor.nextPayoutDate);
-
-        // Update investor profile
-        this.updateElementText('investorName', this.currentInvestor.name);
-        this.updateElementText('investorEmail', this.currentInvestor.email);
-        this.updateElementText('investorPhone', this.currentInvestor.phone);
-        this.updateElementText('memberSince', this.formatDate(this.currentInvestor.memberSince));
-        this.updateElementText('investorConsent', this.currentInvestor.consent);
-
-        // Update investment summary
-        this.updateElementText('investorInvestment', `₹${formatNumber(this.currentInvestor.totalInvestment)}`);
-        this.updateElementText('investorPayout', `₹${formatNumber(this.currentInvestor.totalPayouts)}`);
-        this.updateElementText('investorCurrentValue', `₹${formatNumber(this.currentInvestor.currentPortfolioValue)}`);
-        this.updateElementText('investorROI', `${this.currentInvestor.roi}%`);
-
-        // Render investments timeline
-        this.renderInvestments();
-        
-        // Initialize charts with real data
-        setTimeout(() => {
-            if (typeof chartManager !== 'undefined' && this.currentInvestor) {
-                chartManager.initMyInvestmentChart(this.currentInvestor);
-                chartManager.initPortfolioChart(this.currentInvestor);
-            }
-        }, 100);
-    }
-
-    updateElementText(elementId, text) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.textContent = text;
-        }
-    }
-
-    formatDate(dateString) {
-        if (!dateString) return 'Not set';
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-IN', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        } catch (e) {
-            return 'Invalid date';
-        }
-    }
-
-    renderInvestments() {
-        const timeline = document.getElementById('investmentTimeline');
-        if (!timeline || !this.currentInvestor || !this.currentInvestor.investments) {
-            return;
-        }
-
-        let html = '<div class="timeline">';
-        this.currentInvestor.investments.forEach(inv => {
-            html += `
-                <div class="timeline-item">
-                    <div class="timeline-date">${this.formatDate(inv.date)}</div>
-                    <div class="timeline-content">
-                        <strong>Investment of ₹${parseInt(inv.amount).toLocaleString('en-IN')}</strong> in ${inv.fundName}
-                        <span class="badge-status badge-active ms-2">${inv.status}</span>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
-        timeline.innerHTML = html;
-    }
-
-    logout() {
-        localStorage.removeItem("investorEmail");
-        localStorage.removeItem("investorName");
-        localStorage.removeItem("investorPhone");
-        this.currentInvestor = null;
-        
-        const dashboardContent = document.getElementById('dashboardContent');
-        if (dashboardContent) {
-            dashboardContent.style.display = "none";
-        }
-        
-        this.showConsentPopup();
-        
-        // Clear charts
-        if (chartManager && chartManager.charts) {
-            Object.values(chartManager.charts).forEach(chart => {
-                if (chart) chart.destroy();
-            });
-            chartManager.charts = {};
         }
     }
 }
