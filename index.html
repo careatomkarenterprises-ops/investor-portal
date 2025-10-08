@@ -905,6 +905,105 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwsAG2uqUswgkZ8U3yhBUz7
 const consentPopup = document.getElementById("consentPopup");
 const dashboardContent = document.getElementById("dashboardContent");
 
+
+ // ✅ UPDATED RENDER FUNCTIONS FOR YOUR SHEET STRUCTURE
+function renderInvestments(investments) {
+    const timeline = document.getElementById('investmentTimeline');
+    const recentContainer = document.getElementById('myRecentInvestments');
+    
+    if (!timeline || !recentContainer) return;
+    
+    if (!Array.isArray(investments) || investments.length === 0) {
+        timeline.innerHTML = '<div class="no-data">No investments found</div>';
+        recentContainer.innerHTML = '<div class="no-data">No recent investments</div>';
+        return;
+    }
+
+    // Timeline view
+    let timelineHtml = '<div class="timeline">';
+    investments.forEach(inv => {
+        timelineHtml += `
+            <div class="timeline-item">
+                <div class="timeline-date">${inv.date || 'Not specified'}</div>
+                <div class="timeline-content">
+                    <strong>Investment in ${inv.fundName || 'Unknown Fund'}</strong><br>
+                    <small>Amount: ${formatCurrency(inv.amount || 0)} | Tenure: ${inv.tenure || 0} months</small>
+                    <span class="badge-status badge-${inv.status?.toLowerCase() || 'unknown'} ms-2">${inv.status || 'Unknown'}</span>
+                </div>
+            </div>
+        `;
+    });
+    timelineHtml += '</div>';
+    timeline.innerHTML = timelineHtml;
+
+    // Recent investments view
+    let recentHtml = '';
+    investments.slice(0, 3).forEach(inv => {
+        recentHtml += `
+            <div class="investment-item">
+                <h6>${inv.fundName || 'Unknown Fund'}</h6>
+                <p><strong>Amount:</strong> ${formatCurrency(inv.amount || 0)}</p>
+                <p><strong>Date:</strong> ${inv.date || 'Not specified'}</p>
+                <p><strong>Status:</strong> <span class="badge-status badge-${inv.status?.toLowerCase() || 'unknown'}">${inv.status || 'Unknown'}</span></p>
+            </div>
+        `;
+    });
+    recentContainer.innerHTML = recentHtml;
+}
+
+function renderAgreements(agreements) {
+    const container = document.getElementById('agreementsTable');
+    if (!container) return;
+
+    if (!Array.isArray(agreements) || agreements.length === 0) {
+        container.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No agreements found</td></tr>';
+        return;
+    }
+
+    let html = '';
+    agreements.forEach(agreement => {
+        html += `
+            <tr>
+                <td>${agreement.agreementId || 'N/A'}</td>
+                <td>${agreement.date || 'Not specified'}</td>
+                <td>${agreement.type || 'Not Specified'}</td>
+                <td>${formatCurrency(agreement.amount || 0)}</td>
+                <td><span class="badge-status badge-${agreement.status?.toLowerCase() || 'unknown'}">${agreement.status || 'Unknown'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>View
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function renderPayouts(payouts) {
+    const container = document.getElementById('upcomingPayouts');
+    if (!container) return;
+
+    if (!Array.isArray(payouts) || payouts.length === 0) {
+        container.innerHTML = '<div class="no-data">No upcoming payouts</div>';
+        return;
+    }
+
+    let html = '';
+    payouts.forEach(payout => {
+        html += `
+            <div class="investment-item">
+                <h6>Payout #${payout.payoutId || 'N/A'}</h6>
+                <p><strong>Amount:</strong> ${formatCurrency(payout.amount || 0)}</p>
+                <p><strong>Date:</strong> ${payout.date || 'Not scheduled'}</p>
+                <p><strong>Status:</strong> <span class="badge-status badge-${payout.status?.toLowerCase() || 'pending'}">${payout.status || 'Pending'}</span></p>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+} 
+
 // ✅ Initialize the dashboard
 function initDashboard() {
     initCharts();
